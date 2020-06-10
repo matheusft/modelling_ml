@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Machine Learning Generic Modeller</string>
   </property>
   <widget class="QTabWidget" name="train_tab">
    <property name="geometry">

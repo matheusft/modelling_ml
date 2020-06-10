@@ -52,7 +52,7 @@ class Ui_Dialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
+        Dialog.setWindowTitle(_translate("Dialog", "Machine Learning Generic Modeller"))
         self.load_file_pushButton.setText(_translate("Dialog", "Load File"))
         self.train_tab.setTabText(self.train_tab.indexOf(self.dataset_load_tab), _translate("Dialog", "Dataset Load"))
         self.train_tab.setTabText(self.train_tab.indexOf(self.visualise_tab), _translate("Dialog", "Visualise"))
