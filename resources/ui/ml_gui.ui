@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1040</width>
+    <height>634</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <widget class="QTabWidget" name="train_tab">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>40</y>
+     <width>951</width>
+     <height>521</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="dataset_load_tab">
+    <attribute name="title">
+     <string>Dataset Load</string>
+    </attribute>
+    <widget class="QPushButton" name="load_file_pushButton">
+     <property name="geometry">
+      <rect>
+       <x>280</x>
+       <y>90</y>
+       <width>113</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Load File</string>
+     </property>
+    </widget>
+    <widget class="QTableWidget" name="dataset_tableWidget">
+     <property name="geometry">
+      <rect>
+       <x>25</x>
+       <y>240</y>
+       <width>901</width>
+       <height>211</height>
+      </rect>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="visualise_tab">
+    <attribute name="title">
+     <string>Visualise</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="inputoutput_tab">
+    <attribute name="title">
+     <string>Input/Output</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="pre_process_tab">
+    <attribute name="title">
+     <string>Pre-Process</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="model_selection_tab">
+    <attribute name="title">
+     <string>Model Selction</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="train_tab">
+    <attribute name="title">
+     <string>Train</string>
+    </attribute>
+   </widget>
+   <widget class="QWidget" name="test_tab">
+    <attribute name="title">
+     <string>Test</string>
+    </attribute>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
