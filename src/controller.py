@@ -3,6 +3,7 @@ from os.path import join, abspath
 import model as md
 import sys
 
+
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:
@@ -13,23 +14,29 @@ def resource_path(relative_path):
 
     return join(base_path, relative_path)
 
-def configure_GUI(ui,ml_model):
 
+def configure_gui(ui, ml_model):
     _translate = QtCore.QCoreApplication.translate
 
-    #Connecting load_file_pushButton
-    # ui.load_file_pushButton.clicked.connect(lambda *args, ml_model = ml_model:load_dataset(ml_model))
-    ui.load_file_pushButton.clicked.connect(lambda ml_mode: load_dataset(ui,ml_model))
+    # Connecting load_file_pushButton - Dataset Load Tab
+    ui.load_file_pushButton.clicked.connect(lambda ml_mode: load_dataset(ui, ml_model))
 
-def load_dataset(ui,ml_model):
+    # Connecting radio_button_change - Visualise Tab
+    ui.boxplot_radioButton.clicked.connect(lambda : update_visualisation(ui, ml_model,ui.boxplot_radioButton.text()))
+    ui.summary_radioButton.clicked.connect(lambda : update_visualisation(ui, ml_model,ui.summary_radioButton.text()))
+    ui.plot_radioButton.clicked.connect(lambda : update_visualisation(ui, ml_model,ui.plot_radioButton.text()))
+    ui.histogram_radioButton.clicked.connect(lambda : update_visualisation(ui, ml_model,ui.histogram_radioButton.text()))
+
+
+def load_dataset(ui, ml_model):
     """Prompts the user to select an input file and call ml_model.read_dataset.
 
     Args:
-        ml_model (ML_model): An empty Machine Learning Model.
+        :param ml_model: An empty Machine Learning Model.
+        :param ui:  The ui to be updated
 
     """
-    #TODO
-    # uncomment this when finish doing tests
+    # TODO: uncomment this when finish doing tests
     # fileDlg = QtWidgets.QFileDialog()
     # file_address = fileDlg.getOpenFileName()[0]
     # return_code = ml_model.read_dataset(file_address)
@@ -37,9 +44,9 @@ def load_dataset(ui,ml_model):
     return_code = ml_model.read_dataset(file_address)
 
     if return_code == 0:
-        update_dataset_table(ui,ml_model.dataset)
+        populateWithDatasetData(ui, ml_model.dataset)
 
-    elif return_code == 1:  #Invalid file extension
+    elif return_code == 1:  # Invalid file extension
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setText("Error")
@@ -47,7 +54,7 @@ def load_dataset(ui,ml_model):
         msg.setWindowTitle("Error")
         msg.exec()
 
-    elif return_code == 2: #Exception while reading the file
+    elif return_code == 2:  # Exception while reading the file
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Critical)
         msg.setText("Error")
@@ -55,24 +62,40 @@ def load_dataset(ui,ml_model):
         msg.setWindowTitle("Error")
         msg.exec()
 
-def update_dataset_table(ui,dataset):
 
-    ui.dataset_tableWidget.setRowCount(len(dataset.head(10))+1) # +1 to add the Column Name
+def populateWithDatasetData(ui, dataset):
+    # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
+    ui.dataset_tableWidget.setRowCount(len(dataset.head(10)) + 1)  # +1 to add the Column Names in line 0
     ui.dataset_tableWidget.setColumnCount(len(dataset.columns))
 
+    header = ui.dataset_tableWidget.horizontalHeader()  # uses this header in order to adjust the column width
+
+    # Adding the labels at the top of the Table
+    for i in range(ui.dataset_tableWidget.columnCount()):
+        header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)  # Column width fits the content
+        qt_item = QtWidgets.QTableWidgetItem(dataset.columns[i])  # Creates an qt item
+        qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
+        ui.dataset_tableWidget.setItem(0, i, qt_item)
+
+    # Filling the Table with the dataset
     for i in range(ui.dataset_tableWidget.rowCount()):
         for j in range(ui.dataset_tableWidget.columnCount()):
-            if i == 0:
-                qt_item = QtWidgets.QTableWidgetItem(dataset.columns[j])
-            else:
-                qt_item = QtWidgets.QTableWidgetItem(str(dataset.iloc[i, j]))
-            qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)
-            ui.dataset_tableWidget.setItem(i, j, qt_item)
+            qt_item = QtWidgets.QTableWidgetItem(str(dataset.iloc[i, j]))  # Creates an qt item
+            qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
+            ui.dataset_tableWidget.setItem(i + 1, j, qt_item)  # i+1 to skip the top row (column names)
+
+    # Fill columnSelection_comboBox from the Visualise Tab
+    for each_column in dataset.columns:
+        ui.columnSelection_comboBox.addItem(each_column)
+
+
+def update_visualisation(ui, dataset, radio_name):
+    print('I AM GOING TO UPDATE EVERYTHING {}'.format(radio_name))
 
 
 try:
     sys._MEIPASS
     files_folder = resource_path('resources/')
 except:
-    files_folder = resource_path('../resources/')
-
+    pass
+files_folder = resource_path('../resources/')

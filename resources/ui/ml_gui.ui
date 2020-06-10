@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1040</width>
-    <height>634</height>
+    <width>772</width>
+    <height>417</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Machine Learning Generic Modeller</string>
   </property>
-  <widget class="QTabWidget" name="train_tab">
+  <widget class="QTabWidget" name="tabs_widget">
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>40</y>
-     <width>951</width>
-     <height>521</height>
+     <y>20</y>
+     <width>731</width>
+     <height>391</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -32,8 +32,8 @@
     <widget class="QPushButton" name="load_file_pushButton">
      <property name="geometry">
       <rect>
-       <x>280</x>
-       <y>90</y>
+       <x>220</x>
+       <y>0</y>
        <width>113</width>
        <height>32</height>
       </rect>
@@ -45,11 +45,17 @@
     <widget class="QTableWidget" name="dataset_tableWidget">
      <property name="geometry">
       <rect>
-       <x>25</x>
-       <y>240</y>
-       <width>901</width>
-       <height>211</height>
+       <x>10</x>
+       <y>40</y>
+       <width>691</width>
+       <height>311</height>
       </rect>
+     </property>
+     <property name="toolTip">
+      <string extracomment="&quot;njfsdgfhsdf&quot;"/>
+     </property>
+     <property name="toolTipDuration">
+      <number>30000</number>
      </property>
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
@@ -60,6 +66,75 @@
     <attribute name="title">
      <string>Visualise</string>
     </attribute>
+    <widget class="QWidget" name="verticalLayoutWidget">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>171</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="QComboBox" name="columnSelection_comboBox"/>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="summary_radioButton">
+        <property name="text">
+         <string>Summary</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="plot_radioButton">
+        <property name="text">
+         <string>Plot</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="boxplot_radioButton">
+        <property name="text">
+         <string>Boxplot</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="histogram_radioButton">
+        <property name="text">
+         <string>Histogram</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QTextBrowser" name="columnSummary_textBrowser">
+     <property name="geometry">
+      <rect>
+       <x>19</x>
+       <y>180</y>
+       <width>671</width>
+       <height>171</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QFrame" name="dataVisualisePlot_frame">
+     <property name="geometry">
+      <rect>
+       <x>360</x>
+       <y>10</y>
+       <width>150</width>
+       <height>150</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="inputoutput_tab">
     <attribute name="title">
