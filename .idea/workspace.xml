@@ -3,10 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="49b43dc1-dadc-4c38-94e3-a91e8b1a2dcd" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/resources/ui/ml_gui.ui" beforeDir="false" afterPath="$PROJECT_DIR$/resources/ui/ml_gui.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/view.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -124,12 +121,20 @@
       <option name="project" value="LOCAL" />
       <updated>1591809109204</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Creating MplWidget class in controller.py in order to plot matplotlib in the interface.">
+      <created>1591905040656</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1591905040656</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adding widgets to the Visualisation Tab" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding widgets to the Visualisation Tab" />
+    <MESSAGE value="Creating MplWidget class in controller.py in order to plot matplotlib in the interface." />
+    <option name="LAST_COMMIT_MESSAGE" value="Creating MplWidget class in controller.py in order to plot matplotlib in the interface." />
   </component>
   <component name="WindowStateProjectService">
     <state x="427" y="50" key="#convert_ui_to_py" timestamp="1591801526187">
@@ -140,42 +145,42 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="427" y="50" key="#main/0.23.1440.826@0.23.1440.826" timestamp="1591801434733" />
-    <state x="184" y="23" key="CommitChangelistDialog2" timestamp="1591809108791">
+    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1591905039969">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="184" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1591809108791" />
-    <state width="1419" height="265" key="GridCell.Tab.0.bottom" timestamp="1591904946329">
+    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1591905039969" />
+    <state width="1419" height="213" key="GridCell.Tab.0.bottom" timestamp="1591912330156">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state width="1419" height="265" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1591904946329" />
-    <state width="1419" height="265" key="GridCell.Tab.0.center" timestamp="1591904946328">
+    <state width="1419" height="213" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1591912330156" />
+    <state width="1419" height="213" key="GridCell.Tab.0.center" timestamp="1591912330155">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state width="1419" height="265" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1591904946328" />
-    <state width="1419" height="265" key="GridCell.Tab.0.left" timestamp="1591904946327">
+    <state width="1419" height="213" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1591912330155" />
+    <state width="1419" height="213" key="GridCell.Tab.0.left" timestamp="1591912330154">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state width="1419" height="265" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1591904946327" />
-    <state width="1419" height="265" key="GridCell.Tab.0.right" timestamp="1591904946328">
+    <state width="1419" height="213" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1591912330154" />
+    <state width="1419" height="213" key="GridCell.Tab.0.right" timestamp="1591912330155">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state width="1419" height="265" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1591904946328" />
+    <state width="1419" height="213" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1591912330155" />
     <state x="221" y="75" key="SettingsEditor" timestamp="1591807921121">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="221" y="75" key="SettingsEditor/0.23.1440.826@0.23.1440.826" timestamp="1591807921121" />
-    <state x="320" y="176" key="Vcs.Push.Dialog.v2" timestamp="1591809118355">
+    <state x="320" y="176" key="Vcs.Push.Dialog.v2" timestamp="1591905042906">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="320" y="176" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1591809118355" />
+    <state x="320" y="176" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1591905042906" />
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1591805829237">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.23.1440.826@0.23.1440.826" timestamp="1591805829237" />
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1591895948052">
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1591911880865">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1591895948052" />
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1591911880865" />
     <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1591897009906">
       <screen x="0" y="23" width="1440" height="826" />
     </state>

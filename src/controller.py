@@ -135,14 +135,14 @@ def update_visualisation_widgets(ui, ml_model, radio_name):
 
         if radio_name == ui.plot_radioButton.text():
             print('Update Plot')
-            plot_matplotlib_to_qt_widget([[0, 1, 2, 3, 4], [20, 50, 20, 15, 5]], ui.dataVisualisePlot_widget)
+            plot_matplotlib_to_qt_widget(ml_model,[[0, 1, 2, 3, 4], [20, 50, 20, 15, 5]], ui.dataVisualisePlot_widget)
         elif radio_name == ui.boxplot_radioButton.text():
             print('Update Boxplot')
-            plot_matplotlib_to_qt_widget([[0, 1, 2, 3, 4], [40, 10, 35, 30, 40]], ui.dataVisualisePlot_widget)
+            plot_matplotlib_to_qt_widget(ml_model,[[0, 1, 2, 3, 4], [40, 10, 35, 30, 40]], ui.dataVisualisePlot_widget)
         elif radio_name == ui.histogram_radioButton.text():
             print('Update Histogram')
             # figure = ml_model.generate_histogram(selected_column)
-            plot_matplotlib_to_qt_widget([[0, 1, 2, 3, 4], [10, 1, 20, 3, 40]],ui.dataVisualisePlot_widget)
+            plot_matplotlib_to_qt_widget(ml_model,[[0, 1, 2, 3, 4], [10, 1, 20, 3, 40]],ui.dataVisualisePlot_widget)
 
 
 def update_visualisation_options(ui, ml_model):
@@ -178,13 +178,19 @@ def update_visualisation_options(ui, ml_model):
         update_visualisation_widgets(ui, ml_model, ui.summary_radioButton.text())
 
 
-def plot_matplotlib_to_qt_widget(data,qt_widget):
+def plot_matplotlib_to_qt_widget(ml_model,data,qt_widget):
 
     print('Plot updated')
 
     qt_widget.canvas.axes.axis('on')
     qt_widget.canvas.axes.clear()
-    qt_widget.canvas.axes.plot(data[0],data[1])
+    # qt_widget.canvas.axes.plot(data[0],data[1])
+    # qt_widget.canvas.draw()
+
+    # ml_model.dataset['Thickness'].plot
+    import pandas as pd
+    # pd.DataFrame(ml_model.dataset['Thickness']).hist(ax=qt_widget.canvas.axes)
+    pd.DataFrame(ml_model.dataset['Thickness']).boxplot(ax=qt_widget.canvas.axes)
     qt_widget.canvas.draw()
 
 
