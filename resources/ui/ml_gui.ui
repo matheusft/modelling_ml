@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>772</width>
-    <height>417</height>
+    <width>781</width>
+    <height>419</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -69,7 +69,7 @@
     <widget class="QWidget" name="verticalLayoutWidget">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>20</x>
        <y>10</y>
        <width>171</width>
        <height>131</height>
@@ -113,26 +113,20 @@
      <property name="geometry">
       <rect>
        <x>19</x>
-       <y>180</y>
-       <width>671</width>
-       <height>171</height>
+       <y>160</y>
+       <width>291</width>
+       <height>181</height>
       </rect>
      </property>
     </widget>
-    <widget class="QFrame" name="dataVisualisePlot_frame">
+    <widget class="MplWidget" name="dataVisualisePlot_widget" native="true">
      <property name="geometry">
       <rect>
-       <x>360</x>
+       <x>339</x>
        <y>10</y>
-       <width>150</width>
-       <height>150</height>
+       <width>320</width>
+       <height>331</height>
       </rect>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
      </property>
     </widget>
    </widget>
@@ -163,6 +157,14 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>MplWidget</class>
+   <extends>QWidget</extends>
+   <header>controller</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -11,7 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(772, 417)
+        Dialog.resize(781, 445)
         self.tabs_widget = QtWidgets.QTabWidget(Dialog)
         self.tabs_widget.setGeometry(QtCore.QRect(20, 20, 731, 391))
         self.tabs_widget.setObjectName("tabs_widget")
@@ -32,7 +32,7 @@ class Ui_Dialog(object):
         self.visualise_tab = QtWidgets.QWidget()
         self.visualise_tab.setObjectName("visualise_tab")
         self.verticalLayoutWidget = QtWidgets.QWidget(self.visualise_tab)
-        self.verticalLayoutWidget.setGeometry(QtCore.QRect(10, 10, 171, 131))
+        self.verticalLayoutWidget.setGeometry(QtCore.QRect(20, 10, 171, 131))
         self.verticalLayoutWidget.setObjectName("verticalLayoutWidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.verticalLayoutWidget)
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
@@ -53,13 +53,11 @@ class Ui_Dialog(object):
         self.histogram_radioButton.setObjectName("histogram_radioButton")
         self.verticalLayout.addWidget(self.histogram_radioButton)
         self.columnSummary_textBrowser = QtWidgets.QTextBrowser(self.visualise_tab)
-        self.columnSummary_textBrowser.setGeometry(QtCore.QRect(19, 180, 671, 171))
+        self.columnSummary_textBrowser.setGeometry(QtCore.QRect(19, 160, 291, 181))
         self.columnSummary_textBrowser.setObjectName("columnSummary_textBrowser")
-        self.dataVisualisePlot_frame = QtWidgets.QFrame(self.visualise_tab)
-        self.dataVisualisePlot_frame.setGeometry(QtCore.QRect(360, 10, 150, 150))
-        self.dataVisualisePlot_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.dataVisualisePlot_frame.setFrameShadow(QtWidgets.QFrame.Raised)
-        self.dataVisualisePlot_frame.setObjectName("dataVisualisePlot_frame")
+        self.dataVisualisePlot_widget = MplWidget(self.visualise_tab)
+        self.dataVisualisePlot_widget.setGeometry(QtCore.QRect(339, 10, 320, 320))
+        self.dataVisualisePlot_widget.setObjectName("dataVisualisePlot_widget")
         self.tabs_widget.addTab(self.visualise_tab, "")
         self.inputoutput_tab = QtWidgets.QWidget()
         self.inputoutput_tab.setObjectName("inputoutput_tab")
@@ -97,3 +95,4 @@ class Ui_Dialog(object):
         self.tabs_widget.setTabText(self.tabs_widget.indexOf(self.train_tab), _translate("Dialog", "Train"))
         self.tabs_widget.setTabText(self.tabs_widget.indexOf(self.test_tab), _translate("Dialog", "Test"))
 
+from controller import MplWidget
