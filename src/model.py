@@ -44,4 +44,6 @@ class MlModel:
         return self.dataset[column].boxplot()
 
     def generate_plot(self,column):
-        return self.dataset[column].plot()
+        fig, ax = plt.subplots()
+        self.dataset[column].plot(ax=ax)
+        return ax

@@ -1,7 +1,9 @@
 from view import QtCore, QtWidgets
 from os.path import join, abspath
+import os, random
 import model as md
 import sys
+import pandas as pd
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
 
@@ -20,7 +22,7 @@ class MplWidget(QtWidgets.QWidget):
 
         self.canvas.axes = self.canvas.figure.add_subplot(111)
         self.setLayout(vertical_layout)
-        self.canvas.axes.axis('off') # Deactivate to show a white canvas in the initialisation
+        self.canvas.axes.axis('off')  # Turn off axis lines and labels. Show a white canvas in the initialisation
 
 
 def resource_path(relative_path):
@@ -51,13 +53,9 @@ def configure_gui(ui, ml_model):
     ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
 
     # Connecting radio_button_change - Visualise Tab
-    ui.boxplot_radioButton.clicked.connect(
-        lambda: update_visualisation_widgets(ui, ml_model, ui.boxplot_radioButton.text()))
-    ui.summary_radioButton.clicked.connect(
-        lambda: update_visualisation_widgets(ui, ml_model, ui.summary_radioButton.text()))
-    ui.plot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model, ui.plot_radioButton.text()))
-    ui.histogram_radioButton.clicked.connect(
-        lambda: update_visualisation_widgets(ui, ml_model, ui.histogram_radioButton.text()))
+    ui.boxplot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
+    ui.plot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
+    ui.histogram_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
 
 
 def load_dataset(ui, ml_model):
@@ -71,8 +69,12 @@ def load_dataset(ui, ml_model):
     # TODO: uncomment this when finish doing tests
     # fileDlg = QtWidgets.QFileDialog()
     # file_address = fileDlg.getOpenFileName()[0]
-    # return_code = ml_model.read_dataset(file_address)
-    file_address = '/Users/matheustorquato/Desktop/RSC_Data_2.xlsx'
+
+    # # TODO : Check whether the file_address is valid or empty (Is empty if the user cancel)
+    file_address = ''
+    while file_address == '' or file_address[0] == '.':
+        file_address = random.choice(os.listdir('/Users/matheustorquato/Documents/GitHub/generic_ml/data'))
+    file_address = '/Users/matheustorquato/Documents/GitHub/generic_ml/data/' + file_address
     return_code = ml_model.read_dataset(file_address)
 
     if return_code == 0:
@@ -124,25 +126,19 @@ def populate_with_dataset_data(ui, dataset):
         ui.columnSelection_comboBox.addItem(each_column)
 
 
-def update_visualisation_widgets(ui, ml_model, radio_name):
+def update_visualisation_widgets(ui, ml_model):
     selected_column = ui.columnSelection_comboBox.currentText()  # Get the selected value in the comboBox
 
     ui.columnSummary_textBrowser.clear()
     ui.columnSummary_textBrowser.append(ml_model.dataset[selected_column].describe().
-                                        to_string(float_format='{:.2f}'.format).title().replace('     ','  = '))
+                                        to_string(float_format='{:.2f}'.format).title().replace('     ', '  = '))
 
     if ml_model.column_types_pd_series[selected_column].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
-
-        if radio_name == ui.plot_radioButton.text():
-            print('Update Plot')
-            plot_matplotlib_to_qt_widget(ml_model,[[0, 1, 2, 3, 4], [20, 50, 20, 15, 5]], ui.dataVisualisePlot_widget)
-        elif radio_name == ui.boxplot_radioButton.text():
-            print('Update Boxplot')
-            plot_matplotlib_to_qt_widget(ml_model,[[0, 1, 2, 3, 4], [40, 10, 35, 30, 40]], ui.dataVisualisePlot_widget)
-        elif radio_name == ui.histogram_radioButton.text():
-            print('Update Histogram')
-            # figure = ml_model.generate_histogram(selected_column)
-            plot_matplotlib_to_qt_widget(ml_model,[[0, 1, 2, 3, 4], [10, 1, 20, 3, 40]],ui.dataVisualisePlot_widget)
+        plot_matplotlib_to_qt_widget(ml_model.dataset[selected_column], ui)
+    else:
+        ui.dataVisualisePlot_widget.canvas.axes.clear()
+        ui.dataVisualisePlot_widget.canvas.axes.axis('off')
+        ui.dataVisualisePlot_widget.canvas.draw()
 
 
 def update_visualisation_options(ui, ml_model):
@@ -155,45 +151,42 @@ def update_visualisation_options(ui, ml_model):
     """
     selected_column = ui.columnSelection_comboBox.currentText()  # Get the selected value in the comboBox
     # Create a list of all radioButton objects
-    radio_buttons_list = [ui.summary_radioButton, ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton]
+    radio_buttons_list = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton]
     # Check if the selected value in the columnSelection_comboBox is a numeric column in the dataset
+
     if ml_model.column_types_pd_series[selected_column].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
         radio_buttons_list[0].setEnabled(True)
         radio_buttons_list[1].setEnabled(True)
         radio_buttons_list[2].setEnabled(True)
-        radio_buttons_list[3].setEnabled(True)
-        # Checking which radio button is checked
-        radio_buttons_is_checked_list = [radio_buttons_list[0].isChecked(), radio_buttons_list[1].isChecked(),
-                                         radio_buttons_list[2].isChecked(), radio_buttons_list[3].isChecked()]
-        if any(radio_buttons_is_checked_list):
-            # update the visualisation according to the current radio button
-            update_visualisation_widgets(ui, ml_model,
-                                         radio_buttons_list[radio_buttons_is_checked_list.index(1)].text())
-    else:  # If not numeric, disable all visualisation options but the summary and checks it
-        radio_buttons_list[0].setEnabled(True)
+
+    else:  # If not numeric, disable all visualisation options
+        radio_buttons_list[0].setEnabled(False)
         radio_buttons_list[1].setEnabled(False)
         radio_buttons_list[2].setEnabled(False)
-        radio_buttons_list[3].setEnabled(False)
-        ui.summary_radioButton.setChecked(True)
-        update_visualisation_widgets(ui, ml_model, ui.summary_radioButton.text())
+
+    update_visualisation_widgets(ui, ml_model)
+
+    # TODO: Clear plot area
 
 
-def plot_matplotlib_to_qt_widget(ml_model,data,qt_widget):
+def plot_matplotlib_to_qt_widget(data, ui):
+    target_widget = ui.dataVisualisePlot_widget
+    target_widget.canvas.axes.clear()
+    target_widget.canvas.axes.axis('on')
 
-    print('Plot updated')
+    if ui.plot_radioButton.isChecked() and ui.plot_radioButton.isEnabled():
+        data.plot(ax=target_widget.canvas.axes, grid=False)
 
-    qt_widget.canvas.axes.axis('on')
-    qt_widget.canvas.axes.clear()
-    # qt_widget.canvas.axes.plot(data[0],data[1])
-    # qt_widget.canvas.draw()
+    elif ui.boxplot_radioButton.isChecked() and ui.boxplot_radioButton.isEnabled():
+        pd.DataFrame(data).boxplot(ax=target_widget.canvas.axes, grid=False)
 
-    # ml_model.dataset['Thickness'].plot
-    import pandas as pd
-    # pd.DataFrame(ml_model.dataset['Thickness']).hist(ax=qt_widget.canvas.axes)
-    pd.DataFrame(ml_model.dataset['Thickness']).boxplot(ax=qt_widget.canvas.axes)
-    qt_widget.canvas.draw()
+    elif ui.histogram_radioButton.isChecked() and ui.histogram_radioButton.isEnabled():
+        pd.DataFrame(data).hist(ax=target_widget.canvas.axes, grid=False)
 
+    else:
+        target_widget.canvas.axes.axis('off')
 
+    target_widget.canvas.draw()
 
 
 try:

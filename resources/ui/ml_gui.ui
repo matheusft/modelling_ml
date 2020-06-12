@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>781</width>
-    <height>419</height>
+    <width>767</width>
+    <height>460</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -78,13 +78,6 @@
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <widget class="QComboBox" name="columnSelection_comboBox"/>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="summary_radioButton">
-        <property name="text">
-         <string>Summary</string>
-        </property>
-       </widget>
       </item>
       <item>
        <widget class="QRadioButton" name="plot_radioButton">
