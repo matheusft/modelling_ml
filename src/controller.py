@@ -78,7 +78,7 @@ def load_dataset(ui, ml_model):
     return_code = ml_model.read_dataset(file_address)
 
     if return_code == 0:
-        populate_with_dataset_data(ui, ml_model.dataset)
+        populate_with_dataset_data(ui, ml_model)
 
     elif return_code == 1:  # Invalid file extension
         msg = QtWidgets.QMessageBox()
@@ -97,33 +97,39 @@ def load_dataset(ui, ml_model):
         msg.exec()
 
 
-def populate_with_dataset_data(ui, dataset):
+def populate_with_dataset_data(ui, ml_model):
     # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
-    ui.dataset_tableWidget.setRowCount(len(dataset.head(10)) + 1)  # +1 to add the Column Names in line 0
-    ui.dataset_tableWidget.setColumnCount(len(dataset.columns))
+    ui.dataset_tableWidget.setRowCount(len(ml_model.dataset.head(10)) + 1)  # +1 to add the Column Names in line 0
+    ui.dataset_tableWidget.setColumnCount(len(ml_model.dataset.columns))
 
     header = ui.dataset_tableWidget.horizontalHeader()  # uses this header in order to adjust the column width
 
     # Adding the labels at the top of the Table
     for i in range(ui.dataset_tableWidget.columnCount()):
         header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)  # Column width fits the content
-        qt_item = QtWidgets.QTableWidgetItem(dataset.columns[i])  # Creates an qt item
+        qt_item = QtWidgets.QTableWidgetItem(ml_model.dataset.columns[i])  # Creates an qt item
         qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
         ui.dataset_tableWidget.setItem(0, i, qt_item)
 
     # Filling the Table with the dataset
     for i in range(ui.dataset_tableWidget.rowCount()):
         for j in range(ui.dataset_tableWidget.columnCount()):
-            dataset_value = dataset.iloc[i, j]  # Get the value from the dataset
+            dataset_value = ml_model.dataset.iloc[i, j]  # Get the value from the dataset
             # If the value is numeric, format it to two decimals
             dataset_value_converted = dataset_value if (type(dataset_value) is str) else '{:.2f}'.format(dataset_value)
             qt_item = QtWidgets.QTableWidgetItem(dataset_value_converted)  # Creates an qt item
             qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
             ui.dataset_tableWidget.setItem(i + 1, j, qt_item)  # i+1 to skip the top row (column names)
 
+    if ui.columnSelection_comboBox.count() > 0: # If the comboBox is not empty
+        ui.columnSelection_comboBox.currentIndexChanged.disconnect() # Disconnect the signal first, then clear
+        ui.columnSelection_comboBox.clear() # Delete all values from comboBox, then re-connect the signal
+        ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
+
     # Fill columnSelection_comboBox from the Visualise Tab
-    for each_column in dataset.columns:
+    for each_column in ml_model.dataset.columns:
         ui.columnSelection_comboBox.addItem(each_column)
+
 
 
 def update_visualisation_widgets(ui, ml_model):

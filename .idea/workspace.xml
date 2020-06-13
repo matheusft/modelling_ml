@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/ui/ml_gui.ui" beforeDir="false" afterPath="$PROJECT_DIR$/resources/ui/ml_gui.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/view.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -141,14 +140,22 @@
       <option name="project" value="LOCAL" />
       <updated>1591912377935</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Table visualise working properly&#10;&#10;#TODO: add comments">
+      <created>1591973731510</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1591973731510</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Adding widgets to the Visualisation Tab" />
     <MESSAGE value="Creating MplWidget class in controller.py in order to plot matplotlib in the interface." />
     <MESSAGE value="Finding a solution for plotting Pandas hist and boxplot" />
-    <option name="LAST_COMMIT_MESSAGE" value="Finding a solution for plotting Pandas hist and boxplot" />
+    <MESSAGE value="Table visualise working properly&#10;&#10;#TODO: add comments" />
+    <option name="LAST_COMMIT_MESSAGE" value="Table visualise working properly&#10;&#10;#TODO: add comments" />
   </component>
   <component name="WindowStateProjectService">
     <state x="427" y="50" key="#convert_ui_to_py" timestamp="1591801526187">
@@ -159,46 +166,46 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="427" y="50" key="#main/0.23.1440.826@0.23.1440.826" timestamp="1591801434733" />
-    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1591912377517">
+    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1591973730817">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1591912377517" />
-    <state width="1419" height="185" key="GridCell.Tab.0.bottom" timestamp="1591973575975">
+    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1591973730817" />
+    <state width="1419" height="185" key="GridCell.Tab.0.bottom" timestamp="1592055446227">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="185" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1591973575975" />
-    <state width="1419" height="185" key="GridCell.Tab.0.center" timestamp="1591973575974">
+    <state width="1419" height="185" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592055446227" />
+    <state width="1419" height="185" key="GridCell.Tab.0.center" timestamp="1592055446226">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1591958168471" />
-    <state width="1419" height="185" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1591973575974" />
-    <state width="1419" height="185" key="GridCell.Tab.0.left" timestamp="1591973575974">
+    <state width="1419" height="185" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592055446226" />
+    <state width="1419" height="185" key="GridCell.Tab.0.left" timestamp="1592055446226">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1591958168470" />
-    <state width="1419" height="185" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1591973575974" />
-    <state width="1419" height="185" key="GridCell.Tab.0.right" timestamp="1591973575975">
+    <state width="1419" height="185" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592055446226" />
+    <state width="1419" height="185" key="GridCell.Tab.0.right" timestamp="1592055446227">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="185" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1591973575975" />
+    <state width="1419" height="185" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592055446227" />
     <state x="221" y="75" key="SettingsEditor" timestamp="1591807921121">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="221" y="75" key="SettingsEditor/0.23.1440.826@0.23.1440.826" timestamp="1591807921121" />
-    <state x="320" y="176" key="Vcs.Push.Dialog.v2" timestamp="1591912379952">
+    <state x="320" y="176" key="Vcs.Push.Dialog.v2" timestamp="1591973734390">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="320" y="176" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1591912379952" />
+    <state x="320" y="176" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1591973734390" />
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1591951268628">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.23.1440.826@0.23.1440.826" timestamp="1591951268628" />
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1591969269730">
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1591973988291">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1591969269730" />
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1591973988291" />
     <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1591969982504">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -207,23 +214,18 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="600" height="333" key="javadoc.popup/0.23.1440.826@0.23.1440.826" timestamp="1591899064897" />
-    <state x="385" y="173" width="670" height="676" key="search.everywhere.popup" timestamp="1591806630827">
+    <state x="385" y="173" width="670" height="676" key="search.everywhere.popup" timestamp="1591975322907">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="385" y="173" width="670" height="676" key="search.everywhere.popup/0.23.1440.826@0.23.1440.826" timestamp="1591806630827" />
+    <state x="385" y="173" width="670" height="676" key="search.everywhere.popup/0.23.1440.826@0.23.1440.826" timestamp="1591975322907" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>163</line>
-          <option name="timeStamp" value="66" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>138</line>
-          <option name="timeStamp" value="67" />
+          <line>124</line>
+          <option name="timeStamp" value="71" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
