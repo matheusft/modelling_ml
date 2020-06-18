@@ -57,6 +57,17 @@ def configure_gui(ui, ml_model):
     ui.plot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
     ui.histogram_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
 
+    pre_process_checkboxes = [ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+                              ui.replace_values_checkBox, ui.filter_values_checkBox]
+
+    for pre_process_option in pre_process_checkboxes:
+        pre_process_option.clicked.connect(lambda *args, object=pre_process_option: update_pre_process(ui, ml_model))
+
+    ui.outliers_treshold_horizontalSlider.valueChanged.connect(
+        lambda: update_treshold_label(ui.outliers_treshold_horizontalSlider.value(), ui.outliers_treshold_label))
+
+    # TODO : Disable all button and functions while Dataset is not chosen
+
 
 def load_dataset(ui, ml_model):
     """Prompts the user to select an input file and call ml_model.read_dataset.
@@ -77,8 +88,21 @@ def load_dataset(ui, ml_model):
     file_address = '/Users/matheustorquato/Documents/GitHub/generic_ml/data/' + file_address
     return_code = ml_model.read_dataset(file_address)
 
+    # TODO: add checkbox Dataset with Column name or not
+
     if return_code == 0:
-        populate_with_dataset_data(ui, ml_model)
+
+        populate_tableWidget_with_dataset(ui.dataset_tableWidget, ml_model.dataset)
+
+        # Here we update the columnSelection_comboBox
+        if ui.columnSelection_comboBox.count() > 0: # If the comboBox is not empty
+            ui.columnSelection_comboBox.currentIndexChanged.disconnect() # Disconnect the signal first, then clear
+            ui.columnSelection_comboBox.clear() # Delete all values from comboBox, then re-connect the signal
+            ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
+
+        # Fill columnSelection_comboBox from the Visualise Tab
+        for each_column in ml_model.dataset.columns:
+            ui.columnSelection_comboBox.addItem(each_column)
 
     elif return_code == 1:  # Invalid file extension
         msg = QtWidgets.QMessageBox()
@@ -97,39 +121,29 @@ def load_dataset(ui, ml_model):
         msg.exec()
 
 
-def populate_with_dataset_data(ui, ml_model):
+def populate_tableWidget_with_dataset(tableWidget, filling_dataset):
     # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
-    ui.dataset_tableWidget.setRowCount(len(ml_model.dataset.head(10)) + 1)  # +1 to add the Column Names in line 0
-    ui.dataset_tableWidget.setColumnCount(len(ml_model.dataset.columns))
+    tableWidget.setRowCount(len(filling_dataset.head(10)) + 1)  # +1 to add the Column Names in line 0
+    tableWidget.setColumnCount(len(filling_dataset.columns))
 
-    header = ui.dataset_tableWidget.horizontalHeader()  # uses this header in order to adjust the column width
+    header = tableWidget.horizontalHeader()  # uses this header in order to adjust the column width
 
     # Adding the labels at the top of the Table
-    for i in range(ui.dataset_tableWidget.columnCount()):
+    for i in range(tableWidget.columnCount()):
         header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)  # Column width fits the content
-        qt_item = QtWidgets.QTableWidgetItem(ml_model.dataset.columns[i])  # Creates an qt item
+        qt_item = QtWidgets.QTableWidgetItem(filling_dataset.columns[i])  # Creates an qt item
         qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
-        ui.dataset_tableWidget.setItem(0, i, qt_item)
+        tableWidget.setItem(0, i, qt_item)
 
     # Filling the Table with the dataset
-    for i in range(ui.dataset_tableWidget.rowCount()):
-        for j in range(ui.dataset_tableWidget.columnCount()):
-            dataset_value = ml_model.dataset.iloc[i, j]  # Get the value from the dataset
+    for i in range(tableWidget.rowCount()):
+        for j in range(tableWidget.columnCount()):
+            dataset_value = filling_dataset.iloc[i, j]  # Get the value from the dataset
             # If the value is numeric, format it to two decimals
             dataset_value_converted = dataset_value if (type(dataset_value) is str) else '{:.2f}'.format(dataset_value)
             qt_item = QtWidgets.QTableWidgetItem(dataset_value_converted)  # Creates an qt item
             qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
-            ui.dataset_tableWidget.setItem(i + 1, j, qt_item)  # i+1 to skip the top row (column names)
-
-    if ui.columnSelection_comboBox.count() > 0: # If the comboBox is not empty
-        ui.columnSelection_comboBox.currentIndexChanged.disconnect() # Disconnect the signal first, then clear
-        ui.columnSelection_comboBox.clear() # Delete all values from comboBox, then re-connect the signal
-        ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
-
-    # Fill columnSelection_comboBox from the Visualise Tab
-    for each_column in ml_model.dataset.columns:
-        ui.columnSelection_comboBox.addItem(each_column)
-
+            tableWidget.setItem(i + 1, j, qt_item)  # i+1 to skip the top row (column names)
 
 
 def update_visualisation_widgets(ui, ml_model):
@@ -165,6 +179,10 @@ def update_visualisation_options(ui, ml_model):
         radio_buttons_list[1].setEnabled(True)
         radio_buttons_list[2].setEnabled(True)
 
+        checked_objects = list(map(lambda x: x.isChecked(), radio_buttons_list))
+        if not any(checked_objects): # Checks whether any radio button is checked
+            radio_buttons_list[0].setChecked(True) # If not, checks the first one.
+
     else:  # If not numeric, disable all visualisation options
         radio_buttons_list[0].setEnabled(False)
         radio_buttons_list[1].setEnabled(False)
@@ -194,6 +212,25 @@ def plot_matplotlib_to_qt_widget(data, ui):
 
     target_widget.canvas.draw()
 
+
+def update_treshold_label(slider_value,label_object):
+
+    label_object.setText('{:.1f}'.format(slider_value/10))
+
+
+def update_pre_process(ui,ml_model):
+
+    scaling = ui.numeric_scaling_checkBox.isChecked()
+    rm_duplicate = ui.remove_duplicates_checkBox.isChecked()
+    rm_outliers = [ui.remove_outliers_checkBox.isChecked(), ui.outliers_treshold_horizontalSlider.value()]
+    replace = [ui.replace_values_checkBox.isChecked(), ui.replace_columnSelection_comboBox.currentText(),
+               ui.replace_text_lineEdit.text(), ui.replacing_value_lineEdit.text()]
+    filter_dataset = [ui.filter_values_checkBox.isChecked(), ui.filter_columnSelection_comboBox.currentText(),
+                      ui.filter_operator_comboBox.currentText(),
+                      ui.filtering_dataset_value_lineEdit.text()]
+
+    print(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
+    ml_model.pre_process_data(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
 
 try:
     sys._MEIPASS
