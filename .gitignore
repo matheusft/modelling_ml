@@ -30,7 +30,7 @@
 
 # OS generated files #
 ######################
-.idea
+.idea/
 .DS_Store
 .DS_Store?
 ._*
@@ -38,8 +38,10 @@
 .Trashes
 ehthumbs.db
 Thumbs.db
+*.cpython-37.pyc
 
 # Remove from sync images for MATLAB training
 ######################
 dist/
 build/
+src/__pycache__/
