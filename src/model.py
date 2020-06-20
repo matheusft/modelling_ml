@@ -54,16 +54,22 @@ class MlModel:
         scaling, rm_duplicate, rm_outliers, replace, filter
         self.pre_processed_dataset = self.dataset.copy()
 
-        # # Scaling the numeric values in the dataset, NOT THE LAST COLUMN
-        # numeric_input_columns = dataset.iloc[:, :-1].select_dtypes(include=['float64', 'int']).columns.drop(
-        #     labels=not_used_numeric_input_labels).to_list()
-        # regression_input_scaler = MinMaxScaler(feature_range=(-1, 1))
-        # standardised_input_numeric = regression_input_scaler.fit_transform(dataset[numeric_input_columns])
-        #
-        # DataFrame.drop_duplicates(self, subset: Union[Hashable, Sequence[Hashable], NoneType] = None, keep: Union[
-        #     str, bool] = 'first', inplace: bool = False, ignore_index: bool = False)
-        #
-        #
+        # Scaling the numeric values in the pre_processed_dataset
+        if scaling:
+            numeric_columns_to_not_scale = []
+            numeric_input_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.drop(
+                labels=numeric_columns_to_not_scale).to_list()
+            input_scaler = MinMaxScaler(feature_range=(-1, 1))
+            standardised_numeric_input = input_scaler.fit_transform(self.pre_processed_dataset[numeric_input_columns])
+
+            # Updating the scaled values in the pre_processed_dataset
+            self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
+
+        if rm_duplicate:
+            subset_columns_to_drop = self.pre_processed_dataset.columns  # Todo add this
+            self.pre_processed_dataset.drop_duplicates(subset = subset_columns_to_drop, inplace = True)
+
+
         # # https://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-data-frame
         # # http://statisticshelper.com/wp-content/uploads/2018/08/empirical-rule-with-z-scores.png
         # # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
@@ -85,4 +91,4 @@ class MlModel:
         #
 
 
-        pass
+        return self.pre_processed_dataset

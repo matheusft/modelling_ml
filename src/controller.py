@@ -89,10 +89,12 @@ def load_dataset(ui, ml_model):
     return_code = ml_model.read_dataset(file_address)
 
     # TODO: add checkbox Dataset with Column name or not
+    # Todo: Check what needs to be reset/cleared when a new dataset is loaded
 
     if return_code == 0:
 
         populate_tableWidget_with_dataset(ui.dataset_tableWidget, ml_model.dataset)
+        populate_tableWidget_with_dataset(ui.pre_process_dataset_tableWidget, ml_model.dataset)
 
         # Here we update the columnSelection_comboBox
         if ui.columnSelection_comboBox.count() > 0: # If the comboBox is not empty
@@ -100,9 +102,11 @@ def load_dataset(ui, ml_model):
             ui.columnSelection_comboBox.clear() # Delete all values from comboBox, then re-connect the signal
             ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
 
-        # Fill columnSelection_comboBox from the Visualise Tab
+        # Filling the comboBoxes
         for each_column in ml_model.dataset.columns:
-            ui.columnSelection_comboBox.addItem(each_column)
+            ui.columnSelection_comboBox.addItem(each_column) # Fill columnSelection_comboBox from the Visualise Tab
+            ui.replace_columnSelection_comboBox.addItem(each_column) # from the Pre-process Tab
+            ui.filter_columnSelection_comboBox.addItem(each_column) # from the Pre-process Tab
 
     elif return_code == 1:  # Invalid file extension
         msg = QtWidgets.QMessageBox()
@@ -230,7 +234,10 @@ def update_pre_process(ui,ml_model):
                       ui.filtering_dataset_value_lineEdit.text()]
 
     print(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
-    ml_model.pre_process_data(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
+
+    pre_processed_dataset = ml_model.pre_process_data(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
+
+    populate_tableWidget_with_dataset(ui.pre_process_dataset_tableWidget,pre_processed_dataset)
 
 try:
     sys._MEIPASS

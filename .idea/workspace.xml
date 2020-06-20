@@ -2,13 +2,17 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="49b43dc1-dadc-4c38-94e3-a91e8b1a2dcd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DarkyenusTimeTracker">
+    <option name="totalTimeSeconds" value="1852" />
   </component>
   <component name="FavoritesManager">
     <favorites_list name="generic_ml" />
@@ -186,30 +190,30 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="427" y="50" key="#main/0.23.1440.826@0.23.1440.826" timestamp="1591801434733" />
-    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1592497726625">
+    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1592678950445">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1592497726625" />
-    <state width="1419" height="185" key="GridCell.Tab.0.bottom" timestamp="1592497658299">
+    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1592678950445" />
+    <state width="1419" height="185" key="GridCell.Tab.0.bottom" timestamp="1592678910223">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="185" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592497658299" />
-    <state width="1419" height="185" key="GridCell.Tab.0.center" timestamp="1592497658298">
+    <state width="1419" height="185" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592678910223" />
+    <state width="1419" height="185" key="GridCell.Tab.0.center" timestamp="1592678910222">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1591958168471" />
-    <state width="1419" height="185" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592497658298" />
-    <state width="1419" height="185" key="GridCell.Tab.0.left" timestamp="1592497658297">
+    <state width="1419" height="185" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592678910222" />
+    <state width="1419" height="185" key="GridCell.Tab.0.left" timestamp="1592678910221">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1591958168470" />
-    <state width="1419" height="185" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592497658297" />
-    <state width="1419" height="185" key="GridCell.Tab.0.right" timestamp="1592497658298">
+    <state width="1419" height="185" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592678910221" />
+    <state width="1419" height="185" key="GridCell.Tab.0.right" timestamp="1592678910222">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="185" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592497658298" />
+    <state width="1419" height="185" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592678910222" />
     <state x="221" y="75" key="SettingsEditor" timestamp="1591807921121">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -222,10 +226,10 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.23.1440.826@0.23.1440.826" timestamp="1591951268628" />
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1592229705377">
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1592557405528">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1592229705377" />
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1592557405528" />
     <state x="503" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1592487142303">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -247,14 +251,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>222</line>
-          <option name="timeStamp" value="77" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>65</line>
-          <option name="timeStamp" value="78" />
+          <url>file://$PROJECT_DIR$/src/model.py</url>
+          <line>58</line>
+          <option name="timeStamp" value="80" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
