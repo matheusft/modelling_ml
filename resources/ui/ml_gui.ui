@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>831</width>
-    <height>470</height>
+    <width>1017</width>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,8 +18,8 @@
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>801</width>
-     <height>441</height>
+     <width>981</width>
+     <height>521</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -132,7 +132,7 @@
       <rect>
        <x>10</x>
        <y>20</y>
-       <width>411</width>
+       <width>661</width>
        <height>221</height>
       </rect>
      </property>
@@ -227,7 +227,7 @@
          <widget class="QSlider" name="outliers_treshold_horizontalSlider">
           <property name="maximumSize">
            <size>
-            <width>100</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
@@ -330,26 +330,80 @@
           <property name="sizeHint" stdset="0">
            <size>
             <width>27</width>
-            <height>21</height>
+            <height>20</height>
            </size>
           </property>
          </spacer>
         </item>
         <item>
-         <widget class="QComboBox" name="replace_columnSelection_comboBox"/>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="replace_text_lineEdit">
+         <widget class="QStackedWidget" name="pre_process_replacing_stackedWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="maximumSize">
            <size>
-            <width>380</width>
-            <height>16777215</height>
+            <width>16777215</width>
+            <height>26</height>
            </size>
           </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Plain</enum>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <widget class="QWidget" name="page_numeric">
+           <widget class="QLineEdit" name="replaced_value_lineEdit">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>183</width>
+              <height>21</height>
+             </rect>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>26</height>
+             </size>
+            </property>
+           </widget>
+          </widget>
+          <widget class="QWidget" name="page_categorical">
+           <widget class="QComboBox" name="replaced_value_comboBox">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>104</width>
+              <height>26</height>
+             </rect>
+            </property>
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>16777215</width>
+              <height>26</height>
+             </size>
+            </property>
+           </widget>
+          </widget>
          </widget>
         </item>
         <item>
-         <widget class="QLabel" name="label">
+         <widget class="QLabel" name="label_in">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -359,7 +413,29 @@
           <property name="maximumSize">
            <size>
             <width>380</width>
-            <height>16777215</height>
+            <height>21</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>in</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="replace_columnSelection_comboBox"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="label_with">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>380</width>
+            <height>21</height>
            </size>
           </property>
           <property name="text">
@@ -371,7 +447,7 @@
          <widget class="QLineEdit" name="replacing_value_lineEdit">
           <property name="maximumSize">
            <size>
-            <width>380</width>
+            <width>16777215</width>
             <height>16777215</height>
            </size>
           </property>
@@ -384,20 +460,23 @@
     <widget class="QTableWidget" name="pre_process_dataset_tableWidget">
      <property name="geometry">
       <rect>
-       <x>430</x>
-       <y>10</y>
-       <width>361</width>
+       <x>30</x>
+       <y>340</y>
+       <width>561</width>
        <height>141</height>
       </rect>
+     </property>
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
      </property>
     </widget>
     <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>290</y>
-       <width>441</width>
-       <height>41</height>
+       <y>270</y>
+       <width>771</width>
+       <height>51</height>
       </rect>
      </property>
      <layout class="QHBoxLayout" name="replace_value_horizontalLayout_2">
@@ -431,7 +510,14 @@
        </spacer>
       </item>
       <item>
-       <widget class="QComboBox" name="filter_columnSelection_comboBox"/>
+       <widget class="QComboBox" name="filter_columnSelection_comboBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QComboBox" name="filter_operator_comboBox">
@@ -474,13 +560,76 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="filtering_dataset_value_lineEdit">
+       <widget class="QStackedWidget" name="pre_process_filtering_stackedWidget">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="maximumSize">
          <size>
           <width>16777215</width>
-          <height>16777215</height>
+          <height>26</height>
          </size>
         </property>
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Plain</enum>
+        </property>
+        <property name="currentIndex">
+         <number>1</number>
+        </property>
+        <widget class="QWidget" name="page_numeric_2">
+         <widget class="QLineEdit" name="filtering_dataset_value_lineEdit">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>231</width>
+            <height>21</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>26</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="page_categorical_2">
+         <widget class="QComboBox" name="filtering_dataset_value_comboBox">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>104</width>
+            <height>26</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>26</height>
+           </size>
+          </property>
+         </widget>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -488,10 +637,10 @@
     <widget class="QListWidget" name="preprocess_replace_listWidget">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>160</y>
-       <width>311</width>
-       <height>101</height>
+       <x>680</x>
+       <y>140</y>
+       <width>281</width>
+       <height>61</height>
       </rect>
      </property>
      <property name="selectionMode">
@@ -501,9 +650,9 @@
     <widget class="QListWidget" name="preprocess_filter_listWidget">
      <property name="geometry">
       <rect>
-       <x>470</x>
-       <y>300</y>
-       <width>311</width>
+       <x>740</x>
+       <y>360</y>
+       <width>221</width>
        <height>81</height>
       </rect>
      </property>
@@ -514,33 +663,33 @@
     <widget class="QPushButton" name="remove_replace_value_pushButton">
      <property name="geometry">
       <rect>
-       <x>660</x>
-       <y>260</y>
-       <width>113</width>
+       <x>712</x>
+       <y>200</y>
+       <width>211</width>
        <height>32</height>
       </rect>
      </property>
      <property name="text">
-      <string>Remove</string>
+      <string>Remove Selected</string>
      </property>
     </widget>
     <widget class="QPushButton" name="remove_filter_rule_pushButton">
      <property name="geometry">
       <rect>
-       <x>660</x>
-       <y>380</y>
-       <width>113</width>
+       <x>800</x>
+       <y>450</y>
+       <width>131</width>
        <height>32</height>
       </rect>
      </property>
      <property name="text">
-      <string>Remove</string>
+      <string>Remove Selected</string>
      </property>
     </widget>
     <widget class="QPushButton" name="addrule_filter_value_pushButton">
      <property name="geometry">
       <rect>
-       <x>330</x>
+       <x>610</x>
        <y>330</y>
        <width>113</width>
        <height>32</height>
@@ -553,7 +702,7 @@
     <widget class="QPushButton" name="addrule_replace_value_pushButton">
      <property name="geometry">
       <rect>
-       <x>310</x>
+       <x>560</x>
        <y>240</y>
        <width>113</width>
        <height>32</height>
@@ -561,6 +710,56 @@
      </property>
      <property name="text">
       <string>Add Rule</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_in_2">
+     <property name="geometry">
+      <rect>
+       <x>760</x>
+       <y>110</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>380</width>
+       <height>21</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Replacing Rules</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_in_3">
+     <property name="geometry">
+      <rect>
+       <x>810</x>
+       <y>330</y>
+       <width>101</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>380</width>
+       <height>21</height>
+      </size>
+     </property>
+     <property name="text">
+      <string>Filtering Rules</string>
      </property>
     </widget>
    </widget>

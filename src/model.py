@@ -2,6 +2,7 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from scipy import stats
 import pandas as pd
+import numpy as np
 import os
 
 
@@ -36,20 +37,20 @@ class MlModel:
         except:
             return 2  # Exception
 
-    def generate_histogram(self,column):
+    def generate_histogram(self, column):
         fig, ax = plt.subplots()
         ax = self.dataset[column].hist()
         return ax
 
-    def generate_boxplot(self,column):
+    def generate_boxplot(self, column):
         return self.dataset[column].boxplot()
 
-    def generate_plot(self,column):
+    def generate_plot(self, column):
         fig, ax = plt.subplots()
         self.dataset[column].plot(ax=ax)
         return ax
 
-    def pre_process_data(self,scaling,rm_duplicate,rm_outliers,replace,filter):
+    def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter):
 
         scaling, rm_duplicate, rm_outliers, replace, filter
         self.pre_processed_dataset = self.dataset.copy()
@@ -66,29 +67,29 @@ class MlModel:
             self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
 
         if rm_duplicate:
-            subset_columns_to_drop = self.pre_processed_dataset.columns  # Todo add this
-            self.pre_processed_dataset.drop_duplicates(subset = subset_columns_to_drop, inplace = True)
+            subset_columns_to_drop = []
+            self.pre_processed_dataset.drop_duplicates(subset=subset_columns_to_drop, inplace=True)
 
+        if rm_outliers[0]:
+            # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
+            # Remove Outliers by removing rows that are not within 'standard_deviation_threshold' standard deviations from mean
+            # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
+            standard_deviation_threshold = rm_outliers[1]
+            numeric_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.to_list()
+            self.pre_processed_dataset = self.pre_processed_dataset[
+                (np.abs(stats.zscore(self.pre_processed_dataset[numeric_columns])) < standard_deviation_threshold).all(
+                    axis=1)]
 
-        # # https://stackoverflow.com/questions/23199796/detect-and-exclude-outliers-in-pandas-data-frame
-        # # http://statisticshelper.com/wp-content/uploads/2018/08/empirical-rule-with-z-scores.png
-        # # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
-        # # Remove Outliers by removing rows thatr are not within 'standard_deviation_threshold' standard deviations from mean
-        # # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
-        # standard_deviation_threshold = 6
-        # dataset_filtered = dataset_no_constant_columns[(np.abs(stats.zscore(
-        #     dataset_no_constant_columns.iloc[:, len(not_numeric_columns_indexes):])) <
-        #                                                 standard_deviation_threshold).all(axis=1)]
-        #
-        # DataFrame.replace(self, to_replace=None, value=None, inplace=False, limit=None, regex=False, method='pad')
-        #
-        #
-        #
-        # ###filtering
-        #
-        # DataFrame = DataFrame[DataFrame['column'] == 1]
-        #
-        #
+        if replace[0]:
+            for rule in replace[1]:
+                value_to_replace = rule[0] # Replace from the ComboBox
+                target_column = rule[1]
+                new_value = rule[2]
+                self.pre_processed_dataset[target_column].replace(to_replace=value_to_replace, value=new_value,
+                                                                  inplace=True)
 
+        if filter[0]:
+            pass
+            # DataFrame = DataFrame[DataFrame['column'] == 1]
 
         return self.pre_processed_dataset
