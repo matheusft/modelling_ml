@@ -5,6 +5,7 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/ui/ml_gui.ui" beforeDir="false" afterPath="$PROJECT_DIR$/resources/ui/ml_gui.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/matheus.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/matheus.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/view.py" afterDir="false" />
     </list>
@@ -14,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="27142" />
+    <option name="totalTimeSeconds" value="35984" />
   </component>
   <component name="FavoritesManager">
     <favorites_list name="generic_ml" />
@@ -178,7 +179,14 @@
       <option name="project" value="LOCAL" />
       <updated>1592678968576</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="Fixing the Pre-process functions">
+      <created>1592773933787</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1592773933787</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -189,7 +197,8 @@
     <MESSAGE value="Gui updates" />
     <MESSAGE value="GUI updates&#10;&#10;Working on Pre-processing Tab" />
     <MESSAGE value="Updating the pre_process_data in the model.py" />
-    <option name="LAST_COMMIT_MESSAGE" value="Updating the pre_process_data in the model.py" />
+    <MESSAGE value="Fixing the Pre-process functions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing the Pre-process functions" />
   </component>
   <component name="WindowStateProjectService">
     <state x="427" y="50" key="#convert_ui_to_py" timestamp="1591801526187">
@@ -200,54 +209,54 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="427" y="50" key="#main/0.23.1440.826@0.23.1440.826" timestamp="1591801434733" />
-    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1592678968196">
+    <state x="207" y="23" key="CommitChangelistDialog2" timestamp="1592773933534">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1592678968196" />
-    <state width="1419" height="296" key="GridCell.Tab.0.bottom" timestamp="1592773847818">
+    <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1592773933534" />
+    <state width="1419" height="309" key="GridCell.Tab.0.bottom" timestamp="1592829903661">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="296" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592773847818" />
-    <state width="1419" height="296" key="GridCell.Tab.0.center" timestamp="1592773847817">
+    <state width="1419" height="309" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592829903661" />
+    <state width="1419" height="309" key="GridCell.Tab.0.center" timestamp="1592829903660">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1591958168471" />
-    <state width="1419" height="296" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592773847817" />
-    <state width="1419" height="296" key="GridCell.Tab.0.left" timestamp="1592773847817">
+    <state width="1419" height="309" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592829903660" />
+    <state width="1419" height="309" key="GridCell.Tab.0.left" timestamp="1592829903660">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1591958168470" />
-    <state width="1419" height="296" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592773847817" />
-    <state width="1419" height="296" key="GridCell.Tab.0.right" timestamp="1592773847818">
+    <state width="1419" height="309" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592829903660" />
+    <state width="1419" height="309" key="GridCell.Tab.0.right" timestamp="1592829903661">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="296" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592773847818" />
+    <state width="1419" height="309" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592829903661" />
     <state x="221" y="75" key="SettingsEditor" timestamp="1591807921121">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="221" y="75" key="SettingsEditor/0.23.1440.826@0.23.1440.826" timestamp="1591807921121" />
-    <state x="320" y="176" key="Vcs.Push.Dialog.v2" timestamp="1592678971204">
+    <state x="320" y="176" key="Vcs.Push.Dialog.v2" timestamp="1592773935618">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="320" y="176" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1592678971204" />
+    <state x="320" y="176" key="Vcs.Push.Dialog.v2/0.23.1440.826@0.23.1440.826" timestamp="1592773935618" />
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1" timestamp="1591951268628">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.23.1440.826@0.23.1440.826" timestamp="1591951268628" />
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1592557405528">
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1592815487595">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1592557405528" />
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1592815487595" />
     <state x="503" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1592487142303">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="503" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.826@0.23.1440.826" timestamp="1592487142303" />
-    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1592773018063">
+    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1592825677754">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1440.826@0.23.1440.826" timestamp="1592773018063" />
+    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1440.826@0.23.1440.826" timestamp="1592825677754" />
     <state width="600" height="333" key="javadoc.popup" timestamp="1591899064897">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -261,29 +270,14 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/controller.py</url>
+          <line>441</line>
+          <option name="timeStamp" value="127" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/model.py</url>
-          <line>59</line>
-          <option name="timeStamp" value="80" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>415</line>
-          <option name="timeStamp" value="101" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>389</line>
-          <option name="timeStamp" value="103" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>332</line>
-          <option name="timeStamp" value="107" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>217</line>
-          <option name="timeStamp" value="114" />
+          <line>91</line>
+          <option name="timeStamp" value="128" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

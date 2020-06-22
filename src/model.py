@@ -67,8 +67,7 @@ class MlModel:
             self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
 
         if rm_duplicate:
-            subset_columns_to_drop = []
-            self.pre_processed_dataset.drop_duplicates(subset=subset_columns_to_drop, inplace=True)
+            self.pre_processed_dataset.drop_duplicates(inplace=True)
 
         if rm_outliers[0]:
             # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
@@ -88,8 +87,12 @@ class MlModel:
                 self.pre_processed_dataset[target_column].replace(to_replace=value_to_replace, value=new_value,
                                                                   inplace=True)
 
+                # Todo : Dataframe values are != from Displayed values. This can make the value_to_replace typed not be found in the Dataframe
+
         if filter[0]:
-            pass
+            for rule in filter[1]:
+                # Todo: Develop this!!!
+                pass
             # DataFrame = DataFrame[DataFrame['column'] == 1]
 
         return self.pre_processed_dataset

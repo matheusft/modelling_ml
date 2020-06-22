@@ -300,14 +300,21 @@ def add_replacing_rule(ui, ml_model):
             try:
                 float(ui.replacing_value_lineEdit.text())  # Check whether it is a valid input
             except:
-                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',
+                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input', #Display error message and return
                                 'Type a valid numeric input for column {}'.format(
                                     ui.replace_columnSelection_comboBox.currentText()), 'Error')
                 return
+            # Make String to be displayed in the rule
             string_to_add = '- Replace {} in {} with {}'.format(ui.replaced_value_lineEdit.text(),
                                                                 ui.replace_columnSelection_comboBox.currentText(),
                                                                 ui.replacing_value_lineEdit.text())
-            ui.preprocess_replace_listWidget.addItem(string_to_add)  # Add the new rule to the list widget
+            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+            # Add the data embedded in each QListWidgetItem element from the listWidget
+            item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.replaced_value_lineEdit.text(),
+                                                     ui.replace_columnSelection_comboBox.currentText(),
+                                                     ui.replacing_value_lineEdit.text()])
+            ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
             # Todo Check wheter the rule is not already in the list before adding
 
         else:  # Display a message if the inputs are empty and a rule is added
@@ -319,7 +326,13 @@ def add_replacing_rule(ui, ml_model):
             string_to_add = '- Replace {} in {} with {}'.format(ui.replaced_value_comboBox.currentText(),
                                                                 ui.replace_columnSelection_comboBox.currentText(),
                                                                 ui.replacing_value_lineEdit.text())
-            ui.preprocess_replace_listWidget.addItem(string_to_add)
+            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+            # Add the data embedded in each QListWidgetItem element from the listWidget
+            item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.replaced_value_comboBox.currentText(),
+                                                     ui.replace_columnSelection_comboBox.currentText(),
+                                                     ui.replacing_value_lineEdit.text()])
+            ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
         else:  # Display a message if the inputs are empty and a rule is added
             display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
                             'Type a valid rule', 'Error')
@@ -342,10 +355,16 @@ def add_filtering_rule(ui, ml_model):
                                 'Type a valid numeric input for column {}'.format(
                                     ui.filter_columnSelection_comboBox.currentText()), 'Error')
                 return
-            string_to_add = '- Include {} {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
+            string_to_add = '- Include {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
                                                         ui.filter_operator_comboBox.currentText(),
                                                         ui.filtering_dataset_value_lineEdit.text())
-            ui.preprocess_filter_listWidget.addItem(string_to_add)  # Add the new rule to the list widget
+            item_to_add = QtWidgets.QListWidgetItem() # Create a QListWidgetItem
+            item_to_add.setText(string_to_add) # Add the text to be displayed in the listWidget
+            # Add the data
+            item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.filter_columnSelection_comboBox.currentText(),
+                                                     ui.filter_operator_comboBox.currentText(),
+                                                     ui.filtering_dataset_value_lineEdit.text()])
+            ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
             # Todo Check wheter the rule is not already in the list before adding
 
         else:  # Display a message if the inputs are empty and a rule is added
@@ -353,10 +372,16 @@ def add_filtering_rule(ui, ml_model):
                             'Type a valid rule', 'Error')
 
     else:  # If not numeric
-        string_to_add = '- Include {} {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
+        string_to_add = '- Include {} values {} to {}'.format(ui.filter_columnSelection_comboBox.currentText(),
                                                     ui.filter_operator_comboBox.currentText(),
                                                     ui.filtering_dataset_value_comboBox.currentText())
-        ui.preprocess_filter_listWidget.addItem(string_to_add)
+        item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+        item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+        # Add the data
+        item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.filter_columnSelection_comboBox.currentText(),
+                                                 ui.filter_operator_comboBox.currentText(),
+                                                 ui.filtering_dataset_value_comboBox.currentText()])
+        ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
 
     if ui.replace_values_checkBox.isChecked():
         update_pre_process(ui, ml_model)
@@ -394,30 +419,23 @@ def update_pre_process(ui, ml_model):
 
     replacing_rules = []
     for rule_index in range(ui.preprocess_replace_listWidget.count()):  # Looping through all rules
-        current_rule = ui.preprocess_replace_listWidget.item(rule_index).text()  # Getting the rule as a string
-        # Extracting the values from the string '- Replace {} in {} with {}'
-        start = '- Replace '
-        end = ' in '
-        replaced = current_rule[current_rule.find(start) + len(start):current_rule.rfind(end)]
-        start = ' in '
-        end = ' with '
-        target_column = current_rule[current_rule.find(start) + len(start):current_rule.rfind(end)]
-        start = ' with '
-        new_value = current_rule[current_rule.find(start) + len(start):]
-
-        is_numeric_rule = ml_model.column_types_pd_series[
-                              target_column].kind in 'iuf'  # Check whether the rule is for a numeric column
-
-        if is_numeric_rule:
-            replacing_rules.append([float(replaced), target_column, float(new_value)])
-        else:
-            replacing_rules.append([replaced, target_column, new_value])
-
+        item_data = ui.preprocess_replace_listWidget.item(rule_index).data(
+            QtCore.Qt.UserRole)  # Getting the data embedded in each item from the listWidget
+        if item_data[0] == 'Numeric':
+            replacing_rules.append([float(item_data[1]), item_data[2], float(item_data[3])])
+        elif item_data[0] == 'Categorical':
+            replacing_rules.append([(item_data[1]), item_data[2], (item_data[3])])
     replace = [ui.replace_values_checkBox.isChecked(), replacing_rules]
 
-    filter_dataset = [ui.filter_values_checkBox.isChecked(), ui.filter_columnSelection_comboBox.currentText(),
-                      ui.filter_operator_comboBox.currentText(),
-                      ui.filtering_dataset_value_lineEdit.text()]
+    filtering_rules = []
+    for rule_index in range(ui.preprocess_filter_listWidget.count()):  # Looping through all rules
+        item_data = ui.preprocess_filter_listWidget.item(rule_index).data(
+            QtCore.Qt.UserRole)  # Getting the data embedded in each item from the listWidget
+        if item_data[0] == 'Numeric':
+            filtering_rules.append([(item_data[1]), item_data[2], float(item_data[3])])
+        elif item_data[0] == 'Categorical':
+            filtering_rules.append([(item_data[1]), item_data[2], (item_data[3])])
+    filter_dataset = [ui.filter_values_checkBox.isChecked(), filtering_rules]
 
     # Todo: Check input values before calling ml_model
 

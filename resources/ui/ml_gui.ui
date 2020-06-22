@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1017</width>
-    <height>524</height>
+    <width>1021</width>
+    <height>555</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="dataset_load_tab">
     <attribute name="title">
@@ -47,8 +47,8 @@
       <rect>
        <x>10</x>
        <y>40</y>
-       <width>781</width>
-       <height>361</height>
+       <width>941</width>
+       <height>411</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -117,8 +117,8 @@
       <rect>
        <x>339</x>
        <y>10</y>
-       <width>441</width>
-       <height>391</height>
+       <width>621</width>
+       <height>471</height>
       </rect>
      </property>
     </widget>
@@ -232,7 +232,7 @@
            </size>
           </property>
           <property name="minimum">
-           <number>1</number>
+           <number>10</number>
           </property>
           <property name="maximum">
            <number>90</number>
@@ -460,10 +460,10 @@
     <widget class="QTableWidget" name="pre_process_dataset_tableWidget">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>340</y>
-       <width>561</width>
-       <height>141</height>
+       <x>10</x>
+       <y>330</y>
+       <width>591</width>
+       <height>121</height>
       </rect>
      </property>
      <property name="editTriggers">
@@ -475,7 +475,7 @@
       <rect>
        <x>10</x>
        <y>270</y>
-       <width>771</width>
+       <width>791</width>
        <height>51</height>
       </rect>
      </property>
