@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/ui/ml_gui.ui" beforeDir="false" afterPath="$PROJECT_DIR$/resources/ui/ml_gui.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/matheus.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/matheus.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/view.py" afterDir="false" />
     </list>
@@ -15,7 +14,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="35984" />
+    <option name="totalTimeSeconds" value="54006" />
+    <option name="gitIntegration" value="true" />
+    <option name="naggedAbout" value="1" />
   </component>
   <component name="FavoritesManager">
     <favorites_list name="generic_ml" />
@@ -113,8 +114,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main" />
         <item itemvalue="Python.convert_ui_to_py" />
+        <item itemvalue="Python.main" />
         <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
@@ -213,26 +214,26 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="207" y="23" key="CommitChangelistDialog2/0.23.1440.826@0.23.1440.826" timestamp="1592773933534" />
-    <state width="1419" height="309" key="GridCell.Tab.0.bottom" timestamp="1592829903661">
+    <state width="1419" height="196" key="GridCell.Tab.0.bottom" timestamp="1592928331741">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="309" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592829903661" />
-    <state width="1419" height="309" key="GridCell.Tab.0.center" timestamp="1592829903660">
+    <state width="1419" height="196" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1592928331741" />
+    <state width="1419" height="196" key="GridCell.Tab.0.center" timestamp="1592928331740">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1591958168471" />
-    <state width="1419" height="309" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592829903660" />
-    <state width="1419" height="309" key="GridCell.Tab.0.left" timestamp="1592829903660">
+    <state width="1419" height="196" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1592928331740" />
+    <state width="1419" height="196" key="GridCell.Tab.0.left" timestamp="1592928331740">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1591958168470" />
-    <state width="1419" height="309" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592829903660" />
-    <state width="1419" height="309" key="GridCell.Tab.0.right" timestamp="1592829903661">
+    <state width="1419" height="196" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1592928331740" />
+    <state width="1419" height="196" key="GridCell.Tab.0.right" timestamp="1592928331741">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="394" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1591958168472" />
-    <state width="1419" height="309" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592829903661" />
+    <state width="1419" height="196" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1592928331741" />
     <state x="221" y="75" key="SettingsEditor" timestamp="1591807921121">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -245,18 +246,18 @@
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="384" y="148" key="com.intellij.execution.console.ConsoleHistoryController$MyBrowseAction$1/0.23.1440.826@0.23.1440.826" timestamp="1591951268628" />
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1592815487595">
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog" timestamp="1592900365163">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1592815487595" />
+    <state x="397" y="268" key="com.intellij.ide.util.TipDialog/0.23.1440.826@0.23.1440.826" timestamp="1592900365163" />
     <state x="503" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1592487142303">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state x="503" y="360" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.23.1440.826@0.23.1440.826" timestamp="1592487142303" />
-    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1592825677754">
+    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1592927818373">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
-    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1440.826@0.23.1440.826" timestamp="1592825677754" />
+    <state x="284" y="179" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1440.826@0.23.1440.826" timestamp="1592927818373" />
     <state width="600" height="333" key="javadoc.popup" timestamp="1591899064897">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
@@ -270,14 +271,9 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>441</line>
-          <option name="timeStamp" value="127" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/model.py</url>
-          <line>91</line>
-          <option name="timeStamp" value="128" />
+          <line>102</line>
+          <option name="timeStamp" value="152" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from scipy import stats
 import pandas as pd
 import numpy as np
+import operator
 import os
 
 
@@ -55,17 +56,6 @@ class MlModel:
         scaling, rm_duplicate, rm_outliers, replace, filter
         self.pre_processed_dataset = self.dataset.copy()
 
-        # Scaling the numeric values in the pre_processed_dataset
-        if scaling:
-            numeric_columns_to_not_scale = []
-            numeric_input_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.drop(
-                labels=numeric_columns_to_not_scale).to_list()
-            input_scaler = MinMaxScaler(feature_range=(-1, 1))
-            standardised_numeric_input = input_scaler.fit_transform(self.pre_processed_dataset[numeric_input_columns])
-
-            # Updating the scaled values in the pre_processed_dataset
-            self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
-
         if rm_duplicate:
             self.pre_processed_dataset.drop_duplicates(inplace=True)
 
@@ -78,21 +68,55 @@ class MlModel:
             self.pre_processed_dataset = self.pre_processed_dataset[
                 (np.abs(stats.zscore(self.pre_processed_dataset[numeric_columns])) < standard_deviation_threshold).all(
                     axis=1)]
+            self.pre_processed_dataset.reset_index()
+
+        if filter[0]:
+            for rule in filter[1]:
+                target_column = rule[0]
+                comparing_value = rule[2]
+
+                if rule[1] == 'Equal':
+                    self.pre_processed_dataset = self.pre_processed_dataset[
+                        operator.eq(self.pre_processed_dataset[target_column], comparing_value)]
+                elif rule[1] == 'Not equal':
+                    self.pre_processed_dataset = self.pre_processed_dataset[
+                        operator.ne(self.pre_processed_dataset[target_column], comparing_value)]
+                elif rule[1] == 'Less than':
+                    self.pre_processed_dataset = self.pre_processed_dataset[
+                        operator.lt(self.pre_processed_dataset[target_column], comparing_value)]
+                elif rule[1] == 'Less than or equal to':
+                    self.pre_processed_dataset = self.pre_processed_dataset[
+                        operator.le(self.pre_processed_dataset[target_column], comparing_value)]
+                elif rule[1] == 'Greater than':
+                    self.pre_processed_dataset = self.pre_processed_dataset[
+                        operator.gt(self.pre_processed_dataset[target_column], comparing_value)]
+                elif rule[1] == 'Greater than or equal to':
+                    self.pre_processed_dataset = self.pre_processed_dataset[
+                        operator.ge(self.pre_processed_dataset[target_column], comparing_value)]
+            self.pre_processed_dataset.reset_index()
 
         if replace[0]:
             for rule in replace[1]:
                 value_to_replace = rule[0] # Replace from the ComboBox
                 target_column = rule[1]
                 new_value = rule[2]
-                self.pre_processed_dataset[target_column].replace(to_replace=value_to_replace, value=new_value,
-                                                                  inplace=True)
+                self.pre_processed_dataset.replace({target_column: value_to_replace}, new_value,
+                                                                                  inplace=True)
+
+                #Todo THIS IS NOT WORKING WITH FLOAT VALUES, FIX IT!!!!
 
                 # Todo : Dataframe values are != from Displayed values. This can make the value_to_replace typed not be found in the Dataframe
 
-        if filter[0]:
-            for rule in filter[1]:
-                # Todo: Develop this!!!
-                pass
-            # DataFrame = DataFrame[DataFrame['column'] == 1]
+        # Scaling the numeric values in the pre_processed_dataset
+        if scaling:
+            numeric_columns_to_not_scale = []
+            numeric_input_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.drop(
+                labels=numeric_columns_to_not_scale).to_list()
+            input_scaler = MinMaxScaler(feature_range=(-1, 1))
+            standardised_numeric_input = input_scaler.fit_transform(self.pre_processed_dataset[numeric_input_columns])
+
+            # Updating the scaled values in the pre_processed_dataset
+            self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
+
 
         return self.pre_processed_dataset
