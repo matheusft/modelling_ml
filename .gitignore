@@ -31,8 +31,7 @@
 # OS generated files #
 ######################
 .idea/
-.DS_Store
-.DS_Store?
+src/.DS_Store
 ._*
 .Spotlight-V100
 .Trashes
