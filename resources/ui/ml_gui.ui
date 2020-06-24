@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Machine Learning Generic Modeller</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="ml_gui_resources.qrc">
+    <normaloff>:/newPrefix/images/ML.ico</normaloff>:/newPrefix/images/ML.ico</iconset>
+  </property>
   <widget class="QTabWidget" name="tabs_widget">
    <property name="geometry">
     <rect>
@@ -767,7 +771,7 @@
       <rect>
        <x>710</x>
        <y>440</y>
-       <width>211</width>
+       <width>224</width>
        <height>41</height>
       </rect>
      </property>
@@ -784,6 +788,176 @@
         <property name="text">
          <string>Clear</string>
         </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="model_selection_tab">
+    <attribute name="title">
+     <string>Model Selction</string>
+    </attribute>
+    <widget class="QWidget" name="verticalLayoutWidget_2">
+     <property name="geometry">
+      <rect>
+       <x>31</x>
+       <y>30</y>
+       <width>541</width>
+       <height>411</height>
+      </rect>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_7">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_8">
+        <item>
+         <widget class="QRadioButton" name="regression_selection_radioButton">
+          <property name="text">
+           <string>Regression</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="classification_selection_radioButton">
+          <property name="text">
+           <string>Classification</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="regression_and_classification_stackedWidget">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="page_regression">
+         <widget class="QStackedWidget" name="regression_parameters_stackedWidget">
+          <property name="geometry">
+           <rect>
+            <x>280</x>
+            <y>40</y>
+            <width>221</width>
+            <height>161</height>
+           </rect>
+          </property>
+          <widget class="QWidget" name="page_3"/>
+          <widget class="QWidget" name="page_4"/>
+         </widget>
+         <widget class="QWidget" name="verticalLayoutWidget_3">
+          <property name="geometry">
+           <rect>
+            <x>40</x>
+            <y>40</y>
+            <width>174</width>
+            <height>151</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_9">
+           <item>
+            <widget class="QRadioButton" name="radioButton_5">
+             <property name="text">
+              <string>Neural Networks</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_6">
+             <property name="text">
+              <string>Support Vector Machine</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_7">
+             <property name="text">
+              <string>Random Forest</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_8">
+             <property name="text">
+              <string>Gradient Boosting</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+        <widget class="QWidget" name="page_classification">
+         <widget class="QStackedWidget" name="classification_parameters_stackedWidget">
+          <property name="geometry">
+           <rect>
+            <x>340</x>
+            <y>40</y>
+            <width>221</width>
+            <height>161</height>
+           </rect>
+          </property>
+          <widget class="QWidget" name="page_5"/>
+          <widget class="QWidget" name="page_6"/>
+         </widget>
+         <widget class="QWidget" name="verticalLayoutWidget_4">
+          <property name="geometry">
+           <rect>
+            <x>30</x>
+            <y>50</y>
+            <width>174</width>
+            <height>151</height>
+           </rect>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <item>
+            <widget class="QRadioButton" name="radioButton_9">
+             <property name="text">
+              <string>Neural Networks</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_10">
+             <property name="text">
+              <string>Support Vector Machine</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_11">
+             <property name="text">
+              <string>Random Forest</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_12">
+             <property name="text">
+              <string>Gradient Tree Boosting</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="radioButton_13">
+             <property name="text">
+              <string>K-Nearest Neighbours</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </widget>
       </item>
      </layout>
@@ -922,26 +1096,6 @@
      </layout>
     </widget>
    </widget>
-   <widget class="QWidget" name="model_selection_tab">
-    <attribute name="title">
-     <string>Model Selction</string>
-    </attribute>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>550</x>
-       <y>220</y>
-       <width>181</width>
-       <height>141</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Adaptive boosting
-Gradient boosting
-XGBoost</string>
-     </property>
-    </widget>
-   </widget>
    <widget class="QWidget" name="train_tab">
     <attribute name="title">
      <string>Train</string>
@@ -962,6 +1116,8 @@ XGBoost</string>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="ml_gui_resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

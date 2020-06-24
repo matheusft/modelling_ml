@@ -21,6 +21,7 @@ class MplWidget(QtWidgets.QWidget):
         vertical_layout.addWidget(self.canvas)
 
         self.canvas.axes = self.canvas.figure.add_subplot(111)
+        self.canvas.figure.set_tight_layout(True)
         self.setLayout(vertical_layout)
         self.canvas.axes.axis('off')  # Turn off axis lines and labels. Show a white canvas in the initialisation
 
@@ -197,7 +198,7 @@ def populate_tablewidget_with_dataframe(table_widget, filling_dataframe):
         for j in range(table_widget.columnCount()):
             dataset_value = filling_dataframe.iloc[i, j]  # Get the value from the dataset
             # If the value is numeric, format it to two decimals
-            dataset_value_converted = dataset_value if (type(dataset_value) is str) else '{:.2f}'.format(dataset_value)
+            dataset_value_converted = dataset_value if (type(dataset_value) is str) else '{:}'.format(dataset_value)
             qt_item = QtWidgets.QTableWidgetItem(dataset_value_converted)  # Creates an qt item
             qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
             table_widget.setItem(i + 1, j, qt_item)  # i+1 to skip the top row (column names)
@@ -207,16 +208,13 @@ def update_visualisation_widgets(ui, ml_model):
     selected_column = ui.columnSelection_comboBox.currentText()  # Get the selected value in the comboBox
 
     ui.columnSummary_textBrowser.clear()
-    ui.columnSummary_textBrowser.append(ml_model.dataset[selected_column].describe().
-                                        to_string(float_format='{:.2f}'.format).title().replace('     ', '  = '))
+    description = ml_model.dataset[selected_column].describe()
+    for i in range(len(description)):
+        ui.columnSummary_textBrowser.append('{} = {}'.format(description.keys()[i].title(),description.values[i]))
 
-    if ml_model.column_types_pd_series[selected_column].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
-        plot_matplotlib_to_qt_widget(ml_model.dataset[selected_column], ui)
-    else:
-        ui.dataVisualisePlot_widget.canvas.axes.clear()
-        ui.dataVisualisePlot_widget.canvas.axes.axis('off')
-        ui.dataVisualisePlot_widget.canvas.draw()
-
+    plot_matplotlib_to_qt_widget(ml_model.dataset[selected_column],
+                                 ml_model.column_types_pd_series[selected_column].kind not in 'iuf',
+                                 ui)  # iuf = i int (signed), u unsigned int, f float
 
 def update_preprocess_replace(ui, ml_model):
     selected_value = ui.replace_columnSelection_comboBox.currentText()
@@ -295,19 +293,25 @@ def update_visualisation_options(ui, ml_model):
     # TODO: Clear plot area
 
 
-def plot_matplotlib_to_qt_widget(data, ui):
+def plot_matplotlib_to_qt_widget(data,is_categorical, ui):
+
     target_widget = ui.dataVisualisePlot_widget
     target_widget.canvas.axes.clear()
     target_widget.canvas.axes.axis('on')
 
-    if ui.plot_radioButton.isChecked() and ui.plot_radioButton.isEnabled():
-        data.plot(ax=target_widget.canvas.axes, grid=False)
+    if is_categorical:
+        data.value_counts().plot(kind='bar',ax=target_widget.canvas.axes, grid=False, title = 'Sample Count')
+
+    elif ui.plot_radioButton.isChecked() and ui.plot_radioButton.isEnabled():
+        data.plot(ax=target_widget.canvas.axes, grid=False, title = 'Linear Plot')
 
     elif ui.boxplot_radioButton.isChecked() and ui.boxplot_radioButton.isEnabled():
         pd.DataFrame(data).boxplot(ax=target_widget.canvas.axes, grid=False)
+        target_widget.canvas.axes.axes.set_title('Boxplot')
 
     elif ui.histogram_radioButton.isChecked() and ui.histogram_radioButton.isEnabled():
         pd.DataFrame(data).hist(ax=target_widget.canvas.axes, grid=False)
+        target_widget.canvas.axes.axes.set_title('Histogram')
 
     else:
         target_widget.canvas.axes.axis('off')
@@ -328,7 +332,7 @@ def add_replacing_rule(ui, ml_model):
     if ui.pre_process_replacing_stackedWidget.currentIndex() == 0:  # If numeric
         if ui.replaced_value_lineEdit.text() != '' and ui.replacing_value_lineEdit.text() != '':  # If inputs are not empty
             try:
-                float(ui.replacing_value_lineEdit.text())  # Check whether it is a valid input
+                float(ui.replacing_value_lineEdit.text()), float(ui.replaced_value_lineEdit.text())  # Check whether it is a valid input
             except:
                 display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input', #Display error message and return
                                 'Type a valid numeric input for column {}'.format(
@@ -492,7 +496,7 @@ def update_pre_process(ui, ml_model):
             item_data = ui.preprocess_replace_listWidget.item(rule_index).data(
                 QtCore.Qt.UserRole)  # Getting the data embedded in each item from the listWidget
             if item_data[0] == 'Numeric':
-                replacing_rules.append([float(item_data[1]), item_data[2], float(item_data[3])])
+                replacing_rules.append([(item_data[1]), item_data[2], (item_data[3])])
             elif item_data[0] == 'Categorical':
                 replacing_rules.append([(item_data[1]), item_data[2], (item_data[3])])
         replace = [ui.replace_values_checkBox.isChecked(), replacing_rules]

@@ -97,15 +97,17 @@ class MlModel:
 
         if replace[0]:
             for rule in replace[1]:
-                value_to_replace = rule[0] # Replace from the ComboBox
                 target_column = rule[1]
+                column_data_type = self.column_types_pd_series[target_column]
+                value_to_replace = float(rule[0])
+                value_to_replace = pd.Series(value_to_replace).astype(
+                    column_data_type).values[0]  # Making sure the value to be replaced mataches with the dtype of the dataset
                 new_value = rule[2]
-                self.pre_processed_dataset.replace({target_column: value_to_replace}, new_value,
-                                                                                  inplace=True)
+                new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(
+                    new_value)  # Converting to either float or int, depending if . or e is in the string
 
-                #Todo THIS IS NOT WORKING WITH FLOAT VALUES, FIX IT!!!!
-
-                # Todo : Dataframe values are != from Displayed values. This can make the value_to_replace typed not be found in the Dataframe
+                self.pre_processed_dataset[target_column].replace(to_replace=value_to_replace, value=new_value,
+                                                                  inplace=True)
 
         # Scaling the numeric values in the pre_processed_dataset
         if scaling:

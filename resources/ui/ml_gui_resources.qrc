@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>../images/ML.ico</file>
+  </qresource>
+</RCC>
