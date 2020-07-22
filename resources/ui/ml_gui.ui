@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1001</width>
-    <height>527</height>
+    <width>1000</width>
+    <height>521</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="dataset_load_tab">
     <attribute name="title">
@@ -584,7 +584,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="page_numeric_2">
          <widget class="QLineEdit" name="filtering_dataset_value_lineEdit">
@@ -802,7 +802,7 @@
       <rect>
        <x>31</x>
        <y>30</y>
-       <width>541</width>
+       <width>861</width>
        <height>411</height>
       </rect>
      </property>
@@ -839,120 +839,615 @@
        </layout>
       </item>
       <item>
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QStackedWidget" name="regression_and_classification_stackedWidget">
         <property name="currentIndex">
          <number>0</number>
         </property>
         <widget class="QWidget" name="page_regression">
-         <widget class="QStackedWidget" name="regression_parameters_stackedWidget">
+         <widget class="QWidget" name="horizontalLayoutWidget">
           <property name="geometry">
            <rect>
-            <x>280</x>
-            <y>40</y>
-            <width>221</width>
-            <height>161</height>
+            <x>0</x>
+            <y>-10</y>
+            <width>861</width>
+            <height>381</height>
            </rect>
           </property>
-          <widget class="QWidget" name="page_3"/>
-          <widget class="QWidget" name="page_4"/>
-         </widget>
-         <widget class="QWidget" name="verticalLayoutWidget_3">
-          <property name="geometry">
-           <rect>
-            <x>40</x>
-            <y>40</y>
-            <width>174</width>
-            <height>151</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <property name="sizeConstraint">
+            <enum>QLayout::SetMaximumSize</enum>
+           </property>
            <item>
-            <widget class="QRadioButton" name="radioButton_5">
-             <property name="text">
-              <string>Neural Networks</string>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QRadioButton" name="nn_regression_radioButton">
+               <property name="text">
+                <string>Neural Networks</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="svm_regression_radioButton">
+               <property name="text">
+                <string>Support Vector Machine</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="randomforest_regression_radioButton">
+               <property name="text">
+                <string>Random Forest</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="gradientboosting_regression_radioButton">
+               <property name="text">
+                <string>Gradient Boosting</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="Line" name="line_2">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_6">
-             <property name="text">
-              <string>Support Vector Machine</string>
+            <widget class="QStackedWidget" name="regression_parameters_stackedWidget">
+             <property name="currentIndex">
+              <number>0</number>
              </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioButton_7">
-             <property name="text">
-              <string>Random Forest</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioButton_8">
-             <property name="text">
-              <string>Gradient Boosting</string>
-             </property>
+             <widget class="QWidget" name="nn_regression_page">
+              <widget class="QWidget" name="layoutWidget">
+               <property name="geometry">
+                <rect>
+                 <x>5</x>
+                 <y>11</y>
+                 <width>671</width>
+                 <height>351</height>
+                </rect>
+               </property>
+               <layout class="QHBoxLayout" name="horizontalLayout_17">
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_11">
+                  <item>
+                   <widget class="QLabel" name="nn_hidden_layers_label">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>160</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <property name="text">
+                     <string>Number of Hidden Layers</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_19">
+                    <item>
+                     <widget class="QSlider" name="nn_layers_horizontalSlider">
+                      <property name="maximumSize">
+                       <size>
+                        <width>200</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="minimum">
+                       <number>1</number>
+                      </property>
+                      <property name="maximum">
+                       <number>50</number>
+                      </property>
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="nn_layers_label">
+                      <property name="text">
+                       <string>1</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QTableWidget" name="nn_layers_tableWidget">
+                    <property name="maximumSize">
+                     <size>
+                      <width>235</width>
+                      <height>16777215</height>
+                     </size>
+                    </property>
+                    <attribute name="horizontalHeaderDefaultSectionSize">
+                     <number>120</number>
+                    </attribute>
+                    <row>
+                     <property name="text">
+                      <string>Hidden Layer 1</string>
+                     </property>
+                    </row>
+                    <column>
+                     <property name="text">
+                      <string>Number Of Neurons</string>
+                     </property>
+                    </column>
+                    <item row="0" column="0">
+                     <property name="text">
+                      <string>10</string>
+                     </property>
+                     <property name="textAlignment">
+                      <set>AlignCenter</set>
+                     </property>
+                    </item>
+                   </widget>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <widget class="Line" name="line_3">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="Line" name="line_4">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_8">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_12">
+                    <item>
+                     <widget class="QLabel" name="label_16">
+                      <property name="text">
+                       <string>Activation Function</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBox">
+                      <property name="maximumSize">
+                       <size>
+                        <width>160</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>Relu</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Identity</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Logistic</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Tanh</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_11">
+                    <item>
+                     <widget class="QLabel" name="label_17">
+                      <property name="text">
+                       <string>Solver</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBox_2">
+                      <property name="maximumSize">
+                       <size>
+                        <width>160</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>adam</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>lbfgs</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>sgd</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_13">
+                    <item>
+                     <widget class="QLabel" name="label_18">
+                      <property name="text">
+                       <string>Learning Rate</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBox_3">
+                      <property name="maximumSize">
+                       <size>
+                        <width>160</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <item>
+                       <property name="text">
+                        <string>constant</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>invscaling</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>adaptive</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                    <item>
+                     <widget class="QLabel" name="label_8">
+                      <property name="text">
+                       <string>Shuffle Samples</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QCheckBox" name="checkBox">
+                      <property name="maximumSize">
+                       <size>
+                        <width>160</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_15">
+                    <item>
+                     <widget class="QLabel" name="label">
+                      <property name="text">
+                       <string>Maximum Iterations</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QSlider" name="horizontalSlider">
+                      <property name="maximumSize">
+                       <size>
+                        <width>160</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_4">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Minimum</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_21">
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_16">
+                    <item>
+                     <widget class="QLabel" name="label_15">
+                      <property name="text">
+                       <string>Alpha</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QSlider" name="horizontalSlider_2">
+                      <property name="maximumSize">
+                       <size>
+                        <width>160</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="horizontalSpacer_3">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeType">
+                       <enum>QSizePolicy::Minimum</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>20</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="label_20">
+                      <property name="text">
+                       <string>0</string>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_5">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>70</width>
+                    <height>20</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="svm_regression_page">
+              <widget class="QLabel" name="label_3">
+               <property name="geometry">
+                <rect>
+                 <x>210</x>
+                 <y>90</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>SVM</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="randomforest_regression_page">
+              <widget class="QLabel" name="label_6">
+               <property name="geometry">
+                <rect>
+                 <x>190</x>
+                 <y>120</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Random</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="gradientboosting_regression_page">
+              <widget class="QLabel" name="label_7">
+               <property name="geometry">
+                <rect>
+                 <x>200</x>
+                 <y>180</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Boost</string>
+               </property>
+              </widget>
+             </widget>
             </widget>
            </item>
           </layout>
          </widget>
         </widget>
         <widget class="QWidget" name="page_classification">
-         <widget class="QStackedWidget" name="classification_parameters_stackedWidget">
+         <widget class="QWidget" name="layoutWidget">
           <property name="geometry">
            <rect>
-            <x>340</x>
-            <y>40</y>
-            <width>221</width>
-            <height>161</height>
+            <x>0</x>
+            <y>-10</y>
+            <width>861</width>
+            <height>391</height>
            </rect>
           </property>
-          <widget class="QWidget" name="page_5"/>
-          <widget class="QWidget" name="page_6"/>
-         </widget>
-         <widget class="QWidget" name="verticalLayoutWidget_4">
-          <property name="geometry">
-           <rect>
-            <x>30</x>
-            <y>50</y>
-            <width>174</width>
-            <height>151</height>
-           </rect>
-          </property>
-          <layout class="QVBoxLayout" name="verticalLayout_10">
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
            <item>
-            <widget class="QRadioButton" name="radioButton_9">
-             <property name="text">
-              <string>Neural Networks</string>
-             </property>
-            </widget>
+            <layout class="QVBoxLayout" name="verticalLayout_10">
+             <item>
+              <widget class="QRadioButton" name="nn_classification_radioButton">
+               <property name="text">
+                <string>Neural Networks</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="svm_classification_radioButton">
+               <property name="text">
+                <string>Support Vector Machine</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="randomforest_classification_radioButton">
+               <property name="text">
+                <string>Random Forest</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="gradientboosting_classification_radioButton">
+               <property name="text">
+                <string>Gradient Tree Boosting</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QRadioButton" name="knn_classification_radioButton">
+               <property name="text">
+                <string>K-Nearest Neighbours</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QRadioButton" name="radioButton_10">
-             <property name="text">
-              <string>Support Vector Machine</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioButton_11">
-             <property name="text">
-              <string>Random Forest</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioButton_12">
-             <property name="text">
-              <string>Gradient Tree Boosting</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="radioButton_13">
-             <property name="text">
-              <string>K-Nearest Neighbours</string>
-             </property>
+            <widget class="QStackedWidget" name="classification_parameters_stackedWidget">
+             <widget class="QWidget" name="nn_classification_page">
+              <widget class="QLabel" name="label_11">
+               <property name="geometry">
+                <rect>
+                 <x>220</x>
+                 <y>130</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>NN</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="svm_classification_page">
+              <widget class="QLabel" name="label_10">
+               <property name="geometry">
+                <rect>
+                 <x>260</x>
+                 <y>130</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>SVM</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="randomforest_classification_page">
+              <widget class="QLabel" name="label_9">
+               <property name="geometry">
+                <rect>
+                 <x>100</x>
+                 <y>120</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Random</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="gradientboosting_classification_page">
+              <widget class="QLabel" name="label_12">
+               <property name="geometry">
+                <rect>
+                 <x>160</x>
+                 <y>150</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>Boost</string>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="knn_classification_page">
+              <widget class="QLabel" name="label_13">
+               <property name="geometry">
+                <rect>
+                 <x>240</x>
+                 <y>170</y>
+                 <width>60</width>
+                 <height>16</height>
+                </rect>
+               </property>
+               <property name="text">
+                <string>KNN</string>
+               </property>
+              </widget>
+             </widget>
             </widget>
            </item>
           </layout>

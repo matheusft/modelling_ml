@@ -1,11 +1,12 @@
-from view import QtCore, QtWidgets
-from os.path import join, abspath
-import os, random
-import model as md
+import os
+import random
 import sys
+from os.path import join, abspath
+
 import pandas as pd
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvas
+from matplotlib.figure import Figure
+from view import QtCore, QtWidgets
 
 
 # This class extends QtWidgets.QWidget. It is needed for plotting with matplotlib in PyQt5
@@ -65,7 +66,7 @@ def configure_gui(ui, ml_model):
         pre_process_option.clicked.connect(lambda *args, object=pre_process_option: update_pre_process(ui, ml_model))
 
     ui.outliers_treshold_horizontalSlider.valueChanged.connect(
-        lambda: update_treshold_label(ui.outliers_treshold_horizontalSlider.value(), ui.outliers_treshold_label))
+        lambda: update_label_from_slider_change(ui,ui.outliers_treshold_horizontalSlider.value(), ui.outliers_treshold_label))
     ui.outliers_treshold_horizontalSlider.sliderReleased.connect(lambda: update_pre_process_rm_outlier(ui, ml_model))
 
     ui.replace_columnSelection_comboBox.currentIndexChanged.connect(lambda: update_preprocess_replace(ui,
@@ -101,6 +102,22 @@ def configure_gui(ui, ml_model):
     ui.clear_output_columns_pushButton.clicked.connect(
         lambda: clear_listWidget(ui, ui.output_columns_listWidget))
 
+    model_selection_radio_buttons = [ui.regression_selection_radioButton, ui.classification_selection_radioButton,
+                                    ui.gradientboosting_classification_radioButton, ui.knn_classification_radioButton,
+                                    ui.nn_classification_radioButton, ui.randomforest_classification_radioButton,
+                                    ui.svm_classification_radioButton, ui.svm_regression_radioButton,
+                                    ui.randomforest_regression_radioButton, ui.nn_regression_radioButton,
+                                    ui.gradientboosting_regression_radioButton]
+
+    for model_option in model_selection_radio_buttons:
+        model_option.clicked.connect(
+            lambda *args, model_option=model_option: model_selection_tab_events(ui, model_option))
+
+    ui.nn_regression_radioButton.setChecked(True)
+    ui.regression_selection_radioButton.setChecked(True)
+
+    ui.nn_layers_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui,ui.nn_layers_horizontalSlider.value(), ui.nn_layers_label))
 
     # TODO : Disable all button and functions while Dataset is not chosen
 
@@ -216,6 +233,7 @@ def update_visualisation_widgets(ui, ml_model):
                                  ml_model.column_types_pd_series[selected_column].kind not in 'iuf',
                                  ui)  # iuf = i int (signed), u unsigned int, f float
 
+
 def update_preprocess_replace(ui, ml_model):
     selected_value = ui.replace_columnSelection_comboBox.currentText()
 
@@ -319,8 +337,35 @@ def plot_matplotlib_to_qt_widget(data,is_categorical, ui):
     target_widget.canvas.draw()
 
 
-def update_treshold_label(slider_value, label_object):
-    label_object.setText('{:.1f}'.format(slider_value / 10))
+def update_label_from_slider_change(ui,slider_value, label_object):
+
+    if label_object.objectName() == 'nn_layers_label':
+        label_object.setText('{}'.format(slider_value))
+        update_nn_layers_table(ui.nn_layers_tableWidget,slider_value)
+    elif label_object.objectName() == 'outliers_treshold_label':
+        label_object.setText('{:.1f}'.format(slider_value / 10))
+    elif label_object.objectName() == 'max_it':
+        pass
+        #TODO : add here
+    elif label_object.objectName() == 'alpha':
+        pass
+        # TODO : add here
+
+
+def update_nn_layers_table(table,value):
+
+    if value > table.rowCount():
+        while value > table.rowCount():
+            table.insertRow(table.rowCount())
+            item = QtWidgets.QTableWidgetItem(str(10))
+            item.setTextAlignment((QtCore.Qt.AlignCenter))
+            table.setItem(table.rowCount()-1, 0, item)
+            item = QtWidgets.QTableWidgetItem('Hidden Layer '+str(table.rowCount()))
+            table.setVerticalHeaderItem(table.rowCount()-1, item)
+
+    else:
+        while value < table.rowCount():
+            table.removeRow(table.rowCount()-1)
 
 
 def update_pre_process_rm_outlier(ui, ml_model):
@@ -390,8 +435,8 @@ def add_filtering_rule(ui, ml_model):
                                     ui.filter_columnSelection_comboBox.currentText()), 'Error')
                 return
             string_to_add = '- Include {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
-                                                        ui.filter_operator_comboBox.currentText(),
-                                                        ui.filtering_dataset_value_lineEdit.text())
+                                                               ui.filter_operator_comboBox.currentText(),
+                                                               ui.filtering_dataset_value_lineEdit.text())
             item_to_add = QtWidgets.QListWidgetItem() # Create a QListWidgetItem
             item_to_add.setText(string_to_add) # Add the text to be displayed in the listWidget
             # Add the data
@@ -407,8 +452,8 @@ def add_filtering_rule(ui, ml_model):
 
     else:  # If not numeric
         string_to_add = '- Include {} values {} to {}'.format(ui.filter_columnSelection_comboBox.currentText(),
-                                                    ui.filter_operator_comboBox.currentText(),
-                                                    ui.filtering_dataset_value_comboBox.currentText())
+                                                              ui.filter_operator_comboBox.currentText(),
+                                                              ui.filtering_dataset_value_comboBox.currentText())
         item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
         item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
         # Add the data
@@ -535,7 +580,46 @@ def update_input_output_columns(ui,target_object):
         item = ui.available_columns_listWidget.takeItem(ui.available_columns_listWidget.row(selected_item))
         target_object.addItem(item)
 
+        # Todo : Limit the Otputs columns to ONE in the case of a classification Model
 
+
+def model_selection_tab_events(ui, selected_model_class):
+
+
+    if ui.regression_selection_radioButton.isChecked():
+        ui.regression_and_classification_stackedWidget.setCurrentIndex(0) # Change to Regression Tab
+
+        if ui.nn_regression_radioButton.isChecked():
+            ui.regression_parameters_stackedWidget.setCurrentIndex(0)
+
+
+
+        elif ui.svm_regression_radioButton.isChecked():
+            ui.regression_parameters_stackedWidget.setCurrentIndex(1)
+
+        elif ui.randomforest_regression_radioButton.isChecked():
+            ui.regression_parameters_stackedWidget.setCurrentIndex(2)
+
+        elif ui.gradientboosting_regression_radioButton.isChecked():
+            ui.regression_parameters_stackedWidget.setCurrentIndex(3)
+
+    elif ui.classification_selection_radioButton.isChecked():
+        ui.regression_and_classification_stackedWidget.setCurrentIndex(1) # Change to Classification Tab
+
+        if ui.nn_classification_radioButton.isChecked():
+            ui.classification_parameters_stackedWidget.setCurrentIndex(0)
+
+        elif ui.svm_classification_radioButton.isChecked():
+            ui.classification_parameters_stackedWidget.setCurrentIndex(1)
+
+        elif ui.randomforest_classification_radioButton.isChecked():
+            ui.classification_parameters_stackedWidget.setCurrentIndex(2)
+
+        elif ui.gradientboosting_classification_radioButton.isChecked():
+            ui.classification_parameters_stackedWidget.setCurrentIndex(3)
+
+        elif ui.knn_classification_radioButton.isChecked():
+            ui.classification_parameters_stackedWidget.setCurrentIndex(4)
 
 try:
     sys._MEIPASS
