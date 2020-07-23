@@ -54,6 +54,15 @@ def configure_gui(ui, ml_model):
     # Connecting columnSelection_comboBox - Visualise Tab
     ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
 
+    widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
+                          ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+                          ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
+                          ui.addrule_filter_value_pushButton]
+
+    for widget in widgets_to_disable:
+        widget.setEnabled(False)
+
+
     # Connecting radio_button_change - Visualise Tab
     ui.boxplot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
     ui.plot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
@@ -113,11 +122,23 @@ def configure_gui(ui, ml_model):
         model_option.clicked.connect(
             lambda *args, model_option=model_option: model_selection_tab_events(ui, model_option))
 
+    ui.nn_classification_radioButton.setChecked(True)
     ui.nn_regression_radioButton.setChecked(True)
     ui.regression_selection_radioButton.setChecked(True)
 
-    ui.nn_layers_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui,ui.nn_layers_horizontalSlider.value(), ui.nn_layers_label))
+
+    ui.reg_nn_layers_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui,ui.reg_nn_layers_horizontalSlider.value(), ui.reg_nn_layers_label))
+    ui.reg_nn_max_iter_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.reg_nn_max_iter_horizontalSlider.value(), ui.reg_nn_max_iter_label))
+    ui.reg_nn_alpha_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.reg_nn_alpha_horizontalSlider.value(), ui.reg_nn_alpha_label))
+    ui.clas_nn_layers_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui,ui.clas_nn_layers_horizontalSlider.value(), ui.clas_nn_layers_label))
+    ui.clas_nn_max_iter_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.clas_nn_max_iter_horizontalSlider.value(), ui.clas_nn_max_iter_label))
+    ui.clas_nn_alpha_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.clas_nn_alpha_horizontalSlider.value(), ui.clas_nn_alpha_label))
 
     # TODO : Disable all button and functions while Dataset is not chosen
 
@@ -155,6 +176,14 @@ def load_dataset(ui, ml_model):
 
         [item.setChecked(False) for item in pre_process_checkboxes]
 
+        widgets_to_enable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
+                              ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+                              ui.replace_values_checkBox, ui.filter_values_checkBox,
+                              ui.addrule_replace_value_pushButton,
+                              ui.addrule_filter_value_pushButton]
+
+        [item.setEnabled(True) for item in widgets_to_enable]
+
         # Here we update the columnSelection_comboBox
         if ui.columnSelection_comboBox.count() > 0:  # If the comboBox is not empty
             # Disconnecting
@@ -171,6 +200,16 @@ def load_dataset(ui, ml_model):
                 lambda: update_preprocess_replace(ui, ml_model))
             ui.filter_columnSelection_comboBox.currentIndexChanged.connect(
                 lambda: update_preprocess_filtering(ui, ml_model))
+
+
+        if ui.available_columns_listWidget.count() != 0:
+            ui.available_columns_listWidget.clear()
+
+        if ui.input_columns_listWidget.count() != 0:
+            ui.input_columns_listWidget.clear()
+
+        if ui.output_columns_listWidget.count() != 0:
+            ui.output_columns_listWidget.clear()
 
         # Filling the comboBoxes
         for each_column in ml_model.dataset.columns:
@@ -339,17 +378,22 @@ def plot_matplotlib_to_qt_widget(data,is_categorical, ui):
 
 def update_label_from_slider_change(ui,slider_value, label_object):
 
-    if label_object.objectName() == 'nn_layers_label':
+    if label_object.objectName() == 'reg_nn_layers_label':
         label_object.setText('{}'.format(slider_value))
-        update_nn_layers_table(ui.nn_layers_tableWidget,slider_value)
+        update_nn_layers_table(ui.reg_nn_layers_tableWidget,slider_value)
+    if label_object.objectName() == 'clas_nn_layers_label':
+        label_object.setText('{}'.format(slider_value))
+        update_nn_layers_table(ui.clas_nn_layers_tableWidget,slider_value)
     elif label_object.objectName() == 'outliers_treshold_label':
         label_object.setText('{:.1f}'.format(slider_value / 10))
-    elif label_object.objectName() == 'max_it':
-        pass
-        #TODO : add here
-    elif label_object.objectName() == 'alpha':
-        pass
-        # TODO : add here
+    elif label_object.objectName() == 'reg_nn_max_iter_label':
+        label_object.setText('{}'.format(slider_value))
+    elif label_object.objectName() == 'reg_nn_alpha_label':
+        label_object.setText('{}'.format(slider_value/10000))
+    elif label_object.objectName() == 'clas_nn_max_iter_label':
+        label_object.setText('{}'.format(slider_value))
+    elif label_object.objectName() == 'clas_nn_alpha_label':
+        label_object.setText('{}'.format(slider_value/10000))
 
 
 def update_nn_layers_table(table,value):
@@ -591,8 +635,6 @@ def model_selection_tab_events(ui, selected_model_class):
 
         if ui.nn_regression_radioButton.isChecked():
             ui.regression_parameters_stackedWidget.setCurrentIndex(0)
-
-
 
         elif ui.svm_regression_radioButton.isChecked():
             ui.regression_parameters_stackedWidget.setCurrentIndex(1)
