@@ -19,24 +19,25 @@ class MlModel:
             address (str): file address.
 
         Returns:
-            int: The return value. 1 for Invalid file extension
-                                   2 for reading exception
+            str: The return value. sucess
+                                   invalid_file_extension
+                                   exception_in_the_file
         """
         filename, file_extension = os.path.splitext(address)
         try:
             if file_extension == '.csv':
                 self.dataset = pd.read_csv(address)
                 self.column_types_pd_series = self.dataset.dtypes
-                return 0
+                return 'sucess'
 
             elif file_extension == '.xls' or file_extension == '.xlsx':
                 self.dataset = pd.read_excel(address)
                 self.column_types_pd_series = self.dataset.dtypes
-                return 0
+                return 'sucess'
             else:
-                return 1  # Invalid file extension
+                return 'invalid_file_extension'  # Invalid file extension
         except:
-            return 2  # Exception
+            return 'exception_in_the_file'  # Exception
 
     def generate_histogram(self, column):
         fig, ax = plt.subplots()
@@ -51,9 +52,9 @@ class MlModel:
         self.dataset[column].plot(ax=ax)
         return ax
 
-    def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter):
+    def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter_out):
 
-        scaling, rm_duplicate, rm_outliers, replace, filter
+        scaling, rm_duplicate, rm_outliers, replace, filter_out
         self.pre_processed_dataset = self.dataset.copy()
 
         if rm_duplicate:
@@ -70,28 +71,28 @@ class MlModel:
                     axis=1)]
             self.pre_processed_dataset.reset_index()
 
-        if filter[0]:
-            for rule in filter[1]:
+        if filter_out[0]:
+            for rule in filter_out[1]:
                 target_column = rule[0]
                 comparing_value = rule[2]
 
                 if rule[1] == 'Equal':
-                    self.pre_processed_dataset = self.pre_processed_dataset[
+                    self.pre_processed_dataset = self.pre_processed_dataset[~
                         operator.eq(self.pre_processed_dataset[target_column], comparing_value)]
                 elif rule[1] == 'Not equal':
-                    self.pre_processed_dataset = self.pre_processed_dataset[
+                    self.pre_processed_dataset = self.pre_processed_dataset[~
                         operator.ne(self.pre_processed_dataset[target_column], comparing_value)]
                 elif rule[1] == 'Less than':
-                    self.pre_processed_dataset = self.pre_processed_dataset[
+                    self.pre_processed_dataset = self.pre_processed_dataset[~
                         operator.lt(self.pre_processed_dataset[target_column], comparing_value)]
                 elif rule[1] == 'Less than or equal to':
-                    self.pre_processed_dataset = self.pre_processed_dataset[
+                    self.pre_processed_dataset = self.pre_processed_dataset[~
                         operator.le(self.pre_processed_dataset[target_column], comparing_value)]
                 elif rule[1] == 'Greater than':
-                    self.pre_processed_dataset = self.pre_processed_dataset[
+                    self.pre_processed_dataset = self.pre_processed_dataset[~
                         operator.gt(self.pre_processed_dataset[target_column], comparing_value)]
                 elif rule[1] == 'Greater than or equal to':
-                    self.pre_processed_dataset = self.pre_processed_dataset[
+                    self.pre_processed_dataset = self.pre_processed_dataset[~
                         operator.ge(self.pre_processed_dataset[target_column], comparing_value)]
             self.pre_processed_dataset.reset_index()
 
@@ -99,12 +100,15 @@ class MlModel:
             for rule in replace[1]:
                 target_column = rule[1]
                 column_data_type = self.column_types_pd_series[target_column]
-                value_to_replace = float(rule[0])
-                value_to_replace = pd.Series(value_to_replace).astype(
-                    column_data_type).values[0]  # Making sure the value to be replaced mataches with the dtype of the dataset
                 new_value = rule[2]
-                new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(
-                    new_value)  # Converting to either float or int, depending if . or e is in the string
+                if column_data_type.kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
+                    value_to_replace = float(rule[0])
+                    new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(new_value)
+                else:
+                    value_to_replace = rule[0]
+                # Making sure the value to be replaced mataches with the dtype of the dataset
+                value_to_replace = pd.Series(value_to_replace).astype(column_data_type).values[0]
+                  # Converting to either float or int, depending if . or e is in the string
 
                 self.pre_processed_dataset[target_column].replace(to_replace=value_to_replace, value=new_value,
                                                                   inplace=True)

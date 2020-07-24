@@ -27,7 +27,7 @@ class MplWidget(QtWidgets.QWidget):
         self.canvas.axes.axis('off')  # Turn off axis lines and labels. Show a white canvas in the initialisation
 
 
-def resource_path(relative_path):
+def transform_to_resource_path(relative_path):
     """Get absolute path to resource, works for dev and for PyInstaller.
 
     Args:
@@ -61,7 +61,6 @@ def configure_gui(ui, ml_model):
 
     for widget in widgets_to_disable:
         widget.setEnabled(False)
-
 
     # Connecting radio_button_change - Visualise Tab
     ui.boxplot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
@@ -103,13 +102,13 @@ def configure_gui(ui, ml_model):
         lambda: remove_item_from_listWidget(ui, ui.output_columns_listWidget,ml_model))
 
     ui.clear_replace_value_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.preprocess_replace_listWidget))
+        lambda: clear_listWidget(ui, ui.preprocess_replace_listWidget,ml_model))
     ui.clear_filter_rule_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.preprocess_filter_listWidget))
+        lambda: clear_listWidget(ui, ui.preprocess_filter_listWidget,ml_model))
     ui.clear_input_columns_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.input_columns_listWidget))
+        lambda: clear_listWidget(ui, ui.input_columns_listWidget,ml_model))
     ui.clear_output_columns_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.output_columns_listWidget))
+        lambda: clear_listWidget(ui, ui.output_columns_listWidget,ml_model))
 
     model_selection_radio_buttons = [ui.regression_selection_radioButton, ui.classification_selection_radioButton,
                                     ui.gradientboosting_classification_radioButton, ui.knn_classification_radioButton,
@@ -139,6 +138,14 @@ def configure_gui(ui, ml_model):
         lambda: update_label_from_slider_change(ui, ui.clas_nn_max_iter_horizontalSlider.value(), ui.clas_nn_max_iter_label))
     ui.clas_nn_alpha_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.clas_nn_alpha_horizontalSlider.value(), ui.clas_nn_alpha_label))
+    ui.train_percentage_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.train_percentage_horizontalSlider.value(), ui.train_percentage_label))
+    ui.test_percentage_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.test_percentage_horizontalSlider.value(), ui.test_percentage_label))
+    ui.validate_percentage_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.validate_percentage_horizontalSlider.value(), ui.validation_percentage_label))
+
+
 
     # TODO : Disable all button and functions while Dataset is not chosen
 
@@ -165,7 +172,8 @@ def load_dataset(ui, ml_model):
     # TODO: add checkbox Dataset with Column name or not
     # Todo: Check what needs to be reset/cleared when a new dataset is loaded
 
-    if return_code == 0:  # Sucess
+    # Sucess
+    if return_code == 'sucess':
 
         populate_tablewidget_with_dataframe(ui.dataset_tableWidget, ml_model.dataset)
         populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, ml_model.dataset)
@@ -201,6 +209,12 @@ def load_dataset(ui, ml_model):
             ui.filter_columnSelection_comboBox.currentIndexChanged.connect(
                 lambda: update_preprocess_filtering(ui, ml_model))
 
+        #Todo: Make this a function
+        dataset_shape = ml_model.dataset.shape
+        ui.train_dataset_shape_label.setText(
+            '{} x ?'.format(round(dataset_shape[0] * ui.train_percentage_horizontalSlider.value() / 100)))
+        ui.test_dataset_shape_label.setText(
+            '{} x ?'.format(round(dataset_shape[0] * ui.test_percentage_horizontalSlider.value() / 100)))
 
         if ui.available_columns_listWidget.count() != 0:
             ui.available_columns_listWidget.clear()
@@ -211,6 +225,9 @@ def load_dataset(ui, ml_model):
         if ui.output_columns_listWidget.count() != 0:
             ui.output_columns_listWidget.clear()
 
+        ui.preprocess_replace_listWidget.clear()
+        ui.preprocess_filter_listWidget.clear()
+
         # Filling the comboBoxes
         for each_column in ml_model.dataset.columns:
             ui.columnSelection_comboBox.addItem(each_column)  # Fill columnSelection_comboBox from the Visualise Tab
@@ -218,7 +235,7 @@ def load_dataset(ui, ml_model):
             ui.filter_columnSelection_comboBox.addItem(each_column)  # from the Pre-process Tab
             ui.available_columns_listWidget.addItem(each_column)
 
-    elif return_code == 1:  # Invalid file extension
+    elif return_code == 'invalid_file_extension':
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Warning)
         msg.setText("Error")
@@ -226,7 +243,7 @@ def load_dataset(ui, ml_model):
         msg.setWindowTitle("Error")
         msg.exec()
 
-    elif return_code == 2:  # Exception while reading the file
+    elif return_code == 'exception_in_the_file':
         msg = QtWidgets.QMessageBox()
         msg.setIcon(QtWidgets.QMessageBox.Critical)
         msg.setText("Error")
@@ -378,10 +395,12 @@ def plot_matplotlib_to_qt_widget(data,is_categorical, ui):
 
 def update_label_from_slider_change(ui,slider_value, label_object):
 
+    #Todo - Too repetitive, make this a function
+
     if label_object.objectName() == 'reg_nn_layers_label':
         label_object.setText('{}'.format(slider_value))
         update_nn_layers_table(ui.reg_nn_layers_tableWidget,slider_value)
-    if label_object.objectName() == 'clas_nn_layers_label':
+    elif label_object.objectName() == 'clas_nn_layers_label':
         label_object.setText('{}'.format(slider_value))
         update_nn_layers_table(ui.clas_nn_layers_tableWidget,slider_value)
     elif label_object.objectName() == 'outliers_treshold_label':
@@ -394,6 +413,16 @@ def update_label_from_slider_change(ui,slider_value, label_object):
         label_object.setText('{}'.format(slider_value))
     elif label_object.objectName() == 'clas_nn_alpha_label':
         label_object.setText('{}'.format(slider_value/10000))
+    elif label_object.objectName() == 'train_percentage_label':
+        label_object.setText('{}%'.format(slider_value))
+        ui.test_percentage_horizontalSlider.setValue(100-slider_value)
+        # Todo: Change ui.train_dataset_shape_label and train_dataset_shape_label
+    elif label_object.objectName() == 'test_percentage_label':
+        label_object.setText('{}%'.format(slider_value))
+        ui.train_percentage_horizontalSlider.setValue(100-slider_value)
+        # Todo: Change ui.train_dataset_shape_label and train_dataset_shape_label
+    elif label_object.objectName() == 'validation_percentage_label':
+        label_object.setText('{}%'.format(slider_value))
 
 
 def update_nn_layers_table(table,value):
@@ -406,7 +435,6 @@ def update_nn_layers_table(table,value):
             table.setItem(table.rowCount()-1, 0, item)
             item = QtWidgets.QTableWidgetItem('Hidden Layer '+str(table.rowCount()))
             table.setVerticalHeaderItem(table.rowCount()-1, item)
-
     else:
         while value < table.rowCount():
             table.removeRow(table.rowCount()-1)
@@ -418,6 +446,7 @@ def update_pre_process_rm_outlier(ui, ml_model):
 
 
 def add_replacing_rule(ui, ml_model):
+
     if ui.pre_process_replacing_stackedWidget.currentIndex() == 0:  # If numeric
         if ui.replaced_value_lineEdit.text() != '' and ui.replacing_value_lineEdit.text() != '':  # If inputs are not empty
             try:
@@ -437,8 +466,13 @@ def add_replacing_rule(ui, ml_model):
             item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.replaced_value_lineEdit.text(),
                                                      ui.replace_columnSelection_comboBox.currentText(),
                                                      ui.replacing_value_lineEdit.text()])
+            # Todo: Make this loop a function. It happens 4x in the code
+            for i in range(ui.preprocess_replace_listWidget.count()):
+                if ui.preprocess_replace_listWidget.item(i).text() ==  item_to_add.text():
+                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                    'Type a valid rule', 'Error')
+                    return
             ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
-            # Todo Check wheter the rule is not already in the list before adding
 
         else:  # Display a message if the inputs are empty and a rule is added
             display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
@@ -455,6 +489,11 @@ def add_replacing_rule(ui, ml_model):
             item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.replaced_value_comboBox.currentText(),
                                                      ui.replace_columnSelection_comboBox.currentText(),
                                                      ui.replacing_value_lineEdit.text()])
+            for i in range(ui.preprocess_replace_listWidget.count()):
+                if ui.preprocess_replace_listWidget.item(i).text() ==  item_to_add.text():
+                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                    'Type a valid rule', 'Error')
+                    return
             ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
         else:  # Display a message if the inputs are empty and a rule is added
             display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
@@ -478,7 +517,7 @@ def add_filtering_rule(ui, ml_model):
                                 'Type a valid numeric input for column {}'.format(
                                     ui.filter_columnSelection_comboBox.currentText()), 'Error')
                 return
-            string_to_add = '- Include {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
+            string_to_add = '- Exclude {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
                                                                ui.filter_operator_comboBox.currentText(),
                                                                ui.filtering_dataset_value_lineEdit.text())
             item_to_add = QtWidgets.QListWidgetItem() # Create a QListWidgetItem
@@ -487,15 +526,21 @@ def add_filtering_rule(ui, ml_model):
             item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.filter_columnSelection_comboBox.currentText(),
                                                      ui.filter_operator_comboBox.currentText(),
                                                      ui.filtering_dataset_value_lineEdit.text()])
+            # Todo Make This Loop a function
+            for i in range(ui.preprocess_filter_listWidget.count()):
+                if ui.preprocess_filter_listWidget.item(i).text() ==  item_to_add.text():
+                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                    'Type a valid rule', 'Error')
+                    return
             ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
-            # Todo Check wheter the rule is not already in the list before adding
+
 
         else:  # Display a message if the inputs are empty and a rule is added
             display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
                             'Type a valid rule', 'Error')
 
     else:  # If not numeric
-        string_to_add = '- Include {} values {} to {}'.format(ui.filter_columnSelection_comboBox.currentText(),
+        string_to_add = '- Exclude {} values {} to {}'.format(ui.filter_columnSelection_comboBox.currentText(),
                                                               ui.filter_operator_comboBox.currentText(),
                                                               ui.filtering_dataset_value_comboBox.currentText())
         item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
@@ -504,6 +549,11 @@ def add_filtering_rule(ui, ml_model):
         item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.filter_columnSelection_comboBox.currentText(),
                                                  ui.filter_operator_comboBox.currentText(),
                                                  ui.filtering_dataset_value_comboBox.currentText()])
+        for i in range(ui.preprocess_filter_listWidget.count()):
+            if ui.preprocess_filter_listWidget.item(i).text() == item_to_add.text():
+                display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                'Type a valid rule', 'Error')
+                return
         ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
 
     if ui.filter_values_checkBox.isChecked():
@@ -516,14 +566,14 @@ def remove_item_from_listWidget(ui,target_listWidget,ml_model):
         for item in ui.preprocess_filter_listWidget.selectedItems():
             ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.row(item))
 
-        if ui.filter_values_checkBox.isChecked() and ui.preprocess_filter_listWidget.count() > 0:
+        if ui.filter_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
     elif target_listWidget == ui.preprocess_replace_listWidget:
         for item in ui.preprocess_replace_listWidget.selectedItems():
             ui.preprocess_replace_listWidget.takeItem(ui.preprocess_replace_listWidget.row(item))
 
-        if ui.replace_values_checkBox.isChecked() and ui.preprocess_replace_listWidget.count() > 0:
+        if ui.replace_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
     elif target_listWidget == ui.input_columns_listWidget:
@@ -537,20 +587,16 @@ def remove_item_from_listWidget(ui,target_listWidget,ml_model):
             ui.available_columns_listWidget.addItem(item)
 
 
-def clear_listWidget(ui,target_listWidget):
+def clear_listWidget(ui,target_listWidget,ml_model):
 
     if target_listWidget == ui.preprocess_filter_listWidget:
-        for _ in range(ui.preprocess_filter_listWidget.count()):
-            ui.preprocess_filter_listWidget.takeItem(0) # Delete all items
-
-        if ui.filter_values_checkBox.isChecked() and ui.preprocess_filter_listWidget.count() > 0:
+        ui.preprocess_filter_listWidget.clear()
+        if ui.filter_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
     elif target_listWidget == ui.preprocess_replace_listWidget:
-        for _ in range(ui.preprocess_replace_listWidget.count()):
-            ui.preprocess_replace_listWidget.takeItem(0) # Delete all items
-
-        if ui.replace_values_checkBox.isChecked() and ui.preprocess_replace_listWidget.count() > 0:
+        ui.preprocess_replace_listWidget.clear()
+        if ui.replace_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
     elif target_listWidget == ui.input_columns_listWidget:
@@ -610,10 +656,13 @@ def update_pre_process(ui, ml_model):
     pre_processed_dataset = ml_model.pre_process_data(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
 
     if pre_processed_dataset.empty: # Empty Dataframe
+        ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.count() - 1) # Drop last rule
         display_message(QtWidgets.QMessageBox.Critical, 'Invalid Pre-processing',
                         'These pre-processing rules are too restrictive and would return an empty dataset', 'Error')
     else:
         populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, pre_processed_dataset)
+        dataset_shape = pre_processed_dataset.shape
+        #Todo: Change ui.train_dataset_shape_label and train_dataset_shape_label
 
     # Todo Update the values from the comboboxes after filtering/replacing according to the pro-process dataset
 
@@ -665,7 +714,7 @@ def model_selection_tab_events(ui, selected_model_class):
 
 try:
     sys._MEIPASS
-    files_folder = resource_path('resources/')
+    files_folder = transform_to_resource_path('resources/')
 except:
     pass
-files_folder = resource_path('../resources/')
+files_folder = transform_to_resource_path('../resources/')
