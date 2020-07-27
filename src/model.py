@@ -12,6 +12,7 @@ class MlModel:
     def __init__(self):
         self.dataset = pd.DataFrame()
 
+
     def read_dataset(self, address):
         """Read a dataset into a pandas dataframe from a file address.
 
@@ -28,11 +29,13 @@ class MlModel:
             if file_extension == '.csv':
                 self.dataset = pd.read_csv(address)
                 self.column_types_pd_series = self.dataset.dtypes
+                self.pre_processed_dataset = self.dataset.copy()
                 return 'sucess'
 
             elif file_extension == '.xls' or file_extension == '.xlsx':
                 self.dataset = pd.read_excel(address)
                 self.column_types_pd_series = self.dataset.dtypes
+                self.pre_processed_dataset = self.dataset.copy()
                 return 'sucess'
             else:
                 return 'invalid_file_extension'  # Invalid file extension

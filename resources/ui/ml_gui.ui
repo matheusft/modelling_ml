@@ -386,7 +386,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>164</width>
+              <width>150</width>
               <height>26</height>
              </rect>
             </property>
@@ -584,7 +584,7 @@
          <enum>QFrame::Plain</enum>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page_numeric_2">
          <widget class="QLineEdit" name="filtering_dataset_value_lineEdit">
@@ -616,7 +616,7 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>220</width>
+            <width>200</width>
             <height>26</height>
            </rect>
           </property>

@@ -46,10 +46,11 @@ def transform_to_resource_path(relative_path):
 
 
 def configure_gui(ui, ml_model):
+
     _translate = QtCore.QCoreApplication.translate
 
     # Connecting load_file_pushButton - Dataset Load Tab
-    ui.load_file_pushButton.clicked.connect(lambda ml_mode: load_dataset(ui, ml_model))
+    ui.load_file_pushButton.clicked.connect(lambda: load_dataset(ui, ml_model))
 
     # Connecting columnSelection_comboBox - Visualise Tab
     ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
@@ -71,10 +72,11 @@ def configure_gui(ui, ml_model):
                               ui.replace_values_checkBox, ui.filter_values_checkBox]
 
     for pre_process_option in pre_process_checkboxes:
-        pre_process_option.clicked.connect(lambda *args, object=pre_process_option: update_pre_process(ui, ml_model))
+        pre_process_option.clicked.connect(lambda: update_pre_process(ui, ml_model))
 
     ui.outliers_treshold_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui,ui.outliers_treshold_horizontalSlider.value(), ui.outliers_treshold_label))
+        lambda: update_label_from_slider_change(ui, ui.outliers_treshold_horizontalSlider.value(),
+                                                ui.outliers_treshold_label,ml_model))
     ui.outliers_treshold_horizontalSlider.sliderReleased.connect(lambda: update_pre_process_rm_outlier(ui, ml_model))
 
     ui.replace_columnSelection_comboBox.currentIndexChanged.connect(lambda: update_preprocess_replace(ui,
@@ -86,66 +88,70 @@ def configure_gui(ui, ml_model):
     ui.addrule_filter_value_pushButton.clicked.connect(lambda: add_filtering_rule(ui, ml_model))
 
     ui.remove_replace_value_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.preprocess_replace_listWidget,ml_model))
+        lambda: remove_item_from_listWidget(ui, ui.preprocess_replace_listWidget, ml_model))
     ui.remove_filter_rule_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.preprocess_filter_listWidget,ml_model))
-
+        lambda: remove_item_from_listWidget(ui, ui.preprocess_filter_listWidget, ml_model))
 
     ui.add_input_columns_pushButton.clicked.connect(
-        lambda: update_input_output_columns(ui, ui.input_columns_listWidget))
+        lambda: update_input_output_columns(ui, ui.input_columns_listWidget, ml_model))
     ui.add_output_columns_pushButton.clicked.connect(
-        lambda: update_input_output_columns(ui, ui.output_columns_listWidget))
+        lambda: update_input_output_columns(ui, ui.output_columns_listWidget, ml_model))
 
     ui.remove_input_columns_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.input_columns_listWidget,ml_model))
+        lambda: remove_item_from_listWidget(ui, ui.input_columns_listWidget, ml_model))
     ui.remove_output_columns_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.output_columns_listWidget,ml_model))
+        lambda: remove_item_from_listWidget(ui, ui.output_columns_listWidget, ml_model))
 
     ui.clear_replace_value_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.preprocess_replace_listWidget,ml_model))
+        lambda: clear_listWidget(ui, ui.preprocess_replace_listWidget, ml_model))
     ui.clear_filter_rule_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.preprocess_filter_listWidget,ml_model))
+        lambda: clear_listWidget(ui, ui.preprocess_filter_listWidget, ml_model))
     ui.clear_input_columns_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.input_columns_listWidget,ml_model))
+        lambda: clear_listWidget(ui, ui.input_columns_listWidget, ml_model))
     ui.clear_output_columns_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.output_columns_listWidget,ml_model))
+        lambda: clear_listWidget(ui, ui.output_columns_listWidget, ml_model))
 
     model_selection_radio_buttons = [ui.regression_selection_radioButton, ui.classification_selection_radioButton,
-                                    ui.gradientboosting_classification_radioButton, ui.knn_classification_radioButton,
-                                    ui.nn_classification_radioButton, ui.randomforest_classification_radioButton,
-                                    ui.svm_classification_radioButton, ui.svm_regression_radioButton,
-                                    ui.randomforest_regression_radioButton, ui.nn_regression_radioButton,
-                                    ui.gradientboosting_regression_radioButton]
+                                     ui.gradientboosting_classification_radioButton, ui.knn_classification_radioButton,
+                                     ui.nn_classification_radioButton, ui.randomforest_classification_radioButton,
+                                     ui.svm_classification_radioButton, ui.svm_regression_radioButton,
+                                     ui.randomforest_regression_radioButton, ui.nn_regression_radioButton,
+                                     ui.gradientboosting_regression_radioButton]
 
     for model_option in model_selection_radio_buttons:
-        model_option.clicked.connect(
-            lambda *args, model_option=model_option: model_selection_tab_events(ui, model_option))
+        model_option.clicked.connect(lambda: model_selection_tab_events(ui))
 
     ui.nn_classification_radioButton.setChecked(True)
     ui.nn_regression_radioButton.setChecked(True)
     ui.regression_selection_radioButton.setChecked(True)
 
-
     ui.reg_nn_layers_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui,ui.reg_nn_layers_horizontalSlider.value(), ui.reg_nn_layers_label))
+        lambda: update_label_from_slider_change(ui, ui.reg_nn_layers_horizontalSlider.value(), ui.reg_nn_layers_label,
+                                                ml_model))
     ui.reg_nn_max_iter_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.reg_nn_max_iter_horizontalSlider.value(), ui.reg_nn_max_iter_label))
+        lambda: update_label_from_slider_change(ui, ui.reg_nn_max_iter_horizontalSlider.value(),
+                                                ui.reg_nn_max_iter_label, ml_model))
     ui.reg_nn_alpha_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.reg_nn_alpha_horizontalSlider.value(), ui.reg_nn_alpha_label))
+        lambda: update_label_from_slider_change(ui, ui.reg_nn_alpha_horizontalSlider.value(), ui.reg_nn_alpha_label,
+                                                ml_model))
     ui.clas_nn_layers_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui,ui.clas_nn_layers_horizontalSlider.value(), ui.clas_nn_layers_label))
+        lambda: update_label_from_slider_change(ui, ui.clas_nn_layers_horizontalSlider.value(),
+                                                ui.clas_nn_layers_label, ml_model))
     ui.clas_nn_max_iter_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.clas_nn_max_iter_horizontalSlider.value(), ui.clas_nn_max_iter_label))
+        lambda: update_label_from_slider_change(ui, ui.clas_nn_max_iter_horizontalSlider.value(),
+                                                ui.clas_nn_max_iter_label, ml_model))
     ui.clas_nn_alpha_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.clas_nn_alpha_horizontalSlider.value(), ui.clas_nn_alpha_label))
+        lambda: update_label_from_slider_change(ui, ui.clas_nn_alpha_horizontalSlider.value(), ui.clas_nn_alpha_label,
+                                                ml_model))
     ui.train_percentage_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.train_percentage_horizontalSlider.value(), ui.train_percentage_label))
+        lambda: update_label_from_slider_change(ui, ui.train_percentage_horizontalSlider.value(),
+                                                ui.train_percentage_label, ml_model))
     ui.test_percentage_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.test_percentage_horizontalSlider.value(), ui.test_percentage_label))
+        lambda: update_label_from_slider_change(ui, ui.test_percentage_horizontalSlider.value(),
+                                                ui.test_percentage_label, ml_model))
     ui.validate_percentage_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.validate_percentage_horizontalSlider.value(), ui.validation_percentage_label))
-
-
+        lambda: update_label_from_slider_change(ui, ui.validate_percentage_horizontalSlider.value(),
+                                                ui.validation_percentage_label, ml_model))
 
     # TODO : Disable all button and functions while Dataset is not chosen
 
@@ -185,10 +191,10 @@ def load_dataset(ui, ml_model):
         [item.setChecked(False) for item in pre_process_checkboxes]
 
         widgets_to_enable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-                              ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                              ui.replace_values_checkBox, ui.filter_values_checkBox,
-                              ui.addrule_replace_value_pushButton,
-                              ui.addrule_filter_value_pushButton]
+                             ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+                             ui.replace_values_checkBox, ui.filter_values_checkBox,
+                             ui.addrule_replace_value_pushButton,
+                             ui.addrule_filter_value_pushButton]
 
         [item.setEnabled(True) for item in widgets_to_enable]
 
@@ -209,12 +215,7 @@ def load_dataset(ui, ml_model):
             ui.filter_columnSelection_comboBox.currentIndexChanged.connect(
                 lambda: update_preprocess_filtering(ui, ml_model))
 
-        #Todo: Make this a function
-        dataset_shape = ml_model.dataset.shape
-        ui.train_dataset_shape_label.setText(
-            '{} x ?'.format(round(dataset_shape[0] * ui.train_percentage_horizontalSlider.value() / 100)))
-        ui.test_dataset_shape_label.setText(
-            '{} x ?'.format(round(dataset_shape[0] * ui.test_percentage_horizontalSlider.value() / 100)))
+        update_train_test_shape_label(ui, ml_model)
 
         if ui.available_columns_listWidget.count() != 0:
             ui.available_columns_listWidget.clear()
@@ -267,7 +268,7 @@ def populate_tablewidget_with_dataframe(table_widget, filling_dataframe):
         table_widget.setItem(0, i, qt_item)
 
     # Filling the Table with the dataset
-    for i in range(table_widget.rowCount()-1): # -1 Because the Top row was laready used for the label
+    for i in range(table_widget.rowCount() - 1):  # -1 Because the Top row was laready used for the label
         for j in range(table_widget.columnCount()):
             dataset_value = filling_dataframe.iloc[i, j]  # Get the value from the dataset
             # If the value is numeric, format it to two decimals
@@ -283,7 +284,7 @@ def update_visualisation_widgets(ui, ml_model):
     ui.columnSummary_textBrowser.clear()
     description = ml_model.dataset[selected_column].describe()
     for i in range(len(description)):
-        ui.columnSummary_textBrowser.append('{} = {}'.format(description.keys()[i].title(),description.values[i]))
+        ui.columnSummary_textBrowser.append('{} = {}'.format(description.keys()[i].title(), description.values[i]))
 
     plot_matplotlib_to_qt_widget(ml_model.dataset[selected_column],
                                  ml_model.column_types_pd_series[selected_column].kind not in 'iuf',
@@ -367,17 +368,16 @@ def update_visualisation_options(ui, ml_model):
     # TODO: Clear plot area
 
 
-def plot_matplotlib_to_qt_widget(data,is_categorical, ui):
-
+def plot_matplotlib_to_qt_widget(data, is_categorical, ui):
     target_widget = ui.dataVisualisePlot_widget
     target_widget.canvas.axes.clear()
     target_widget.canvas.axes.axis('on')
 
     if is_categorical:
-        data.value_counts().plot(kind='bar',ax=target_widget.canvas.axes, grid=False, title = 'Sample Count')
+        data.value_counts().plot(kind='bar', ax=target_widget.canvas.axes, grid=False, title='Sample Count')
 
     elif ui.plot_radioButton.isChecked() and ui.plot_radioButton.isEnabled():
-        data.plot(ax=target_widget.canvas.axes, grid=False, title = 'Linear Plot')
+        data.plot(ax=target_widget.canvas.axes, grid=False, title='Linear Plot')
 
     elif ui.boxplot_radioButton.isChecked() and ui.boxplot_radioButton.isEnabled():
         pd.DataFrame(data).boxplot(ax=target_widget.canvas.axes, grid=False)
@@ -393,66 +393,64 @@ def plot_matplotlib_to_qt_widget(data,is_categorical, ui):
     target_widget.canvas.draw()
 
 
-def update_label_from_slider_change(ui,slider_value, label_object):
-
-    #Todo - Too repetitive, make this a function
+def update_label_from_slider_change(ui, slider_value, label_object, ml_model):
+    # Todo - Too repetitive, make this a function
 
     if label_object.objectName() == 'reg_nn_layers_label':
         label_object.setText('{}'.format(slider_value))
-        update_nn_layers_table(ui.reg_nn_layers_tableWidget,slider_value)
+        update_nn_layers_table(ui.reg_nn_layers_tableWidget, slider_value)
     elif label_object.objectName() == 'clas_nn_layers_label':
         label_object.setText('{}'.format(slider_value))
-        update_nn_layers_table(ui.clas_nn_layers_tableWidget,slider_value)
+        update_nn_layers_table(ui.clas_nn_layers_tableWidget, slider_value)
     elif label_object.objectName() == 'outliers_treshold_label':
         label_object.setText('{:.1f}'.format(slider_value / 10))
     elif label_object.objectName() == 'reg_nn_max_iter_label':
         label_object.setText('{}'.format(slider_value))
     elif label_object.objectName() == 'reg_nn_alpha_label':
-        label_object.setText('{}'.format(slider_value/10000))
+        label_object.setText('{}'.format(slider_value / 10000))
     elif label_object.objectName() == 'clas_nn_max_iter_label':
         label_object.setText('{}'.format(slider_value))
     elif label_object.objectName() == 'clas_nn_alpha_label':
-        label_object.setText('{}'.format(slider_value/10000))
+        label_object.setText('{}'.format(slider_value / 10000))
     elif label_object.objectName() == 'train_percentage_label':
         label_object.setText('{}%'.format(slider_value))
-        ui.test_percentage_horizontalSlider.setValue(100-slider_value)
-        # Todo: Change ui.train_dataset_shape_label and train_dataset_shape_label
+        ui.test_percentage_horizontalSlider.setValue(100 - slider_value)
+        update_train_test_shape_label(ui,ml_model)
     elif label_object.objectName() == 'test_percentage_label':
         label_object.setText('{}%'.format(slider_value))
-        ui.train_percentage_horizontalSlider.setValue(100-slider_value)
-        # Todo: Change ui.train_dataset_shape_label and train_dataset_shape_label
+        ui.train_percentage_horizontalSlider.setValue(100 - slider_value)
+        update_train_test_shape_label(ui,ml_model)
     elif label_object.objectName() == 'validation_percentage_label':
         label_object.setText('{}%'.format(slider_value))
 
 
-def update_nn_layers_table(table,value):
-
+def update_nn_layers_table(table, value):
     if value > table.rowCount():
         while value > table.rowCount():
             table.insertRow(table.rowCount())
             item = QtWidgets.QTableWidgetItem(str(10))
             item.setTextAlignment((QtCore.Qt.AlignCenter))
-            table.setItem(table.rowCount()-1, 0, item)
-            item = QtWidgets.QTableWidgetItem('Hidden Layer '+str(table.rowCount()))
-            table.setVerticalHeaderItem(table.rowCount()-1, item)
+            table.setItem(table.rowCount() - 1, 0, item)
+            item = QtWidgets.QTableWidgetItem('Hidden Layer ' + str(table.rowCount()))
+            table.setVerticalHeaderItem(table.rowCount() - 1, item)
     else:
         while value < table.rowCount():
-            table.removeRow(table.rowCount()-1)
+            table.removeRow(table.rowCount() - 1)
 
 
 def update_pre_process_rm_outlier(ui, ml_model):
     if ui.remove_outliers_checkBox.isChecked():
-        update_pre_process(ui,ml_model)
+        update_pre_process(ui, ml_model)
 
 
 def add_replacing_rule(ui, ml_model):
-
     if ui.pre_process_replacing_stackedWidget.currentIndex() == 0:  # If numeric
         if ui.replaced_value_lineEdit.text() != '' and ui.replacing_value_lineEdit.text() != '':  # If inputs are not empty
             try:
-                float(ui.replacing_value_lineEdit.text()), float(ui.replaced_value_lineEdit.text())  # Check whether it is a valid input
+                float(ui.replacing_value_lineEdit.text()), float(
+                    ui.replaced_value_lineEdit.text())  # Check whether it is a valid input
             except:
-                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input', #Display error message and return
+                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',  # Display error message and return
                                 'Type a valid numeric input for column {}'.format(
                                     ui.replace_columnSelection_comboBox.currentText()), 'Error')
                 return
@@ -468,7 +466,7 @@ def add_replacing_rule(ui, ml_model):
                                                      ui.replacing_value_lineEdit.text()])
             # Todo: Make this loop a function. It happens 4x in the code
             for i in range(ui.preprocess_replace_listWidget.count()):
-                if ui.preprocess_replace_listWidget.item(i).text() ==  item_to_add.text():
+                if ui.preprocess_replace_listWidget.item(i).text() == item_to_add.text():
                     display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
                                     'Type a valid rule', 'Error')
                     return
@@ -490,7 +488,7 @@ def add_replacing_rule(ui, ml_model):
                                                      ui.replace_columnSelection_comboBox.currentText(),
                                                      ui.replacing_value_lineEdit.text()])
             for i in range(ui.preprocess_replace_listWidget.count()):
-                if ui.preprocess_replace_listWidget.item(i).text() ==  item_to_add.text():
+                if ui.preprocess_replace_listWidget.item(i).text() == item_to_add.text():
                     display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
                                     'Type a valid rule', 'Error')
                     return
@@ -520,15 +518,15 @@ def add_filtering_rule(ui, ml_model):
             string_to_add = '- Exclude {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
                                                                ui.filter_operator_comboBox.currentText(),
                                                                ui.filtering_dataset_value_lineEdit.text())
-            item_to_add = QtWidgets.QListWidgetItem() # Create a QListWidgetItem
-            item_to_add.setText(string_to_add) # Add the text to be displayed in the listWidget
+            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
             # Add the data
             item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.filter_columnSelection_comboBox.currentText(),
                                                      ui.filter_operator_comboBox.currentText(),
                                                      ui.filtering_dataset_value_lineEdit.text()])
             # Todo Make This Loop a function
             for i in range(ui.preprocess_filter_listWidget.count()):
-                if ui.preprocess_filter_listWidget.item(i).text() ==  item_to_add.text():
+                if ui.preprocess_filter_listWidget.item(i).text() == item_to_add.text():
                     display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
                                     'Type a valid rule', 'Error')
                     return
@@ -560,8 +558,7 @@ def add_filtering_rule(ui, ml_model):
         update_pre_process(ui, ml_model)
 
 
-def remove_item_from_listWidget(ui,target_listWidget,ml_model):
-
+def remove_item_from_listWidget(ui, target_listWidget, ml_model):
     if target_listWidget == ui.preprocess_filter_listWidget:
         for item in ui.preprocess_filter_listWidget.selectedItems():
             ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.row(item))
@@ -574,7 +571,7 @@ def remove_item_from_listWidget(ui,target_listWidget,ml_model):
             ui.preprocess_replace_listWidget.takeItem(ui.preprocess_replace_listWidget.row(item))
 
         if ui.replace_values_checkBox.isChecked():
-            update_pre_process(ui, ml_model)
+            update_pre_process(utrain_percentage_horizontalSlideri, ml_model)
 
     elif target_listWidget == ui.input_columns_listWidget:
         for selected_item in target_listWidget.selectedItems():
@@ -587,8 +584,7 @@ def remove_item_from_listWidget(ui,target_listWidget,ml_model):
             ui.available_columns_listWidget.addItem(item)
 
 
-def clear_listWidget(ui,target_listWidget,ml_model):
-
+def clear_listWidget(ui, target_listWidget, ml_model):
     if target_listWidget == ui.preprocess_filter_listWidget:
         ui.preprocess_filter_listWidget.clear()
         if ui.filter_values_checkBox.isChecked():
@@ -603,6 +599,8 @@ def clear_listWidget(ui,target_listWidget,ml_model):
         for _ in range(ui.input_columns_listWidget.count()):
             item = ui.input_columns_listWidget.takeItem(0)
             ui.available_columns_listWidget.addItem(item)
+
+        update_train_test_shape_label(ui,ml_model)
 
     elif target_listWidget == ui.output_columns_listWidget:
         for _ in range(ui.output_columns_listWidget.count()):
@@ -620,12 +618,11 @@ def display_message(icon, main_message, informative_message, window_title):
 
 
 def update_pre_process(ui, ml_model):
-
     scaling = ui.numeric_scaling_checkBox.isChecked()
     rm_duplicate = ui.remove_duplicates_checkBox.isChecked()
     rm_outliers = [ui.remove_outliers_checkBox.isChecked(), ui.outliers_treshold_horizontalSlider.value() / 10]
 
-    if ui.replace_values_checkBox.isChecked() and ui.preprocess_replace_listWidget.count()>0: # Just read the replacing Values if the box is checked
+    if ui.replace_values_checkBox.isChecked() and ui.preprocess_replace_listWidget.count() > 0:  # Just read the replacing Values if the box is checked
         replacing_rules = []
         for rule_index in range(ui.preprocess_replace_listWidget.count()):  # Looping through all rules
             item_data = ui.preprocess_replace_listWidget.item(rule_index).data(
@@ -638,7 +635,7 @@ def update_pre_process(ui, ml_model):
     else:
         replace = [False]
 
-    if ui.filter_values_checkBox.isChecked() and ui.preprocess_filter_listWidget.count()>0:
+    if ui.filter_values_checkBox.isChecked() and ui.preprocess_filter_listWidget.count() > 0:
         filtering_rules = []
         for rule_index in range(ui.preprocess_filter_listWidget.count()):  # Looping through all rules
             item_data = ui.preprocess_filter_listWidget.item(rule_index).data(
@@ -655,32 +652,32 @@ def update_pre_process(ui, ml_model):
 
     pre_processed_dataset = ml_model.pre_process_data(scaling, rm_duplicate, rm_outliers, replace, filter_dataset)
 
-    if pre_processed_dataset.empty: # Empty Dataframe
-        ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.count() - 1) # Drop last rule
+    if pre_processed_dataset.empty:  # Empty Dataframe
+        ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.count() - 1)  # Drop last rule
         display_message(QtWidgets.QMessageBox.Critical, 'Invalid Pre-processing',
                         'These pre-processing rules are too restrictive and would return an empty dataset', 'Error')
     else:
         populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, pre_processed_dataset)
-        dataset_shape = pre_processed_dataset.shape
-        #Todo: Change ui.train_dataset_shape_label and train_dataset_shape_label
+        update_train_test_shape_label(ui,ml_model)
 
     # Todo Update the values from the comboboxes after filtering/replacing according to the pro-process dataset
 
 
-def update_input_output_columns(ui,target_object):
-
+def update_input_output_columns(ui, target_object, ml_model):
     for selected_item in ui.available_columns_listWidget.selectedItems():
         item = ui.available_columns_listWidget.takeItem(ui.available_columns_listWidget.row(selected_item))
         target_object.addItem(item)
 
+        if target_object.objectName() == 'input_columns_listWidget':
+
+            update_train_test_shape_label(ui,ml_model)
+
         # Todo : Limit the Otputs columns to ONE in the case of a classification Model
 
 
-def model_selection_tab_events(ui, selected_model_class):
-
-
+def model_selection_tab_events(ui):
     if ui.regression_selection_radioButton.isChecked():
-        ui.regression_and_classification_stackedWidget.setCurrentIndex(0) # Change to Regression Tab
+        ui.regression_and_classification_stackedWidget.setCurrentIndex(0)  # Change to Regression Tab
 
         if ui.nn_regression_radioButton.isChecked():
             ui.regression_parameters_stackedWidget.setCurrentIndex(0)
@@ -695,7 +692,7 @@ def model_selection_tab_events(ui, selected_model_class):
             ui.regression_parameters_stackedWidget.setCurrentIndex(3)
 
     elif ui.classification_selection_radioButton.isChecked():
-        ui.regression_and_classification_stackedWidget.setCurrentIndex(1) # Change to Classification Tab
+        ui.regression_and_classification_stackedWidget.setCurrentIndex(1)  # Change to Classification Tab
 
         if ui.nn_classification_radioButton.isChecked():
             ui.classification_parameters_stackedWidget.setCurrentIndex(0)
@@ -711,6 +708,21 @@ def model_selection_tab_events(ui, selected_model_class):
 
         elif ui.knn_classification_radioButton.isChecked():
             ui.classification_parameters_stackedWidget.setCurrentIndex(4)
+
+
+def update_train_test_shape_label(ui,ml_model):
+
+    dataset_shape = ml_model.pre_processed_dataset.shape
+
+    number_of_rows_train = round(dataset_shape[0] * ui.train_percentage_horizontalSlider.value() / 100)
+    number_of_columns_train = ui.input_columns_listWidget.count()
+
+    number_of_rows_test = round(dataset_shape[0] * ui.test_percentage_horizontalSlider.value() / 100)
+    number_of_columns_test = ui.input_columns_listWidget.count()
+
+    ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train,number_of_columns_train))
+    ui.test_dataset_shape_label.setText('{} x {}'.format(number_of_rows_test, number_of_columns_test))
+
 
 try:
     sys._MEIPASS
