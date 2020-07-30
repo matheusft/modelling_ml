@@ -128,6 +128,9 @@ def configure_gui(ui, ml_model):
     ui.reg_nn_layers_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.reg_nn_layers_horizontalSlider.value(), ui.reg_nn_layers_label,
                                                 ml_model))
+    ui.clas_nn_val_percentage_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.clas_nn_val_percentage_horizontalSlider.value(),
+                                                ui.reg_nn_val_percent_label, ml_model))
     ui.reg_nn_max_iter_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.reg_nn_max_iter_horizontalSlider.value(),
                                                 ui.reg_nn_max_iter_label, ml_model))
@@ -137,6 +140,9 @@ def configure_gui(ui, ml_model):
     ui.clas_nn_layers_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.clas_nn_layers_horizontalSlider.value(),
                                                 ui.clas_nn_layers_label, ml_model))
+    ui.reg_nn_val_percentage_horizontalSlider.valueChanged.connect(
+        lambda: update_label_from_slider_change(ui, ui.reg_nn_val_percentage_horizontalSlider.value(),
+                                                ui.clas_nn_val_percent_label, ml_model))
     ui.clas_nn_max_iter_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.clas_nn_max_iter_horizontalSlider.value(),
                                                 ui.clas_nn_max_iter_label, ml_model))
@@ -149,9 +155,10 @@ def configure_gui(ui, ml_model):
     ui.test_percentage_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.test_percentage_horizontalSlider.value(),
                                                 ui.test_percentage_label, ml_model))
-    ui.validate_percentage_horizontalSlider.valueChanged.connect(
-        lambda: update_label_from_slider_change(ui, ui.validate_percentage_horizontalSlider.value(),
-                                                ui.validation_percentage_label, ml_model))
+
+    ui.train_model_pushButton.clicked.connect(lambda: train_model(ui,ml_model))
+
+    #Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
 
     # TODO : Disable all button and functions while Dataset is not chosen
 
@@ -404,10 +411,17 @@ def update_label_from_slider_change(ui, slider_value, label_object, ml_model):
         update_nn_layers_table(ui.clas_nn_layers_tableWidget, slider_value)
     elif label_object.objectName() == 'outliers_treshold_label':
         label_object.setText('{:.1f}'.format(slider_value / 10))
+        #https://moonbooks.org/Articles/How-to-fill-an-area-in-matplotlib-/
+        #https://i.pinimg.com/originals/e1/d6/30/e1d630a1719b4444bbd08b7df92b7bf1.gif
+        #Todo: Plot a normal distribution with the included and excluded area (plt.fill_between)
+    elif label_object.objectName() == 'reg_nn_val_percent_label':
+        label_object.setText('{}%'.format(slider_value))
     elif label_object.objectName() == 'reg_nn_max_iter_label':
         label_object.setText('{}'.format(slider_value))
     elif label_object.objectName() == 'reg_nn_alpha_label':
         label_object.setText('{}'.format(slider_value / 10000))
+    elif label_object.objectName() == 'clas_nn_val_percent_label':
+        label_object.setText('{}%'.format(slider_value))
     elif label_object.objectName() == 'clas_nn_max_iter_label':
         label_object.setText('{}'.format(slider_value))
     elif label_object.objectName() == 'clas_nn_alpha_label':
@@ -420,8 +434,6 @@ def update_label_from_slider_change(ui, slider_value, label_object, ml_model):
         label_object.setText('{}%'.format(slider_value))
         ui.train_percentage_horizontalSlider.setValue(100 - slider_value)
         update_train_test_shape_label(ui,ml_model)
-    elif label_object.objectName() == 'validation_percentage_label':
-        label_object.setText('{}%'.format(slider_value))
 
 
 def update_nn_layers_table(table, value):
@@ -722,6 +734,81 @@ def update_train_test_shape_label(ui,ml_model):
 
     ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train,number_of_columns_train))
     ui.test_dataset_shape_label.setText('{} x {}'.format(number_of_rows_test, number_of_columns_test))
+
+def train_model(ui,ml_model):
+
+    # Todo : check for condition before continuing: 1) Output columns is not empty
+
+    train_percentage = (ui.train_percentage_horizontalSlider.value()/100)
+    test_percentage = (ui.test_percentage_horizontalSlider.value()/100)
+    shuffle_samples = ui.shuffle_samples_checkBox.isChecked()
+
+    model_parameters = {'train_percentage': train_percentage, 'test_percentage': test_percentage,
+                        'shuffle_samples': shuffle_samples}
+
+    input_variables = []
+    for i in range(ui.input_columns_listWidget.count()):
+        input_variables.append(ui.input_columns_listWidget.item(i).text())
+
+    output_variables = []
+    for i in range(ui.output_columns_listWidget.count()):
+        output_variables.append(ui.output_columns_listWidget.item(i).text())
+
+    is_regression = ui.regression_selection_radioButton.isChecked()
+
+    if is_regression:
+        algorithm_index = [ui.nn_regression_radioButton.isChecked(), ui.svm_regression_radioButton.isChecked(),
+                           ui.randomforest_regression_radioButton.isChecked(),
+                           ui.gradientboosting_regression_radioButton.isChecked()].index(1)
+        algorithm = ['nn','svm','random_forest','grad_boosting'][algorithm_index]
+
+        if algorithm == 'nn':
+            n_of_hidden_layers = ui.reg_nn_layers_horizontalSlider.value()
+            n_of_neurons_each_layer = []
+            for i in range(n_of_hidden_layers):
+                n_of_neurons_each_layer.append(int(ui.reg_nn_layers_tableWidget.item(i,0).text()))
+            activation_func = ui.reg_nn_actvfunc_comboBox.currentText()
+            solver = ui.reg_nn_solver_comboBox.currentText()
+            learning_rate = ui.reg_nn_learnrate_comboBox.currentText()
+            max_iter = ui.reg_nn_max_iter_horizontalSlider.value()
+            alpha = ui.reg_nn_alpha_horizontalSlider.value()/10000
+            validation_percentage = ui.reg_nn_val_percentage_horizontalSlider.value()/100
+
+            algorithm_parameters = {'n_of_hidden_layers': n_of_hidden_layers,
+                                    'n_of_neurons_each_layer': n_of_neurons_each_layer,
+                                    'activation_func': activation_func, 'solver': solver,
+                                    'learning_rate': learning_rate,
+                                    'max_iter': max_iter, 'alpha': alpha,
+                                    'validation_percentage': validation_percentage}
+        elif algorithm == 'svm':
+            algorithm_parameters = []
+        elif algorithm == 'random_forest' :
+            algorithm_parameters = []
+        elif algorithm == 'grad_boosting' :
+            algorithm_parameters = []
+
+    else:
+        algorithm_index = [ui.nn_classification_radioButton.isChecked(), ui.svm_classification_radioButton.isChecked(),
+                           ui.randomforest_classification_radioButton.isChecked(),
+                           ui.gradientboosting_classification_radioButton.isChecked(),
+                           ui.knn_classification_radioButton.isChecked()].index(1)
+        algorithm = ['nn', 'svm', 'random_forest', 'grad_boosting','knn'][algorithm_index]
+
+        if algorithm == 'nn':
+            algorithm_parameters = []
+        elif algorithm == 'svm':
+            algorithm_parameters = []
+        elif algorithm == 'random_forest' :
+            algorithm_parameters = []
+        elif algorithm == 'grad_boosting' :
+            algorithm_parameters = []
+        elif algorithm == 'knn' :
+            algorithm_parameters = []
+
+    model_parameters.update({'is_regression': is_regression, 'algorithm': algorithm, 'input_variables': input_variables,
+                             'output_variables': output_variables})
+
+    ml_model.train(model_parameters,algorithm_parameters)
 
 
 try:

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1001</width>
-    <height>565</height>
+    <width>1022</width>
+    <height>556</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
      <x>10</x>
      <y>10</y>
      <width>981</width>
-     <height>541</height>
+     <height>531</height>
     </rect>
    </property>
    <property name="currentIndex">
@@ -801,9 +801,9 @@
      <property name="geometry">
       <rect>
        <x>31</x>
-       <y>30</y>
+       <y>20</y>
        <width>931</width>
-       <height>481</height>
+       <height>461</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -857,7 +857,7 @@
             <x>0</x>
             <y>-10</y>
             <width>931</width>
-            <height>391</height>
+            <height>401</height>
            </rect>
           </property>
           <layout class="QHBoxLayout" name="horizontalLayout_9">
@@ -1038,22 +1038,22 @@
                       </property>
                       <item>
                        <property name="text">
-                        <string>Relu</string>
+                        <string>relu</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>Identity</string>
+                        <string>identity</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>Logistic</string>
+                        <string>logistic</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>Tanh</string>
+                        <string>tanh</string>
                        </property>
                       </item>
                      </widget>
@@ -1133,24 +1133,76 @@
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_14">
+                   <layout class="QHBoxLayout" name="horizontalLayout_32">
                     <item>
-                     <widget class="QLabel" name="label_8">
+                     <widget class="QLabel" name="label_41">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
-                       <string>Shuffle Samples</string>
+                       <string>Validation Percentage</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QCheckBox" name="reg_nn_shuffle_checkBox">
+                     <widget class="QSlider" name="reg_nn_val_percentage_horizontalSlider">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="maximumSize">
                        <size>
-                        <width>160</width>
+                        <width>170</width>
                         <height>16777215</height>
                        </size>
                       </property>
+                      <property name="minimum">
+                       <number>5</number>
+                      </property>
+                      <property name="maximum">
+                       <number>95</number>
+                      </property>
+                      <property name="value">
+                       <number>10</number>
+                      </property>
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="clas_nn_val_percent_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>35</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>35</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="baseSize">
+                       <size>
+                        <width>30</width>
+                        <height>0</height>
+                       </size>
+                      </property>
                       <property name="text">
-                       <string/>
+                       <string>10%</string>
                       </property>
                      </widget>
                     </item>
@@ -1160,6 +1212,12 @@
                    <layout class="QHBoxLayout" name="horizontalLayout_15">
                     <item>
                      <widget class="QLabel" name="label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Max Iterations</string>
                       </property>
@@ -1167,6 +1225,12 @@
                     </item>
                     <item>
                      <widget class="QSlider" name="reg_nn_max_iter_horizontalSlider">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="maximumSize">
                        <size>
                         <width>160</width>
@@ -1179,13 +1243,22 @@
                       <property name="maximum">
                        <number>300</number>
                       </property>
+                      <property name="value">
+                       <number>100</number>
+                      </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <spacer name="horizontalSpacer_4">
+                     <spacer name="horizontalSpacer_7">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1202,6 +1275,12 @@
                     </item>
                     <item>
                      <widget class="QLabel" name="reg_nn_max_iter_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>35</width>
@@ -1209,7 +1288,7 @@
                        </size>
                       </property>
                       <property name="text">
-                       <string>1</string>
+                       <string>100</string>
                       </property>
                      </widget>
                     </item>
@@ -1219,6 +1298,12 @@
                    <layout class="QHBoxLayout" name="horizontalLayout_16">
                     <item>
                      <widget class="QLabel" name="label_15">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Alpha</string>
                       </property>
@@ -1226,6 +1311,12 @@
                     </item>
                     <item>
                      <widget class="QSlider" name="reg_nn_alpha_horizontalSlider">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="maximumSize">
                        <size>
                         <width>160</width>
@@ -1245,6 +1336,12 @@
                     </item>
                     <item>
                      <spacer name="horizontalSpacer_3">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1253,14 +1350,20 @@
                       </property>
                       <property name="sizeHint" stdset="0">
                        <size>
-                        <width>40</width>
-                        <height>20</height>
+                        <width>10</width>
+                        <height>5</height>
                        </size>
                       </property>
                      </spacer>
                     </item>
                     <item>
                      <widget class="QLabel" name="reg_nn_alpha_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>50</width>
@@ -1388,6 +1491,9 @@
            </item>
            <item>
             <widget class="QStackedWidget" name="classification_parameters_stackedWidget">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
              <widget class="QWidget" name="nn_classification_page">
               <widget class="QWidget" name="layoutWidget_2">
                <property name="geometry">
@@ -1518,22 +1624,22 @@
                       </property>
                       <item>
                        <property name="text">
-                        <string>Relu</string>
+                        <string>relu</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>Identity</string>
+                        <string>identity</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>Logistic</string>
+                        <string>logistic</string>
                        </property>
                       </item>
                       <item>
                        <property name="text">
-                        <string>Tanh</string>
+                        <string>tanh</string>
                        </property>
                       </item>
                      </widget>
@@ -1613,24 +1719,76 @@
                    </layout>
                   </item>
                   <item>
-                   <layout class="QHBoxLayout" name="horizontalLayout_24">
+                   <layout class="QHBoxLayout" name="horizontalLayout_31">
                     <item>
-                     <widget class="QLabel" name="label_14">
+                     <widget class="QLabel" name="label_40">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
-                       <string>Shuffle Samples</string>
+                       <string>Validation Percentage</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QCheckBox" name="clas_nn_shuffle_checkBox">
+                     <widget class="QSlider" name="clas_nn_val_percentage_horizontalSlider">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="maximumSize">
                        <size>
-                        <width>160</width>
+                        <width>170</width>
                         <height>16777215</height>
                        </size>
                       </property>
+                      <property name="minimum">
+                       <number>5</number>
+                      </property>
+                      <property name="maximum">
+                       <number>95</number>
+                      </property>
+                      <property name="value">
+                       <number>10</number>
+                      </property>
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLabel" name="reg_nn_val_percent_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>35</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>35</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="baseSize">
+                       <size>
+                        <width>30</width>
+                        <height>0</height>
+                       </size>
+                      </property>
                       <property name="text">
-                       <string/>
+                       <string>10%</string>
                       </property>
                      </widget>
                     </item>
@@ -1640,6 +1798,12 @@
                    <layout class="QHBoxLayout" name="horizontalLayout_25">
                     <item>
                      <widget class="QLabel" name="label_22">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Max Iterations</string>
                       </property>
@@ -1647,6 +1811,12 @@
                     </item>
                     <item>
                      <widget class="QSlider" name="clas_nn_max_iter_horizontalSlider">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="maximumSize">
                        <size>
                         <width>160</width>
@@ -1659,6 +1829,12 @@
                       <property name="maximum">
                        <number>300</number>
                       </property>
+                      <property name="pageStep">
+                       <number>1</number>
+                      </property>
+                      <property name="value">
+                       <number>100</number>
+                      </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1666,6 +1842,12 @@
                     </item>
                     <item>
                      <spacer name="horizontalSpacer_5">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1682,6 +1864,12 @@
                     </item>
                     <item>
                      <widget class="QLabel" name="clas_nn_max_iter_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>35</width>
@@ -1689,7 +1877,7 @@
                        </size>
                       </property>
                       <property name="text">
-                       <string>1</string>
+                       <string>100</string>
                       </property>
                      </widget>
                     </item>
@@ -1699,6 +1887,12 @@
                    <layout class="QHBoxLayout" name="horizontalLayout_26">
                     <item>
                      <widget class="QLabel" name="label_23">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="text">
                        <string>Alpha</string>
                       </property>
@@ -1706,6 +1900,12 @@
                     </item>
                     <item>
                      <widget class="QSlider" name="clas_nn_alpha_horizontalSlider">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="maximumSize">
                        <size>
                         <width>160</width>
@@ -1725,6 +1925,12 @@
                     </item>
                     <item>
                      <spacer name="horizontalSpacer_6">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
                       </property>
@@ -1741,6 +1947,12 @@
                     </item>
                     <item>
                      <widget class="QLabel" name="clas_nn_alpha_label">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
                       <property name="minimumSize">
                        <size>
                         <width>50</width>
@@ -1980,9 +2192,9 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>270</y>
+       <y>300</y>
        <width>396</width>
-       <height>190</height>
+       <height>181</height>
       </rect>
      </property>
      <property name="maximumSize">
@@ -2004,11 +2216,11 @@
       <number>0</number>
      </property>
      <widget class="QWidget" name="regression_metrics">
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <property name="geometry">
         <rect>
          <x>10</x>
-         <y>13</y>
+         <y>10</y>
          <width>261</width>
          <height>161</height>
         </rect>
@@ -2213,11 +2425,11 @@
       <string>Export Model</string>
      </property>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>220</y>
+       <y>260</y>
        <width>403</width>
        <height>32</height>
       </rect>
@@ -2264,13 +2476,13 @@
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
        <x>30</x>
        <y>30</y>
-       <width>391</width>
-       <height>94</height>
+       <width>411</width>
+       <height>155</height>
       </rect>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_14">
@@ -2403,76 +2615,68 @@
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_27">
+       <layout class="QHBoxLayout" name="horizontalLayout_14">
         <item>
-         <widget class="QLabel" name="label_35">
+         <widget class="QLabel" name="label_8">
           <property name="text">
-           <string>Validation Set Percentage</string>
+           <string>Shuffle Samples</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QSlider" name="validate_percentage_horizontalSlider">
-          <property name="maximumSize">
-           <size>
-            <width>170</width>
-            <height>16777215</height>
-           </size>
-          </property>
-          <property name="minimum">
-           <number>5</number>
-          </property>
-          <property name="maximum">
-           <number>95</number>
-          </property>
-          <property name="value">
-           <number>10</number>
-          </property>
+         <spacer name="horizontalSpacer_12">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="validation_percentage_label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
+          <property name="sizeType">
+           <enum>QSizePolicy::Expanding</enum>
           </property>
-          <property name="minimumSize">
+          <property name="sizeHint" stdset="0">
            <size>
-            <width>35</width>
-            <height>0</height>
+            <width>80</width>
+            <height>20</height>
            </size>
           </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="shuffle_samples_checkBox">
           <property name="maximumSize">
            <size>
-            <width>35</width>
+            <width>160</width>
             <height>16777215</height>
            </size>
           </property>
-          <property name="baseSize">
-           <size>
-            <width>30</width>
-            <height>0</height>
-           </size>
-          </property>
           <property name="text">
-           <string>10%</string>
+           <string/>
           </property>
          </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer_13">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Fixed</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>20</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
         </item>
        </layout>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="">
+    <widget class="QWidget" name="layoutWidget">
      <property name="geometry">
       <rect>
-       <x>34</x>
-       <y>141</y>
+       <x>30</x>
+       <y>190</y>
        <width>391</width>
        <height>58</height>
       </rect>

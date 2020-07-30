@@ -1,3 +1,4 @@
+from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -5,7 +6,6 @@ import pandas as pd
 import numpy as np
 import operator
 import os
-
 
 class MlModel:
 
@@ -129,3 +129,55 @@ class MlModel:
 
 
         return self.pre_processed_dataset
+
+    def train(self,model_parameters,algorithm_parameters):
+
+        input_dataset = self.pre_processed_dataset[
+            model_parameters['input_variables'] + model_parameters['output_variables']]
+        data_indexes = np.array(input_dataset.index)
+
+        if model_parameters['shuffle_samples']:
+            np.random.shuffle(data_indexes)
+
+        train_indexes = data_indexes[0:round(len(data_indexes) * model_parameters['train_percentage'])]
+        test_indexes = data_indexes[round(len(data_indexes) * model_parameters['train_percentage']):]
+
+        train_dataset = input_dataset.loc[train_indexes]
+        test_dataset = input_dataset.loc[test_indexes]
+
+        x_train = train_dataset[model_parameters['input_variables']]
+        x_test = test_dataset[model_parameters['input_variables']]
+        y_train = train_dataset[model_parameters['output_variables']]
+        y_test = test_dataset[model_parameters['output_variables']]
+
+        if model_parameters['is_regression']:
+            if model_parameters['algorithm'] == 'nn':
+                mlp_model = MLPRegressor(hidden_layer_sizes=tuple(algorithm_parameters['n_of_neurons_each_layer']),
+                                         max_iter=algorithm_parameters['max_iter'],
+                                         solver=algorithm_parameters['solver'],
+                                         activation=algorithm_parameters['activation_func'],
+                                         alpha=algorithm_parameters['alpha'],
+                                         learning_rate=algorithm_parameters['learning_rate'],
+                                         validation_fraction=algorithm_parameters['validation_percentage'])
+                mlp_model.fit(x_train, y_train)
+                #Todo plot validation curve https://scikit-learn.org/stable/modules/learning_curve.html
+                y_pred = mlp_model.predict(x_test)
+
+            elif algorithm == 'svm':
+                algorithm_parameters = []
+            elif algorithm == 'random_forest':
+                algorithm_parameters = []
+            elif algorithm == 'grad_boosting':
+                algorithm_parameters = []
+        else:
+
+            if algorithm == 'nn':
+                algorithm_parameters = []
+            elif algorithm == 'svm':
+                algorithm_parameters = []
+            elif algorithm == 'random_forest':
+                algorithm_parameters = []
+            elif algorithm == 'grad_boosting':
+                algorithm_parameters = []
+            elif algorithm == 'knn':
+                algorithm_parameters = []
