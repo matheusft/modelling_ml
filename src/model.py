@@ -1,11 +1,13 @@
 from sklearn.neural_network import MLPRegressor
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.metrics import r2_score, mean_squared_error, max_error
 import matplotlib.pyplot as plt
 from scipy import stats
 import pandas as pd
 import numpy as np
 import operator
 import os
+
 
 class MlModel:
 
@@ -42,18 +44,22 @@ class MlModel:
         except:
             return 'exception_in_the_file'  # Exception
 
+
     def generate_histogram(self, column):
         fig, ax = plt.subplots()
         ax = self.dataset[column].hist()
         return ax
 
+
     def generate_boxplot(self, column):
         return self.dataset[column].boxplot()
+
 
     def generate_plot(self, column):
         fig, ax = plt.subplots()
         self.dataset[column].plot(ax=ax)
         return ax
+
 
     def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter_out):
 
@@ -130,6 +136,7 @@ class MlModel:
 
         return self.pre_processed_dataset
 
+
     def train(self,model_parameters,algorithm_parameters):
 
         input_dataset = self.pre_processed_dataset[
@@ -150,18 +157,26 @@ class MlModel:
         y_train = train_dataset[model_parameters['output_variables']]
         y_test = test_dataset[model_parameters['output_variables']]
 
+        if len(model_parameters['input_variables']) == 1:
+            x_train = x_train.values.ravel()
+            x_test = x_test.values.ravel()
+
+        if len(model_parameters['output_variables']) == 1:
+            y_train = y_train.values.ravel()
+            y_test = y_test.values.ravel()
+
         if model_parameters['is_regression']:
             if model_parameters['algorithm'] == 'nn':
-                mlp_model = MLPRegressor(hidden_layer_sizes=tuple(algorithm_parameters['n_of_neurons_each_layer']),
+                ml_model = MLPRegressor(hidden_layer_sizes=tuple(algorithm_parameters['n_of_neurons_each_layer']),
                                          max_iter=algorithm_parameters['max_iter'],
                                          solver=algorithm_parameters['solver'],
                                          activation=algorithm_parameters['activation_func'],
                                          alpha=algorithm_parameters['alpha'],
                                          learning_rate=algorithm_parameters['learning_rate'],
                                          validation_fraction=algorithm_parameters['validation_percentage'])
-                mlp_model.fit(x_train, y_train)
-                #Todo plot validation curve https://scikit-learn.org/stable/modules/learning_curve.html
-                y_pred = mlp_model.predict(x_test)
+
+                ml_model.fit(x_train, y_train)
+                y_pred = ml_model.predict(x_test)
 
             elif algorithm == 'svm':
                 algorithm_parameters = []
@@ -169,6 +184,27 @@ class MlModel:
                 algorithm_parameters = []
             elif algorithm == 'grad_boosting':
                 algorithm_parameters = []
+
+            r2_score_result = r2_score(y_test, y_pred)
+            mse = mean_squared_error(y_test, y_pred)
+            max_error_result = max_error(y_test, y_pred)
+            rmse = mean_squared_error(y_test, y_pred, squared = False)
+
+            if len(model_parameters['output_variables']) == 1:
+                np_y_test = np.array(y_test).flatten()
+                valid_indices = [i for i, x in enumerate(np_y_test) if x != 0]
+                np_y_pred = np.array(y_pred).flatten()
+                percentage_errors = (abs(np_y_test[valid_indices]-np_y_pred[valid_indices]))/np_y_test[valid_indices]
+                data_to_plot = percentage_errors
+            else:
+                r2_score_result_separate = r2_score(y_test, y_pred, multioutput='raw_values')
+                data_to_plot = r2_score_result_separate
+
+            training_output = {'r2_score': r2_score_result, 'mse': mse, 'max_error': max_error_result, 'rmse': rmse,
+                               'data_to_plot': data_to_plot}
+
+            return training_output
+
         else:
 
             if algorithm == 'nn':

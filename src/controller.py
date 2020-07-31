@@ -27,6 +27,47 @@ class MplWidget(QtWidgets.QWidget):
         self.canvas.axes.axis('off')  # Turn off axis lines and labels. Show a white canvas in the initialisation
 
 
+class Train_Model_WorkerSignals(QtCore.QObject):
+
+    # Returns the ui and a DataFrame with all the solutions
+    finished = QtCore.pyqtSignal(object,object,object)
+
+
+class Train_Model_Worker(QtCore.QRunnable):
+    """
+    Worker thread
+
+    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
+
+    :param callback: The function callback to run on this worker thread. Supplied args and
+                     kwargs will be passed through to the runner.
+    :type callback: function
+    :param args: Arguments to pass to the callback function
+    :param kwargs: Keywords to pass to the callback function
+
+    """
+
+    def __init__(self, *args, **kwargs):
+        super(Train_Model_Worker, self).__init__()
+
+        self.ml_model = args[0]
+        self.model_parameters = args[1]
+        self.algorithm_parameters = args[2]
+        self.ui = args[3]
+
+        self.args = args
+        self.kwargs = kwargs
+        self.signals = Train_Model_WorkerSignals()
+
+    @QtCore.pyqtSlot()
+    def run(self):
+
+        # training the model
+        result = self.ml_model.train(self.model_parameters,self.algorithm_parameters)
+        # sending the output of the thread to the assigned function
+        self.signals.finished.emit(self.ui,result,self.model_parameters['is_regression'])
+
+
 def transform_to_resource_path(relative_path):
     """Get absolute path to resource, works for dev and for PyInstaller.
 
@@ -49,19 +90,14 @@ def configure_gui(ui, ml_model):
 
     _translate = QtCore.QCoreApplication.translate
 
+    # Seting up the thread pool for multi-threading
+    ui.threadpool = QtCore.QThreadPool()
+
     # Connecting load_file_pushButton - Dataset Load Tab
     ui.load_file_pushButton.clicked.connect(lambda: load_dataset(ui, ml_model))
 
     # Connecting columnSelection_comboBox - Visualise Tab
     ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
-
-    widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-                          ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                          ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
-                          ui.addrule_filter_value_pushButton]
-
-    for widget in widgets_to_disable:
-        widget.setEnabled(False)
 
     # Connecting radio_button_change - Visualise Tab
     ui.boxplot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
@@ -121,10 +157,6 @@ def configure_gui(ui, ml_model):
     for model_option in model_selection_radio_buttons:
         model_option.clicked.connect(lambda: model_selection_tab_events(ui))
 
-    ui.nn_classification_radioButton.setChecked(True)
-    ui.nn_regression_radioButton.setChecked(True)
-    ui.regression_selection_radioButton.setChecked(True)
-
     ui.reg_nn_layers_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.reg_nn_layers_horizontalSlider.value(), ui.reg_nn_layers_label,
                                                 ml_model))
@@ -158,9 +190,24 @@ def configure_gui(ui, ml_model):
 
     ui.train_model_pushButton.clicked.connect(lambda: train_model(ui,ml_model))
 
+
+    ui.regression_selection_radioButton.click()
+    ui.nn_regression_radioButton.click()
+
+    ui.tabs_widget.setCurrentIndex(0)
+
+    widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
+                          ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+                          ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
+                          ui.addrule_filter_value_pushButton]
+
+    for widget in widgets_to_disable:
+        widget.setEnabled(False)
+
     #Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
 
-    # TODO : Disable all button and functions while Dataset is not chosen
+    # TODO : Disable all button and functions while Dataset is not chosen -
+    # Todo : Check things that break when the dataset is not loaded yet
 
 
 def load_dataset(ui, ml_model):
@@ -690,6 +737,7 @@ def update_input_output_columns(ui, target_object, ml_model):
 def model_selection_tab_events(ui):
     if ui.regression_selection_radioButton.isChecked():
         ui.regression_and_classification_stackedWidget.setCurrentIndex(0)  # Change to Regression Tab
+        ui.train_metrics_stackedWidget.setCurrentIndex(0)  # Change to Regression Tab
 
         if ui.nn_regression_radioButton.isChecked():
             ui.regression_parameters_stackedWidget.setCurrentIndex(0)
@@ -705,6 +753,7 @@ def model_selection_tab_events(ui):
 
     elif ui.classification_selection_radioButton.isChecked():
         ui.regression_and_classification_stackedWidget.setCurrentIndex(1)  # Change to Classification Tab
+        ui.train_metrics_stackedWidget.setCurrentIndex(1)  # Change to Regression Tab
 
         if ui.nn_classification_radioButton.isChecked():
             ui.classification_parameters_stackedWidget.setCurrentIndex(0)
@@ -734,6 +783,7 @@ def update_train_test_shape_label(ui,ml_model):
 
     ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train,number_of_columns_train))
     ui.test_dataset_shape_label.setText('{} x {}'.format(number_of_rows_test, number_of_columns_test))
+
 
 def train_model(ui,ml_model):
 
@@ -808,7 +858,34 @@ def train_model(ui,ml_model):
     model_parameters.update({'is_regression': is_regression, 'algorithm': algorithm, 'input_variables': input_variables,
                              'output_variables': output_variables})
 
-    ml_model.train(model_parameters,algorithm_parameters)
+    # Creating an object worker
+    worker = Train_Model_Worker(ml_model,model_parameters,algorithm_parameters, ui)
+
+    # Connecting the signals from the created worker to its functions
+    worker.signals.finished.connect(display_training_results)
+
+    # Running the traning in a separate thread from the GUI
+    ui.threadpool.start(worker)
+
+    print('SHOW LOADING IMAGE!!!')
+
+
+def display_training_results(ui, result, is_regression):
+
+    if is_regression:
+
+        ui.reg_mse_label.setText('{:.4f}'.format(result['mse']))
+        ui.reg_rmse_label.setText('{:.4f}'.format(result['rmse']))
+        ui.reg_r2_label.setText('{:.4f}'.format(result['r2_score']))
+        ui.reg_max_error_label.setText('{:.4f}'.format(result['max_error']))
+
+        #Todo: Plot the results!!!
+        print('Plot the results!!!!')
+
+        # plot_matplotlib_to_qt_widget(data, is_categorical, ui)
+
+    else:
+        pass
 
 
 try:
