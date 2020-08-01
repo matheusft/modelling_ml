@@ -1,6 +1,7 @@
-from sklearn.neural_network import MLPRegressor
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.metrics import r2_score, mean_squared_error, max_error
+from sklearn.neural_network import MLPRegressor, MLPClassifier
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
+from sklearn.metrics import r2_score, mean_squared_error, max_error, recall_score, f1_score, precision_score, \
+    accuracy_score
 import matplotlib.pyplot as plt
 from scipy import stats
 import pandas as pd
@@ -158,6 +159,7 @@ class MlModel:
         y_test = test_dataset[model_parameters['output_variables']]
 
         if len(model_parameters['input_variables']) == 1:
+            #Todo This broke the fitting when the input len == 1 - FIX IT!!
             x_train = x_train.values.ravel()
             x_test = x_test.values.ravel()
 
@@ -178,11 +180,11 @@ class MlModel:
                 ml_model.fit(x_train, y_train)
                 y_pred = ml_model.predict(x_test)
 
-            elif algorithm == 'svm':
+            elif model_parameters['algorithm'] == 'svm':
                 algorithm_parameters = []
-            elif algorithm == 'random_forest':
+            elif model_parameters['algorithm'] == 'random_forest':
                 algorithm_parameters = []
-            elif algorithm == 'grad_boosting':
+            elif model_parameters['algorithm'] == 'grad_boosting':
                 algorithm_parameters = []
 
             r2_score_result = r2_score(y_test, y_pred)
@@ -195,7 +197,9 @@ class MlModel:
                 valid_indices = [i for i, x in enumerate(np_y_test) if x != 0]
                 np_y_pred = np.array(y_pred).flatten()
                 percentage_errors = (abs(np_y_test[valid_indices]-np_y_pred[valid_indices]))/np_y_test[valid_indices]
-                data_to_plot = percentage_errors
+                array_zero_errors = np.zeros(abs(len(np_y_test) - len(valid_indices)))
+                percentage_errors_with_zeros = np.concatenate((percentage_errors,array_zero_errors))
+                data_to_plot = percentage_errors_with_zeros
             else:
                 r2_score_result_separate = r2_score(y_test, y_pred, multioutput='raw_values')
                 data_to_plot = r2_score_result_separate
@@ -207,13 +211,48 @@ class MlModel:
 
         else:
 
-            if algorithm == 'nn':
+            #Todo : classification y values can be either objects or ints - check this when updating the input/output tab
+            label_encoder = LabelEncoder()
+            label_encoder.fit(np.concatenate((y_train,y_test)))
+            encoded_y_train = label_encoder.transform(y_train)
+            encoded_y_test = label_encoder.transform(y_test)
+
+            if model_parameters['algorithm'] == 'nn':
+                ml_model = MLPClassifier(hidden_layer_sizes=tuple(algorithm_parameters['n_of_neurons_each_layer']),
+                                         max_iter=algorithm_parameters['max_iter'],
+                                         solver=algorithm_parameters['solver'],
+                                         activation=algorithm_parameters['activation_func'],
+                                         alpha=algorithm_parameters['alpha'],
+                                         learning_rate=algorithm_parameters['learning_rate'],
+                                         validation_fraction=algorithm_parameters['validation_percentage'])
+
+                ml_model.fit(x_train, encoded_y_train)
+                encoded_y_pred = ml_model.predict(x_test)
+            elif model_parameters['algorithm'] == 'svm':
                 algorithm_parameters = []
-            elif algorithm == 'svm':
+            elif model_parameters['algorithm'] == 'random_forest':
                 algorithm_parameters = []
-            elif algorithm == 'random_forest':
+            elif model_parameters['algorithm'] == 'grad_boosting':
                 algorithm_parameters = []
-            elif algorithm == 'grad_boosting':
+            elif model_parameters['algorithm'] == 'knn':
                 algorithm_parameters = []
-            elif algorithm == 'knn':
-                algorithm_parameters = []
+
+            number_of_classes = len(set(np.concatenate((y_train,y_test))))
+            if  number_of_classes > 2:
+                average_value = 'micro'
+            else:
+                average_value = 'binary'
+
+            recall = recall_score(encoded_y_test, encoded_y_pred, average = average_value)
+            f1 = f1_score(encoded_y_test, encoded_y_pred, average = average_value)
+            accuracy = accuracy_score(encoded_y_test, encoded_y_pred)
+            precision = precision_score(encoded_y_test, encoded_y_pred, average = average_value)
+
+            data_to_plot = {'actual': y_test, 'actual_encoded': encoded_y_test,
+                            'predicted': label_encoder.inverse_transform(encoded_y_pred),
+                            'predicted_encoded': encoded_y_pred}
+
+            training_output = {'recall_score': recall, 'f1_score': f1, 'precision_score': precision, 'accuracy': accuracy,
+                               'data_to_plot': data_to_plot}
+
+            return training_output

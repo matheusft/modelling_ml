@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1000</width>
-    <height>550</height>
+    <height>524</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,7 +27,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>5</number>
    </property>
    <widget class="QWidget" name="dataset_load_tab">
     <attribute name="title">
@@ -863,7 +863,7 @@
       <item>
        <widget class="QStackedWidget" name="regression_and_classification_stackedWidget">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="page_regression">
          <widget class="QWidget" name="horizontalLayoutWidget">
@@ -924,7 +924,7 @@
            <item>
             <widget class="QStackedWidget" name="regression_parameters_stackedWidget">
              <property name="currentIndex">
-              <number>0</number>
+              <number>3</number>
              </property>
              <widget class="QWidget" name="nn_regression_page">
               <widget class="QWidget" name="layoutWidget">
@@ -1510,7 +1510,7 @@
            <item>
             <widget class="QStackedWidget" name="classification_parameters_stackedWidget">
              <property name="currentIndex">
-              <number>0</number>
+              <number>4</number>
              </property>
              <widget class="QWidget" name="nn_classification_page">
               <widget class="QWidget" name="layoutWidget_2">
@@ -2205,6 +2205,85 @@
        <height>401</height>
       </rect>
      </property>
+     <widget class="QWidget" name="">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>511</width>
+        <height>401</height>
+       </rect>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="1">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="0">
+        <spacer name="horizontalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="1" column="1">
+        <widget class="QtWaitingSpinner" name="loading_widget" native="true"/>
+       </item>
+       <item row="1" column="2">
+        <spacer name="horizontalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="1">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Minimum</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
     </widget>
     <widget class="QStackedWidget" name="train_metrics_stackedWidget">
      <property name="geometry">
@@ -2231,7 +2310,7 @@
       <number>1</number>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="regression_metrics">
       <widget class="QWidget" name="layoutWidget">
@@ -2359,7 +2438,7 @@
         <item row="4" column="0">
          <widget class="QLabel" name="label_37">
           <property name="text">
-           <string>ROC AUC:</string>
+           <string>Precision:</string>
           </property>
          </widget>
         </item>
@@ -2413,7 +2492,7 @@
          </widget>
         </item>
         <item row="4" column="1">
-         <widget class="QLabel" name="clas_roc_auc_label">
+         <widget class="QLabel" name="clas_precision_label">
           <property name="text">
            <string>0</string>
           </property>
@@ -2788,7 +2867,13 @@
   <customwidget>
    <class>MplWidget</class>
    <extends>QWidget</extends>
-   <header>controller</header>
+   <header>personalised_widgets</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QtWaitingSpinner</class>
+   <extends>QWidget</extends>
+   <header>personalised_widgets</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

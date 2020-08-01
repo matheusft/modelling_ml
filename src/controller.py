@@ -2,34 +2,15 @@ import os
 import random
 import sys
 from os.path import join, abspath
-
 import pandas as pd
-from matplotlib.backends.backend_qt5agg import FigureCanvas
-from matplotlib.figure import Figure
 from view import QtCore, QtWidgets
+from personalised_widgets import MplWidget, QtWaitingSpinner
 
-
-# This class extends QtWidgets.QWidget. It is needed for plotting with matplotlib in PyQt5
-# A QtWidgets.QWidget was manually promoted to a MplWidget parent class in the Qt Creator
-class MplWidget(QtWidgets.QWidget):
-
-    def __init__(self, parent=None):
-        QtWidgets.QWidget.__init__(self, parent)
-
-        self.canvas = FigureCanvas(Figure())
-
-        vertical_layout = QtWidgets.QVBoxLayout()
-        vertical_layout.addWidget(self.canvas)
-
-        self.canvas.axes = self.canvas.figure.add_subplot(111)
-        self.canvas.figure.set_tight_layout(True)
-        self.setLayout(vertical_layout)
-        self.canvas.axes.axis('off')  # Turn off axis lines and labels. Show a white canvas in the initialisation
 
 
 class Train_Model_WorkerSignals(QtCore.QObject):
 
-    # Returns the ui and a DataFrame with all the solutions
+
     finished = QtCore.pyqtSignal(object,object,object)
 
 
@@ -190,7 +171,7 @@ def configure_gui(ui, ml_model):
 
     ui.train_model_pushButton.clicked.connect(lambda: train_model(ui,ml_model))
 
-
+    ui.nn_classification_radioButton.click()
     ui.regression_selection_radioButton.click()
     ui.nn_regression_radioButton.click()
 
@@ -199,7 +180,7 @@ def configure_gui(ui, ml_model):
     widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
                           ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
                           ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
-                          ui.addrule_filter_value_pushButton]
+                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton]
 
     for widget in widgets_to_disable:
         widget.setEnabled(False)
@@ -845,7 +826,23 @@ def train_model(ui,ml_model):
         algorithm = ['nn', 'svm', 'random_forest', 'grad_boosting','knn'][algorithm_index]
 
         if algorithm == 'nn':
-            algorithm_parameters = []
+            n_of_hidden_layers = ui.clas_nn_layers_horizontalSlider.value()
+            n_of_neurons_each_layer = []
+            for i in range(n_of_hidden_layers):
+                n_of_neurons_each_layer.append(int(ui.clas_nn_layers_tableWidget.item(i,0).text()))
+            activation_func = ui.clas_nn_actvfunc_comboBox.currentText()
+            solver = ui.clas_nn_solver_comboBox.currentText()
+            learning_rate = ui.clas_nn_learnrate_comboBox.currentText()
+            max_iter = ui.clas_nn_max_iter_horizontalSlider.value()
+            alpha = ui.clas_nn_alpha_horizontalSlider.value()/10000
+            validation_percentage = ui.clas_nn_val_percentage_horizontalSlider.value()/100
+
+            algorithm_parameters = {'n_of_hidden_layers': n_of_hidden_layers,
+                                    'n_of_neurons_each_layer': n_of_neurons_each_layer,
+                                    'activation_func': activation_func, 'solver': solver,
+                                    'learning_rate': learning_rate,
+                                    'max_iter': max_iter, 'alpha': alpha,
+                                    'validation_percentage': validation_percentage}
         elif algorithm == 'svm':
             algorithm_parameters = []
         elif algorithm == 'random_forest' :
@@ -864,13 +861,19 @@ def train_model(ui,ml_model):
     # Connecting the signals from the created worker to its functions
     worker.signals.finished.connect(display_training_results)
 
+    ui.train_model_pushButton.setDisabled(True)
+    ui.loading_widget.start()
+
+
     # Running the traning in a separate thread from the GUI
     ui.threadpool.start(worker)
 
-    print('SHOW LOADING IMAGE!!!')
-
 
 def display_training_results(ui, result, is_regression):
+
+    ui.loading_widget.stop()
+    ui.train_model_pushButton.setDisabled(False)
+    ui.export_model_pushButton.setDisabled(False)
 
     if is_regression:
 
@@ -885,8 +888,14 @@ def display_training_results(ui, result, is_regression):
         # plot_matplotlib_to_qt_widget(data, is_categorical, ui)
 
     else:
-        pass
 
+        ui.clas_accuracy_label.setText('{:.4f}'.format(result['accuracy']))
+        ui.clas_recall_label.setText('{:.4f}'.format(result['recall_score']))
+        ui.clas_precision_label.setText('{:.4f}'.format(result['precision_score']))
+        ui.clas_f1_score_label.setText('{:.4f}'.format(result['f1_score']))
+
+        # Todo: Plot the results!!!
+        print('Plot Confusion Matrix!!!!')
 
 try:
     sys._MEIPASS
