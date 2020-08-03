@@ -1,6 +1,6 @@
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
-from sklearn.metrics import r2_score, mean_squared_error, max_error, recall_score, f1_score, precision_score, \
+from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, recall_score, f1_score, precision_score, \
     accuracy_score
 import matplotlib.pyplot as plt
 from scipy import stats
@@ -14,6 +14,9 @@ class MlModel:
 
     def __init__(self):
         self.dataset = pd.DataFrame()
+        self.is_rm_duplicate = 0
+        self.is_rm_outliers = 0
+        self.is_numeric_scaled = 0
 
 
     def read_dataset(self, address):
@@ -64,13 +67,19 @@ class MlModel:
 
     def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter_out):
 
-        scaling, rm_duplicate, rm_outliers, replace, filter_out
+
         self.pre_processed_dataset = self.dataset.copy()
 
+        self.is_rm_duplicate = 0
+        self.is_rm_outliers = 0
+        self.is_numeric_scaled = 0
+
         if rm_duplicate:
+            self.is_rm_duplicate = 1
             self.pre_processed_dataset.drop_duplicates(inplace=True)
 
         if rm_outliers[0]:
+            self.is_rm_outliers = 1
             # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
             # Remove Outliers by removing rows that are not within 'standard_deviation_threshold' standard deviations from mean
             # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
@@ -125,11 +134,12 @@ class MlModel:
 
         # Scaling the numeric values in the pre_processed_dataset
         if scaling:
+            self.is_numeric_scaled = 1
             numeric_columns_to_not_scale = []
             numeric_input_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.drop(
                 labels=numeric_columns_to_not_scale).to_list()
-            input_scaler = MinMaxScaler(feature_range=(-1, 1))
-            standardised_numeric_input = input_scaler.fit_transform(self.pre_processed_dataset[numeric_input_columns])
+            self.input_scaler = MinMaxScaler(feature_range=(-1, 1))
+            standardised_numeric_input = self.input_scaler.fit_transform(self.pre_processed_dataset[numeric_input_columns])
 
             # Updating the scaled values in the pre_processed_dataset
             self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
@@ -138,36 +148,65 @@ class MlModel:
         return self.pre_processed_dataset
 
 
-    def train(self,model_parameters,algorithm_parameters):
+    def split_data_train_test(self, model_parameters):
 
+        #Making a copy of the pre_processed_dataset using only input/output columns
         input_dataset = self.pre_processed_dataset[
-            model_parameters['input_variables'] + model_parameters['output_variables']]
-        data_indexes = np.array(input_dataset.index)
+            model_parameters['input_variables'] + model_parameters['output_variables']].copy()
+        #Selecting all non-numeric columns from input variables
+        categorical_input_columns = input_dataset[model_parameters['input_variables']].select_dtypes(
+            include=['object']).columns.to_list()
 
+        self.categorical_encoders = []
+        encoded_categorical_columns = pd.DataFrame()
+        for column in categorical_input_columns:
+            # Creating an encoder for each non-nueric column and appending to a list of encoders
+            self.categorical_encoders.append(LabelEncoder())
+            values_to_fit_transform = input_dataset[column].values.tolist()
+            self.categorical_encoders[-1].fit(values_to_fit_transform)
+            # Creating a dataframe with the encoded columns
+            encoded_categorical_columns[column] = self.categorical_encoders[-1].transform(values_to_fit_transform)
+
+        data_indexes = np.array(input_dataset.index)
         if model_parameters['shuffle_samples']:
             np.random.shuffle(data_indexes)
 
+        #Splitting the indexes of the Dtaframe into train_indexes and test_indexes
         train_indexes = data_indexes[0:round(len(data_indexes) * model_parameters['train_percentage'])]
         test_indexes = data_indexes[round(len(data_indexes) * model_parameters['train_percentage']):]
+
+        #Replacing the categorical values with the encoded values
+        input_dataset[categorical_input_columns] = encoded_categorical_columns
 
         train_dataset = input_dataset.loc[train_indexes]
         test_dataset = input_dataset.loc[test_indexes]
 
-        x_train = train_dataset[model_parameters['input_variables']]
-        x_test = test_dataset[model_parameters['input_variables']]
-        y_train = train_dataset[model_parameters['output_variables']]
-        y_test = test_dataset[model_parameters['output_variables']]
+        x_train = train_dataset[model_parameters['input_variables']].values
+        x_test = test_dataset[model_parameters['input_variables']].values
+        y_train = train_dataset[model_parameters['output_variables']].values
+        y_test = test_dataset[model_parameters['output_variables']].values
 
-        if len(model_parameters['input_variables']) == 1:
-            #Todo This broke the fitting when the input len == 1 - FIX IT!!
-            x_train = x_train.values.ravel()
-            x_test = x_test.values.ravel()
+        # if the target class is an integer which was scaled between 0 and 1
+        if not model_parameters['is_regression'] and self.is_numeric_scaled and self.column_types_pd_series[
+            model_parameters['output_variables'][0]].kind == 'i':
 
-        if len(model_parameters['output_variables']) == 1:
-            y_train = y_train.values.ravel()
-            y_test = y_test.values.ravel()
+            original_target_categories = self.dataset[model_parameters['output_variables']].values
+            y_train = original_target_categories[train_indexes]
+            y_test = original_target_categories[test_indexes]
+
+        return {'x_train': x_train, 'x_test': x_test, 'y_train': y_train, 'y_test': y_test}
+
+
+    def train(self,model_parameters,algorithm_parameters):
+
+        split_dataset = self.split_data_train_test(model_parameters)
+        x_train = split_dataset['x_train']
+        x_test = split_dataset['x_test']
+        y_train = split_dataset['y_train']
+        y_test = split_dataset['y_test']
 
         if model_parameters['is_regression']:
+
             if model_parameters['algorithm'] == 'nn':
                 ml_model = MLPRegressor(hidden_layer_sizes=tuple(algorithm_parameters['n_of_neurons_each_layer']),
                                          max_iter=algorithm_parameters['max_iter'],
@@ -179,7 +218,6 @@ class MlModel:
 
                 ml_model.fit(x_train, y_train)
                 y_pred = ml_model.predict(x_test)
-
             elif model_parameters['algorithm'] == 'svm':
                 algorithm_parameters = []
             elif model_parameters['algorithm'] == 'random_forest':
@@ -189,22 +227,30 @@ class MlModel:
 
             r2_score_result = r2_score(y_test, y_pred)
             mse = mean_squared_error(y_test, y_pred)
-            max_error_result = max_error(y_test, y_pred)
+            mae = mean_absolute_error(y_test, y_pred)
             rmse = mean_squared_error(y_test, y_pred, squared = False)
 
             if len(model_parameters['output_variables']) == 1:
                 np_y_test = np.array(y_test).flatten()
-                valid_indices = [i for i, x in enumerate(np_y_test) if x != 0]
+                valid_indexes = [i for i, x in enumerate(np_y_test) if x != 0]
                 np_y_pred = np.array(y_pred).flatten()
-                percentage_errors = (abs(np_y_test[valid_indices]-np_y_pred[valid_indices]))/np_y_test[valid_indices]
-                array_zero_errors = np.zeros(abs(len(np_y_test) - len(valid_indices)))
+                percentage_errors = abs(np_y_test[valid_indexes]-np_y_pred[valid_indexes])/np_y_test[valid_indexes]
+                array_zero_errors = np.zeros(abs(len(np_y_test) - len(valid_indexes)))
                 percentage_errors_with_zeros = np.concatenate((percentage_errors,array_zero_errors))
                 data_to_plot = percentage_errors_with_zeros
             else:
-                r2_score_result_separate = r2_score(y_test, y_pred, multioutput='raw_values')
-                data_to_plot = r2_score_result_separate
+                data_to_plot = {'values':[] , 'labels':model_parameters['output_variables']}
+                for column in model_parameters['output_variables']:
+                    np_y_test = np.array(y_test[column])
+                    valid_indexes = [i for i, x in enumerate(np_y_test) if x != 0]
+                    np_y_pred = y_pred[:,list(y_test.columns).index(column)]
+                    percentage_errors = abs((np_y_test[valid_indexes] - np_y_pred[valid_indexes]) / np_y_test[
+                        valid_indexes])
+                    array_zero_errors = np.zeros(abs(len(np_y_test) - len(valid_indexes)))
+                    percentage_errors_with_zeros = np.concatenate((percentage_errors, array_zero_errors))
+                    data_to_plot['values'].append(percentage_errors_with_zeros.mean())
 
-            training_output = {'r2_score': r2_score_result, 'mse': mse, 'max_error': max_error_result, 'rmse': rmse,
+            training_output = {'r2_score': r2_score_result, 'mse': mse, 'mae': mae, 'rmse': rmse,
                                'data_to_plot': data_to_plot}
 
             return training_output
@@ -212,10 +258,10 @@ class MlModel:
         else:
 
             #Todo : classification y values can be either objects or ints - check this when updating the input/output tab
-            label_encoder = LabelEncoder()
-            label_encoder.fit(np.concatenate((y_train,y_test)))
-            encoded_y_train = label_encoder.transform(y_train)
-            encoded_y_test = label_encoder.transform(y_test)
+            self.output_class_label_encoder = LabelEncoder()
+            self.output_class_label_encoder.fit(np.concatenate((y_train,y_test)).ravel())
+            encoded_y_train = self.output_class_label_encoder.transform(y_train.ravel())
+            encoded_y_test = self.output_class_label_encoder.transform(y_test.ravel())
 
             if model_parameters['algorithm'] == 'nn':
                 ml_model = MLPClassifier(hidden_layer_sizes=tuple(algorithm_parameters['n_of_neurons_each_layer']),
@@ -225,7 +271,6 @@ class MlModel:
                                          alpha=algorithm_parameters['alpha'],
                                          learning_rate=algorithm_parameters['learning_rate'],
                                          validation_fraction=algorithm_parameters['validation_percentage'])
-
                 ml_model.fit(x_train, encoded_y_train)
                 encoded_y_pred = ml_model.predict(x_test)
             elif model_parameters['algorithm'] == 'svm':
@@ -237,9 +282,9 @@ class MlModel:
             elif model_parameters['algorithm'] == 'knn':
                 algorithm_parameters = []
 
-            number_of_classes = len(set(np.concatenate((y_train,y_test))))
+            number_of_classes = len(np.unique(np.concatenate((y_train,y_test))))
             if  number_of_classes > 2:
-                average_value = 'micro'
+                average_value = 'macro'
             else:
                 average_value = 'binary'
 
@@ -249,7 +294,7 @@ class MlModel:
             precision = precision_score(encoded_y_test, encoded_y_pred, average = average_value)
 
             data_to_plot = {'actual': y_test, 'actual_encoded': encoded_y_test,
-                            'predicted': label_encoder.inverse_transform(encoded_y_pred),
+                            'predicted': self.output_class_label_encoder.inverse_transform(encoded_y_pred),
                             'predicted_encoded': encoded_y_pred}
 
             training_output = {'recall_score': recall, 'f1_score': f1, 'precision_score': precision, 'accuracy': accuracy,

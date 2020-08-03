@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1000</width>
-    <height>524</height>
+    <width>998</width>
+    <height>546</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2141,51 +2141,101 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <item>
-           <widget class="QPushButton" name="add_output_columns_pushButton">
-            <property name="text">
-             <string>&gt;</string>
+         <widget class="QStackedWidget" name="output_selection_stackedWidget">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>200</height>
+           </size>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="currentIndex">
+           <number>1</number>
+          </property>
+          <widget class="QWidget" name="regression">
+           <widget class="QWidget" name="layoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>0</x>
+              <y>0</y>
+              <width>452</width>
+              <height>204</height>
+             </rect>
             </property>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QPushButton" name="add_output_columns_pushButton">
+               <property name="text">
+                <string>&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="text">
+                  <string>Output Columns</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QListWidget" name="output_columns_listWidget">
+                 <property name="selectionMode">
+                  <enum>QAbstractItemView::MultiSelection</enum>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
+                 <item>
+                  <widget class="QPushButton" name="remove_output_columns_pushButton">
+                   <property name="text">
+                    <string>Remove Selected</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="clear_output_columns_pushButton">
+                   <property name="text">
+                    <string>Clear</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_6">
-            <item>
-             <widget class="QLabel" name="label_5">
-              <property name="text">
-               <string>Output Columns</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QListWidget" name="output_columns_listWidget">
-              <property name="selectionMode">
-               <enum>QAbstractItemView::MultiSelection</enum>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_4">
-              <item>
-               <widget class="QPushButton" name="remove_output_columns_pushButton">
-                <property name="text">
-                 <string>Remove Selected</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QPushButton" name="clear_output_columns_pushButton">
-                <property name="text">
-                 <string>Clear</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
+          </widget>
+          <widget class="QWidget" name="classification">
+           <widget class="QWidget" name="layoutWidget">
+            <property name="geometry">
+             <rect>
+              <x>50</x>
+              <y>50</y>
+              <width>171</width>
+              <height>81</height>
+             </rect>
+            </property>
+            <layout class="QGridLayout" name="gridLayout_5">
+             <item row="0" column="0">
+              <widget class="QLabel" name="label_14">
+               <property name="text">
+                <string>Target Variable</string>
+               </property>
+              </widget>
+             </item>
+             <item row="1" column="0">
+              <widget class="QComboBox" name="clas_output_colum_comboBox"/>
+             </item>
+            </layout>
+           </widget>
+          </widget>
+         </widget>
         </item>
        </layout>
       </item>
@@ -2205,7 +2255,7 @@
        <height>401</height>
       </rect>
      </property>
-     <widget class="QWidget" name="">
+     <widget class="QWidget" name="layoutWidget">
       <property name="geometry">
        <rect>
         <x>0</x>
@@ -2310,7 +2360,7 @@
       <number>1</number>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="regression_metrics">
       <widget class="QWidget" name="layoutWidget">
@@ -2326,7 +2376,7 @@
         <item row="5" column="0">
          <widget class="QLabel" name="label_32">
           <property name="text">
-           <string>Max Error</string>
+           <string>Mean Absolute Error:</string>
           </property>
          </widget>
         </item>
@@ -2401,7 +2451,7 @@
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QLabel" name="reg_max_error_label">
+         <widget class="QLabel" name="reg_mea_label">
           <property name="text">
            <string>0</string>
           </property>
