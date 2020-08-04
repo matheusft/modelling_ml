@@ -7,7 +7,6 @@ from view import QtCore, QtWidgets
 from personalised_widgets import MplWidget, QtWaitingSpinner
 
 
-
 class Train_Model_WorkerSignals(QtCore.QObject):
 
 
@@ -735,21 +734,34 @@ def update_pre_process(ui, ml_model):
 
 def update_input_output_columns(ui, target_object, ml_model):
 
+    is_regression = ui.regression_selection_radioButton.isChecked()
+
     for selected_item in ui.available_columns_listWidget.selectedItems():
         item = ui.available_columns_listWidget.takeItem(ui.available_columns_listWidget.row(selected_item))
-        target_object.addItem(item)
+        is_variable_categorical = selected_item.text() in ml_model.categorical_columns
+        is_output_variable = target_object.objectName() == 'output_columns_listWidget'
+        if is_regression and is_variable_categorical and is_output_variable:
+            ui.available_columns_listWidget.addItem(item)
+            display_message(QtWidgets.QMessageBox.Information, 'Invalid Input',
+                            'Categorical variables should not be used as regression output', 'Error')
+        else:
+            target_object.addItem(item)
 
-        if target_object.objectName() == 'input_columns_listWidget':
-            update_train_test_shape_label(ui,ml_model)
+    if target_object.objectName() == 'input_columns_listWidget':
+        update_train_test_shape_label(ui, ml_model)
 
-    update_train_model_button_status(ui, ui.regression_selection_radioButton.isChecked())
+    update_train_model_button_status(ui, is_regression)
 
 
 def model_selection_tab_events(ui):
-    if ui.regression_selection_radioButton.isChecked():
+
+    is_regression = ui.regression_selection_radioButton.isChecked()
+
+    if is_regression:
         ui.regression_and_classification_stackedWidget.setCurrentIndex(0)  # Change to Regression Tab
         ui.train_metrics_stackedWidget.setCurrentIndex(0)  # Change to Regression Tab
         ui.output_selection_stackedWidget.setCurrentIndex(0)
+        update_train_model_button_status(ui, is_regression)
 
         if ui.nn_regression_radioButton.isChecked():
             ui.regression_parameters_stackedWidget.setCurrentIndex(0)
@@ -767,6 +779,7 @@ def model_selection_tab_events(ui):
         ui.regression_and_classification_stackedWidget.setCurrentIndex(1)  # Change to Classification Tab
         ui.train_metrics_stackedWidget.setCurrentIndex(1)  # Change to Regression Tab
         ui.output_selection_stackedWidget.setCurrentIndex(1)
+        update_train_model_button_status(ui, is_regression)
 
         if ui.nn_classification_radioButton.isChecked():
             ui.classification_parameters_stackedWidget.setCurrentIndex(0)
@@ -918,6 +931,7 @@ def train_model(ui,ml_model):
     #Todo : Delete this when finished testing
     result = ml_model.train(model_parameters,algorithm_parameters)
     display_training_results(ui, result, model_parameters)
+
 
 def display_training_results(ui, result, model_parameters):
 

@@ -5,6 +5,7 @@ from matplotlib.figure import Figure
 import math
 
 #QtWidgets.QWidget promoted to MplWidget in Qt Designer
+# It is used to plot matplotlib and Pandas plots to a Qt Widget
 class MplWidget(QtWidgets.QWidget):
 
     def __init__(self, parent=None):
@@ -20,7 +21,8 @@ class MplWidget(QtWidgets.QWidget):
         self.setLayout(vertical_layout)
         self.canvas.axes.axis('off')  # Turn off axis lines and labels. Show a white canvas in the initialisation
 
-#QtWidgets.QWidget promoted to QtWaitingSpinner in Qt Designer
+# QtWidgets.QWidget promoted to QtWaitingSpinner in Qt Designer
+# This widget is used to display a loading icon
 class QtWaitingSpinner(QtWidgets.QWidget):
     def __init__(self, parent, centerOnParent=True, disableParentWhenSpinning=False, modality=QtCore.Qt.NonModal):
         super().__init__(parent)
