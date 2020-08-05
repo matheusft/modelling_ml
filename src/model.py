@@ -1,7 +1,7 @@
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, recall_score, f1_score, precision_score, \
-    accuracy_score
+    accuracy_score, confusion_matrix
 import matplotlib.pyplot as plt
 from scipy import stats
 import pandas as pd
@@ -45,6 +45,7 @@ class MlModel:
             self.column_types_pd_series = self.dataset.dtypes
             # Selecting all non-numeric columns
             self.categorical_variables = self.dataset.select_dtypes(include=['object']).columns.to_list()
+            self.integer_variables = self.dataset.select_dtypes(include=['int64']).columns.to_list()
             return 'sucess'
         except:
             return 'exception_in_the_file'  # Exception
@@ -138,13 +139,13 @@ class MlModel:
         input_dataset.reset_index(inplace=True)
         # Selecting the categorical variables that are in the training set
         categorical_variables_in_training = list(set(self.categorical_variables) & set(
-            model_parameters['input_variables'] + model_parameters['output_variables']))
+            model_parameters['input_variables']))
 
         self.categorical_encoders = {}
         encoded_categorical_columns = pd.DataFrame()
         for column in categorical_variables_in_training:
             # Creating an encoder for each non-nueric column and appending to a list of encoders
-            self.categorical_encoders[column] = (LabelEncoder())
+            self.categorical_encoders[column] = LabelEncoder()
             values_to_fit_transform = input_dataset[column].values
             self.categorical_encoders[column].fit(values_to_fit_transform)
             # Creating a dataframe with the encoded columns
@@ -279,17 +280,17 @@ class MlModel:
             else:
                 average_value = 'binary'
 
-            recall = recall_score(encoded_y_test, encoded_y_pred, average=average_value)
-            f1 = f1_score(encoded_y_test, encoded_y_pred, average=average_value)
+            recall = recall_score(encoded_y_test, encoded_y_pred, average=average_value, zero_division=0)
+            f1 = f1_score(encoded_y_test, encoded_y_pred, average=average_value, zero_division=0)
             accuracy = accuracy_score(encoded_y_test, encoded_y_pred)
-            precision = precision_score(encoded_y_test, encoded_y_pred, average=average_value)
+            precision = precision_score(encoded_y_test, encoded_y_pred, average=average_value, zero_division=0)
 
-            data_to_plot = {'actual': y_test, 'actual_encoded': encoded_y_test,
-                            'predicted': self.output_class_label_encoder.inverse_transform(encoded_y_pred),
-                            'predicted_encoded': encoded_y_pred}
+            df_conf = pd.DataFrame(confusion_matrix(encoded_y_test, encoded_y_pred))
+            df_conf.set_index(self.output_class_label_encoder.inverse_transform(df_conf.index), inplace=True)
+            df_conf.columns = self.output_class_label_encoder.inverse_transform(df_conf.columns)
 
             training_output = {'recall_score': recall, 'f1_score': f1, 'precision_score': precision,
                                'accuracy': accuracy,
-                               'data_to_plot': data_to_plot}
+                               'data_to_plot': df_conf}
 
             return training_output

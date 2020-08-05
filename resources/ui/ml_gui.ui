@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>998</width>
-    <height>546</height>
+    <height>520</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -27,25 +27,12 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>5</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="dataset_load_tab">
     <attribute name="title">
      <string>Dataset Load</string>
     </attribute>
-    <widget class="QPushButton" name="load_file_pushButton">
-     <property name="geometry">
-      <rect>
-       <x>220</x>
-       <y>0</y>
-       <width>113</width>
-       <height>32</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Load File</string>
-     </property>
-    </widget>
     <widget class="QTableWidget" name="dataset_tableWidget">
      <property name="geometry">
       <rect>
@@ -64,6 +51,51 @@
      <property name="editTriggers">
       <set>QAbstractItemView::NoEditTriggers</set>
      </property>
+    </widget>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>0</y>
+       <width>612</width>
+       <height>32</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_24">
+      <item>
+       <widget class="QPushButton" name="load_file_pushButton">
+        <property name="text">
+         <string>Load File</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_14">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeType">
+         <enum>QSizePolicy::Fixed</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>300</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QComboBox" name="example_dataset_comboBox">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </widget>
    <widget class="QWidget" name="visualise_tab">

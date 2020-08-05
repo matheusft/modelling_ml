@@ -1,16 +1,17 @@
 import os
 import random
 import sys
+import seaborn as sns
 from os.path import join, abspath
 import pandas as pd
 from view import QtCore, QtWidgets
 from personalised_widgets import MplWidget, QtWaitingSpinner
 
+#Set seaborn aesthetic parameters
+sns.set()
 
 class Train_Model_WorkerSignals(QtCore.QObject):
-
-
-    finished = QtCore.pyqtSignal(object,object,object)
+    finished = QtCore.pyqtSignal(object, object, object)
 
 
 class Train_Model_Worker(QtCore.QRunnable):
@@ -41,11 +42,10 @@ class Train_Model_Worker(QtCore.QRunnable):
 
     @QtCore.pyqtSlot()
     def run(self):
-
         # training the model
-        result = self.ml_model.train(self.model_parameters,self.algorithm_parameters)
+        result = self.ml_model.train(self.model_parameters, self.algorithm_parameters)
         # sending the output of the thread to the assigned function
-        self.signals.finished.emit(self.ui,result,self.model_parameters)
+        self.signals.finished.emit(self.ui, result, self.model_parameters)
 
 
 def transform_to_resource_path(relative_path):
@@ -67,14 +67,23 @@ def transform_to_resource_path(relative_path):
 
 
 def configure_gui(ui, ml_model):
-
     _translate = QtCore.QCoreApplication.translate
 
     # Seting up the thread pool for multi-threading
     ui.threadpool = QtCore.QThreadPool()
 
+    # Populating the example_dataset_comboBox
+    current_working_directory = os.getcwd()
+    datasets_path = current_working_directory + '/../data/'
+    list_of_datasets = os.listdir(datasets_path)
+    for dataset in list_of_datasets:
+        if not dataset.startswith('.'):
+            # Each Item receives the dataset name as text and the dataset path as data
+            ui.example_dataset_comboBox.addItem(dataset.split('.')[0], datasets_path + dataset)
+
     # Connecting load_file_pushButton - Dataset Load Tab
     ui.load_file_pushButton.clicked.connect(lambda: load_dataset(ui, ml_model))
+    ui.example_dataset_comboBox.currentIndexChanged.connect(lambda: load_dataset(ui, ml_model))
 
     # Connecting columnSelection_comboBox - Visualise Tab
     ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
@@ -92,7 +101,7 @@ def configure_gui(ui, ml_model):
 
     ui.outliers_treshold_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.outliers_treshold_horizontalSlider.value(),
-                                                ui.outliers_treshold_label,ml_model))
+                                                ui.outliers_treshold_label, ml_model))
     ui.outliers_treshold_horizontalSlider.sliderReleased.connect(lambda: update_pre_process_rm_outlier(ui, ml_model))
 
     ui.replace_columnSelection_comboBox.currentIndexChanged.connect(lambda: update_preprocess_replace(ui,
@@ -104,9 +113,9 @@ def configure_gui(ui, ml_model):
     ui.addrule_filter_value_pushButton.clicked.connect(lambda: add_filtering_rule(ui, ml_model))
 
     ui.remove_replace_value_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.preprocess_replace_listWidget, ml_model))
+        lambda: remove_item_from_listwidget(ui, ui.preprocess_replace_listWidget, ml_model))
     ui.remove_filter_rule_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.preprocess_filter_listWidget, ml_model))
+        lambda: remove_item_from_listwidget(ui, ui.preprocess_filter_listWidget, ml_model))
 
     ui.add_input_columns_pushButton.clicked.connect(
         lambda: update_input_output_columns(ui, ui.input_columns_listWidget, ml_model))
@@ -114,18 +123,18 @@ def configure_gui(ui, ml_model):
         lambda: update_input_output_columns(ui, ui.output_columns_listWidget, ml_model))
 
     ui.remove_input_columns_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.input_columns_listWidget, ml_model))
+        lambda: remove_item_from_listwidget(ui, ui.input_columns_listWidget, ml_model))
     ui.remove_output_columns_pushButton.clicked.connect(
-        lambda: remove_item_from_listWidget(ui, ui.output_columns_listWidget, ml_model))
+        lambda: remove_item_from_listwidget(ui, ui.output_columns_listWidget, ml_model))
 
     ui.clear_replace_value_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.preprocess_replace_listWidget, ml_model))
+        lambda: clear_listwidget(ui, ui.preprocess_replace_listWidget, ml_model))
     ui.clear_filter_rule_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.preprocess_filter_listWidget, ml_model))
+        lambda: clear_listwidget(ui, ui.preprocess_filter_listWidget, ml_model))
     ui.clear_input_columns_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.input_columns_listWidget, ml_model))
+        lambda: clear_listwidget(ui, ui.input_columns_listWidget, ml_model))
     ui.clear_output_columns_pushButton.clicked.connect(
-        lambda: clear_listWidget(ui, ui.output_columns_listWidget, ml_model))
+        lambda: clear_listwidget(ui, ui.output_columns_listWidget, ml_model))
 
     model_selection_radio_buttons = [ui.regression_selection_radioButton, ui.classification_selection_radioButton,
                                      ui.gradientboosting_classification_radioButton, ui.knn_classification_radioButton,
@@ -168,7 +177,7 @@ def configure_gui(ui, ml_model):
         lambda: update_label_from_slider_change(ui, ui.test_percentage_horizontalSlider.value(),
                                                 ui.test_percentage_label, ml_model))
 
-    ui.train_model_pushButton.clicked.connect(lambda: train_model(ui,ml_model))
+    ui.train_model_pushButton.clicked.connect(lambda: train_model(ui, ml_model))
 
     ui.nn_classification_radioButton.click()
     ui.regression_selection_radioButton.click()
@@ -180,12 +189,13 @@ def configure_gui(ui, ml_model):
     widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
                           ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
                           ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
-                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton]
+                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton,
+                          ui.load_file_pushButton]
 
     for widget in widgets_to_disable:
         widget.setEnabled(False)
 
-    #Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
+    # Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
 
     # TODO : Disable all button and functions while Dataset is not chosen -
     # Todo : Check things that break when the dataset is not loaded yet
@@ -204,10 +214,13 @@ def load_dataset(ui, ml_model):
     # file_address = fileDlg.getOpenFileName()[0]
 
     # # TODO : Check whether the file_address is valid or empty (Is empty if the user cancel)
-    file_address = ''
-    while file_address == '' or file_address[0] == '.':
-        file_address = random.choice(os.listdir('/Users/matheustorquato/Documents/GitHub/generic_ml/data'))
-    file_address = '/Users/matheustorquato/Documents/GitHub/generic_ml/data/' + file_address
+    # file_address = ''
+    # while file_address == '' or file_address[0] == '.':
+    #     file_address = random.choice(os.listdir('/Users/matheustorquato/Documents/GitHub/generic_ml/data'))
+    # file_address = '/Users/matheustorquato/Documents/GitHub/generic_ml/data/' + file_address
+    selected_index = ui.example_dataset_comboBox.currentIndex()
+    file_address = ui.example_dataset_comboBox.itemData(selected_index)
+    # Todo: Display loading icom here!!!
     return_code = ml_model.read_dataset(file_address)
 
     # TODO: add checkbox Dataset with Column name or not
@@ -273,7 +286,7 @@ def load_dataset(ui, ml_model):
             ui.filter_columnSelection_comboBox.addItem(each_column)  # from the Pre-process Tab
             ui.available_columns_listWidget.addItem(each_column)
 
-            if ml_model.column_types_pd_series[each_column].kind in 'iO': #i = Integer , O = Object
+            if ml_model.column_types_pd_series[each_column].kind in 'iO':  # i = Integer , O = Object
                 ui.clas_output_colum_comboBox.addItem(each_column)
 
     elif return_code == 'invalid_file_extension':
@@ -295,27 +308,25 @@ def load_dataset(ui, ml_model):
 
 def populate_tablewidget_with_dataframe(table_widget, filling_dataframe):
     # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
-    table_widget.setRowCount(len(filling_dataframe.head(10)) + 1)  # +1 to add the Column Names in line 0
+    number_of_rows_to_display = 20
+    table_widget.setRowCount(len(filling_dataframe.head(number_of_rows_to_display)))
     table_widget.setColumnCount(len(filling_dataframe.columns))
 
-    header = table_widget.horizontalHeader()  # uses this header in order to adjust the column width
+    #Todo: Check if the columns width are ok
+    ## header = table_widget.horizontalHeader()  # uses this header in order to adjust the column width
+    ## header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)  # Column width fits the content
 
     # Adding the labels at the top of the Table
-    for i in range(table_widget.columnCount()):
-        header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)  # Column width fits the content
-        qt_item = QtWidgets.QTableWidgetItem(filling_dataframe.columns[i])  # Creates an qt item
-        qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
-        table_widget.setItem(0, i, qt_item)
+    table_widget.setHorizontalHeaderLabels(filling_dataframe.columns)
 
     # Filling the Table with the dataset
-    for i in range(table_widget.rowCount() - 1):  # -1 Because the Top row was laready used for the label
+    for i in range(table_widget.rowCount()):
         for j in range(table_widget.columnCount()):
             dataset_value = filling_dataframe.iloc[i, j]  # Get the value from the dataset
-            # If the value is numeric, format it to two decimals
             dataset_value_converted = dataset_value if (type(dataset_value) is str) else '{:}'.format(dataset_value)
             qt_item = QtWidgets.QTableWidgetItem(dataset_value_converted)  # Creates an qt item
             qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
-            table_widget.setItem(i + 1, j, qt_item)  # i+1 to skip the top row (column names)
+            table_widget.setItem(i, j, qt_item)
 
 
 def update_visualisation_widgets(ui, ml_model):
@@ -331,7 +342,7 @@ def update_visualisation_widgets(ui, ml_model):
 
     plot_matplotlib_to_qt_widget(ui=ui, target_widget=ui.dataVisualisePlot_widget,
                                  content={'data': ml_model.dataset[selected_column],
-                                          'is_categorical': is_categorical })
+                                          'is_categorical': is_categorical})
 
 
 def update_preprocess_replace(ui, ml_model):
@@ -414,12 +425,17 @@ def update_visualisation_options(ui, ml_model):
 def plot_matplotlib_to_qt_widget(ui, target_widget, content):
 
     target_widget.canvas.axes.clear()
+    # If the figure has multiple axes - This happens when the Confusion Matrix is plotted
+    if len(target_widget.canvas.figure.axes) > 1:
+        target_widget.canvas.figure.clf() # Clear the figure
+        target_widget.canvas.axes = target_widget.canvas.figure.add_subplot() # Add an Axes to the figure
     target_widget.canvas.axes.axis('on')
 
     if target_widget.objectName() == 'dataVisualisePlot_widget':
         if content['is_categorical']:
             content['data'].value_counts().plot(kind='bar', ax=target_widget.canvas.axes, grid=False,
                                                 title='Sample Count')
+            target_widget.canvas.axes.tick_params(axis='x', labelrotation=60)
         elif ui.plot_radioButton.isChecked() and ui.plot_radioButton.isEnabled():
             content['data'].plot(ax=target_widget.canvas.axes, grid=False, title='Linear Plot')
         elif ui.boxplot_radioButton.isChecked() and ui.boxplot_radioButton.isEnabled():
@@ -433,7 +449,7 @@ def plot_matplotlib_to_qt_widget(ui, target_widget, content):
 
     elif target_widget.objectName() == 'model_train_widget':
         if content['is_regression']:
-            if(len(content['output_variables']) == 1):
+            if len(content['output_variables']) == 1:
                 pd.DataFrame(content['data']).hist(ax=target_widget.canvas.axes, grid=False)
                 target_widget.canvas.axes.axes.set_title('Histogram of Percentage Errors')
             else:
@@ -441,8 +457,13 @@ def plot_matplotlib_to_qt_widget(ui, target_widget, content):
                 target_widget.canvas.axes.set_xticklabels(content['data']['labels'], rotation='vertical')
                 target_widget.canvas.axes.axes.set_title('Percentage Error')
         else:
-            print('Print Confusion Matrix')
-
+            # Print the number labels in the cells if n_of_classes < 10, otherwise just colours
+            is_annot = False if len(content['data']) > 10 else True
+            _ = sns.heatmap(content['data'], cmap="YlGnBu", annot=is_annot, ax=target_widget.canvas.axes)
+            target_widget.canvas.axes.tick_params(axis='y', labelrotation=0)
+            target_widget.canvas.axes.tick_params(axis='x', labelrotation=60)
+            target_widget.canvas.axes.set_xlabel('Actual')
+            target_widget.canvas.axes.set_ylabel('Predicted')
 
     target_widget.canvas.draw()
 
@@ -458,9 +479,9 @@ def update_label_from_slider_change(ui, slider_value, label_object, ml_model):
         update_nn_layers_table(ui.clas_nn_layers_tableWidget, slider_value)
     elif label_object.objectName() == 'outliers_treshold_label':
         label_object.setText('{:.1f}'.format(slider_value / 10))
-        #https://moonbooks.org/Articles/How-to-fill-an-area-in-matplotlib-/
-        #https://i.pinimg.com/originals/e1/d6/30/e1d630a1719b4444bbd08b7df92b7bf1.gif
-        #Todo: Plot a normal distribution with the included and excluded area (plt.fill_between)
+        # https://moonbooks.org/Articles/How-to-fill-an-area-in-matplotlib-/
+        # https://i.pinimg.com/originals/e1/d6/30/e1d630a1719b4444bbd08b7df92b7bf1.gif
+        # Todo: Plot a normal distribution with the included and excluded area (plt.fill_between)
     elif label_object.objectName() == 'reg_nn_val_percent_label':
         label_object.setText('{}%'.format(slider_value))
     elif label_object.objectName() == 'reg_nn_max_iter_label':
@@ -476,11 +497,11 @@ def update_label_from_slider_change(ui, slider_value, label_object, ml_model):
     elif label_object.objectName() == 'train_percentage_label':
         label_object.setText('{}%'.format(slider_value))
         ui.test_percentage_horizontalSlider.setValue(100 - slider_value)
-        update_train_test_shape_label(ui,ml_model)
+        update_train_test_shape_label(ui, ml_model)
     elif label_object.objectName() == 'test_percentage_label':
         label_object.setText('{}%'.format(slider_value))
         ui.train_percentage_horizontalSlider.setValue(100 - slider_value)
-        update_train_test_shape_label(ui,ml_model)
+        update_train_test_shape_label(ui, ml_model)
 
 
 def update_nn_layers_table(table, value):
@@ -488,7 +509,7 @@ def update_nn_layers_table(table, value):
         while value > table.rowCount():
             table.insertRow(table.rowCount())
             item = QtWidgets.QTableWidgetItem(str(10))
-            item.setTextAlignment((QtCore.Qt.AlignCenter))
+            item.setTextAlignment(QtCore.Qt.AlignCenter)
             table.setItem(table.rowCount() - 1, 0, item)
             item = QtWidgets.QTableWidgetItem('Hidden Layer ' + str(table.rowCount()))
             table.setVerticalHeaderItem(table.rowCount() - 1, item)
@@ -617,58 +638,65 @@ def add_filtering_rule(ui, ml_model):
         update_pre_process(ui, ml_model)
 
 
-def remove_item_from_listWidget(ui, target_listWidget, ml_model):
-    if target_listWidget == ui.preprocess_filter_listWidget:
+def remove_item_from_listwidget(ui, target_listwidget, ml_model):
+    if target_listwidget == ui.preprocess_filter_listWidget:
         for item in ui.preprocess_filter_listWidget.selectedItems():
             ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.row(item))
 
         if ui.filter_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
-    elif target_listWidget == ui.preprocess_replace_listWidget:
+    elif target_listwidget == ui.preprocess_replace_listWidget:
         for item in ui.preprocess_replace_listWidget.selectedItems():
             ui.preprocess_replace_listWidget.takeItem(ui.preprocess_replace_listWidget.row(item))
 
         if ui.replace_values_checkBox.isChecked():
             update_pre_process(utrain_percentage_horizontalSlideri, ml_model)
 
-    elif target_listWidget == ui.input_columns_listWidget:
-        for selected_item in target_listWidget.selectedItems():
-            item = target_listWidget.takeItem(target_listWidget.row(selected_item))
+    elif target_listwidget == ui.input_columns_listWidget:
+        for selected_item in target_listwidget.selectedItems():
+            item = target_listwidget.takeItem(target_listwidget.row(selected_item))
+            ui.available_columns_listWidget.addItem(item)
+
+            # Adding the variables back to the clas_output_colum_comboBox
+            if selected_item.text() in ml_model.categorical_variables:
+                ui.clas_output_colum_comboBox.addItem(selected_item.text())
+
+        update_train_model_button_status(ui, ui.regression_selection_radioButton.isChecked())
+
+    elif target_listwidget == ui.output_columns_listWidget:
+        for selected_item in target_listwidget.selectedItems():
+            item = target_listwidget.takeItem(target_listwidget.row(selected_item))
             ui.available_columns_listWidget.addItem(item)
 
         update_train_model_button_status(ui, ui.regression_selection_radioButton.isChecked())
 
-    elif target_listWidget == ui.output_columns_listWidget:
-        for selected_item in target_listWidget.selectedItems():
-            item = target_listWidget.takeItem(target_listWidget.row(selected_item))
-            ui.available_columns_listWidget.addItem(item)
 
-        update_train_model_button_status(ui, ui.regression_selection_radioButton.isChecked())
-
-
-def clear_listWidget(ui, target_listWidget, ml_model):
-
-    if target_listWidget == ui.preprocess_filter_listWidget:
+def clear_listwidget(ui, target_listwidget, ml_model):
+    if target_listwidget == ui.preprocess_filter_listWidget:
         ui.preprocess_filter_listWidget.clear()
         if ui.filter_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
-    elif target_listWidget == ui.preprocess_replace_listWidget:
+    elif target_listwidget == ui.preprocess_replace_listWidget:
         ui.preprocess_replace_listWidget.clear()
         if ui.replace_values_checkBox.isChecked():
             update_pre_process(ui, ml_model)
 
-    elif target_listWidget == ui.input_columns_listWidget:
+    elif target_listwidget == ui.input_columns_listWidget:
 
         for _ in range(ui.input_columns_listWidget.count()):
             item = ui.input_columns_listWidget.takeItem(0)
             ui.available_columns_listWidget.addItem(item)
 
-        ui.train_model_pushButton.setDisabled(True)
-        update_train_test_shape_label(ui,ml_model)
+            # Adding the variables back to the clas_output_colum_comboBox
+            if item.text() in ml_model.categorical_variables:
+                ui.clas_output_colum_comboBox.addItem(item.text())
 
-    elif target_listWidget == ui.output_columns_listWidget:
+        ui.train_model_pushButton.setDisabled(True)
+        update_train_test_shape_label(ui, ml_model)
+
+    elif target_listwidget == ui.output_columns_listWidget:
 
         ui.train_model_pushButton.setDisabled(True)
 
@@ -727,18 +755,17 @@ def update_pre_process(ui, ml_model):
                         'These pre-processing rules are too restrictive and would return an empty dataset', 'Error')
     else:
         populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, pre_processed_dataset)
-        update_train_test_shape_label(ui,ml_model)
+        update_train_test_shape_label(ui, ml_model)
 
     # Todo Update the values from the comboboxes after filtering/replacing according to the pro-process dataset
 
 
 def update_input_output_columns(ui, target_object, ml_model):
-
     is_regression = ui.regression_selection_radioButton.isChecked()
 
     for selected_item in ui.available_columns_listWidget.selectedItems():
         item = ui.available_columns_listWidget.takeItem(ui.available_columns_listWidget.row(selected_item))
-        is_variable_categorical = selected_item.text() in ml_model.categorical_columns
+        is_variable_categorical = selected_item.text() in ml_model.categorical_variables
         is_output_variable = target_object.objectName() == 'output_columns_listWidget'
         if is_regression and is_variable_categorical and is_output_variable:
             ui.available_columns_listWidget.addItem(item)
@@ -746,6 +773,11 @@ def update_input_output_columns(ui, target_object, ml_model):
                             'Categorical variables should not be used as regression output', 'Error')
         else:
             target_object.addItem(item)
+            combobox = ui.clas_output_colum_comboBox
+            items_in_combobox = [combobox.itemText(i) for i in range(combobox.count())]
+            if is_variable_categorical and selected_item.text() in items_in_combobox:
+                item_index = items_in_combobox.index(selected_item.text())
+                combobox.removeItem(item_index)
 
     if target_object.objectName() == 'input_columns_listWidget':
         update_train_test_shape_label(ui, ml_model)
@@ -754,7 +786,6 @@ def update_input_output_columns(ui, target_object, ml_model):
 
 
 def model_selection_tab_events(ui):
-
     is_regression = ui.regression_selection_radioButton.isChecked()
 
     if is_regression:
@@ -797,8 +828,7 @@ def model_selection_tab_events(ui):
             ui.classification_parameters_stackedWidget.setCurrentIndex(4)
 
 
-def update_train_test_shape_label(ui,ml_model):
-
+def update_train_test_shape_label(ui, ml_model):
     dataset_shape = ml_model.pre_processed_dataset.shape
 
     number_of_rows_train = round(dataset_shape[0] * ui.train_percentage_horizontalSlider.value() / 100)
@@ -807,12 +837,11 @@ def update_train_test_shape_label(ui,ml_model):
     number_of_rows_test = round(dataset_shape[0] * ui.test_percentage_horizontalSlider.value() / 100)
     number_of_columns_test = ui.input_columns_listWidget.count()
 
-    ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train,number_of_columns_train))
+    ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train, number_of_columns_train))
     ui.test_dataset_shape_label.setText('{} x {}'.format(number_of_rows_test, number_of_columns_test))
 
 
-def update_train_model_button_status(ui,is_regression):
-
+def update_train_model_button_status(ui, is_regression):
     if is_regression:
         if ui.output_columns_listWidget.count() > 0 and ui.input_columns_listWidget.count() > 0:
             ui.train_model_pushButton.setDisabled(False)
@@ -825,12 +854,11 @@ def update_train_model_button_status(ui,is_regression):
             ui.train_model_pushButton.setDisabled(True)
 
 
-def train_model(ui,ml_model):
-
+def train_model(ui, ml_model):
     # Todo : check for condition before continuing: 1) Output columns is not empty
 
-    train_percentage = (ui.train_percentage_horizontalSlider.value()/100)
-    test_percentage = (ui.test_percentage_horizontalSlider.value()/100)
+    train_percentage = (ui.train_percentage_horizontalSlider.value() / 100)
+    test_percentage = (ui.test_percentage_horizontalSlider.value() / 100)
     shuffle_samples = ui.shuffle_samples_checkBox.isChecked()
 
     model_parameters = {'train_percentage': train_percentage, 'test_percentage': test_percentage,
@@ -853,19 +881,19 @@ def train_model(ui,ml_model):
         algorithm_index = [ui.nn_regression_radioButton.isChecked(), ui.svm_regression_radioButton.isChecked(),
                            ui.randomforest_regression_radioButton.isChecked(),
                            ui.gradientboosting_regression_radioButton.isChecked()].index(1)
-        algorithm = ['nn','svm','random_forest','grad_boosting'][algorithm_index]
+        algorithm = ['nn', 'svm', 'random_forest', 'grad_boosting'][algorithm_index]
 
         if algorithm == 'nn':
             n_of_hidden_layers = ui.reg_nn_layers_horizontalSlider.value()
             n_of_neurons_each_layer = []
             for i in range(n_of_hidden_layers):
-                n_of_neurons_each_layer.append(int(ui.reg_nn_layers_tableWidget.item(i,0).text()))
+                n_of_neurons_each_layer.append(int(ui.reg_nn_layers_tableWidget.item(i, 0).text()))
             activation_func = ui.reg_nn_actvfunc_comboBox.currentText()
             solver = ui.reg_nn_solver_comboBox.currentText()
             learning_rate = ui.reg_nn_learnrate_comboBox.currentText()
             max_iter = ui.reg_nn_max_iter_horizontalSlider.value()
-            alpha = ui.reg_nn_alpha_horizontalSlider.value()/10000
-            validation_percentage = ui.reg_nn_val_percentage_horizontalSlider.value()/100
+            alpha = ui.reg_nn_alpha_horizontalSlider.value() / 10000
+            validation_percentage = ui.reg_nn_val_percentage_horizontalSlider.value() / 100
 
             algorithm_parameters = {'n_of_hidden_layers': n_of_hidden_layers,
                                     'n_of_neurons_each_layer': n_of_neurons_each_layer,
@@ -875,9 +903,9 @@ def train_model(ui,ml_model):
                                     'validation_percentage': validation_percentage}
         elif algorithm == 'svm':
             algorithm_parameters = []
-        elif algorithm == 'random_forest' :
+        elif algorithm == 'random_forest':
             algorithm_parameters = []
-        elif algorithm == 'grad_boosting' :
+        elif algorithm == 'grad_boosting':
             algorithm_parameters = []
 
     else:
@@ -885,19 +913,19 @@ def train_model(ui,ml_model):
                            ui.randomforest_classification_radioButton.isChecked(),
                            ui.gradientboosting_classification_radioButton.isChecked(),
                            ui.knn_classification_radioButton.isChecked()].index(1)
-        algorithm = ['nn', 'svm', 'random_forest', 'grad_boosting','knn'][algorithm_index]
+        algorithm = ['nn', 'svm', 'random_forest', 'grad_boosting', 'knn'][algorithm_index]
 
         if algorithm == 'nn':
             n_of_hidden_layers = ui.clas_nn_layers_horizontalSlider.value()
             n_of_neurons_each_layer = []
             for i in range(n_of_hidden_layers):
-                n_of_neurons_each_layer.append(int(ui.clas_nn_layers_tableWidget.item(i,0).text()))
+                n_of_neurons_each_layer.append(int(ui.clas_nn_layers_tableWidget.item(i, 0).text()))
             activation_func = ui.clas_nn_actvfunc_comboBox.currentText()
             solver = ui.clas_nn_solver_comboBox.currentText()
             learning_rate = ui.clas_nn_learnrate_comboBox.currentText()
             max_iter = ui.clas_nn_max_iter_horizontalSlider.value()
-            alpha = ui.clas_nn_alpha_horizontalSlider.value()/10000
-            validation_percentage = ui.clas_nn_val_percentage_horizontalSlider.value()/100
+            alpha = ui.clas_nn_alpha_horizontalSlider.value() / 10000
+            validation_percentage = ui.clas_nn_val_percentage_horizontalSlider.value() / 100
 
             algorithm_parameters = {'n_of_hidden_layers': n_of_hidden_layers,
                                     'n_of_neurons_each_layer': n_of_neurons_each_layer,
@@ -907,18 +935,18 @@ def train_model(ui,ml_model):
                                     'validation_percentage': validation_percentage}
         elif algorithm == 'svm':
             algorithm_parameters = []
-        elif algorithm == 'random_forest' :
+        elif algorithm == 'random_forest':
             algorithm_parameters = []
-        elif algorithm == 'grad_boosting' :
+        elif algorithm == 'grad_boosting':
             algorithm_parameters = []
-        elif algorithm == 'knn' :
+        elif algorithm == 'knn':
             algorithm_parameters = []
 
     model_parameters.update({'is_regression': is_regression, 'algorithm': algorithm, 'input_variables': input_variables,
                              'output_variables': output_variables})
 
     # Creating an object worker
-    worker = Train_Model_Worker(ml_model,model_parameters,algorithm_parameters, ui)
+    worker = Train_Model_Worker(ml_model, model_parameters, algorithm_parameters, ui)
 
     # Connecting the signals from the created worker to its functions
     worker.signals.finished.connect(display_training_results)
@@ -928,13 +956,12 @@ def train_model(ui,ml_model):
 
     # Running the traning in a separate thread from the GUI
     # ui.threadpool.start(worker) #Todo uncomment when this when finished testing!!
-    #Todo : Delete this when finished testing
-    result = ml_model.train(model_parameters,algorithm_parameters)
+    # Todo : Delete this when finished testing
+    result = ml_model.train(model_parameters, algorithm_parameters)
     display_training_results(ui, result, model_parameters)
 
 
 def display_training_results(ui, result, model_parameters):
-
     ui.loading_widget.stop()
     ui.train_model_pushButton.setDisabled(False)
     ui.export_model_pushButton.setDisabled(False)
@@ -958,8 +985,10 @@ def display_training_results(ui, result, model_parameters):
         ui.clas_precision_label.setText('{:.4f}'.format(result['precision_score']))
         ui.clas_f1_score_label.setText('{:.4f}'.format(result['f1_score']))
 
-        # Todo: Plot the results!!!
-        print('Plot Confusion Matrix!!!!')
+        plot_matplotlib_to_qt_widget(ui=ui, target_widget=ui.model_train_widget,
+                                     content={'data': result['data_to_plot'],
+                                              'output_variables': model_parameters['output_variables'],
+                                              'is_regression': model_parameters['is_regression']})
 
 try:
     sys._MEIPASS
