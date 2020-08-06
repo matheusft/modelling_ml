@@ -180,7 +180,8 @@ def configure_gui(ui, ml_model):
     ui.train_model_pushButton.clicked.connect(lambda: train_model(ui, ml_model))
 
     ui.nn_classification_radioButton.click()
-    ui.regression_selection_radioButton.click()
+    ui.nn_regression_radioButton.click()
+    # ui.regression_selection_radioButton.setChecked(True)
     ui.nn_regression_radioButton.click()
 
     ui.tabs_widget.setCurrentIndex(0)
