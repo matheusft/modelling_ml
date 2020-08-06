@@ -775,7 +775,7 @@ def update_input_output_columns(ui, target_object, ml_model):
             target_object.addItem(item)
             combobox = ui.clas_output_colum_comboBox
             items_in_combobox = [combobox.itemText(i) for i in range(combobox.count())]
-            if is_variable_categorical and selected_item.text() in items_in_combobox:
+            if selected_item.text() in items_in_combobox:
                 item_index = items_in_combobox.index(selected_item.text())
                 combobox.removeItem(item_index)
 
@@ -954,6 +954,7 @@ def train_model(ui, ml_model):
     ui.train_model_pushButton.setDisabled(True)
     ui.loading_widget.start()
 
+    # Todo: Clean the plot before running the thread
     # Running the traning in a separate thread from the GUI
     # ui.threadpool.start(worker) #Todo uncomment when this when finished testing!!
     # Todo : Delete this when finished testing
