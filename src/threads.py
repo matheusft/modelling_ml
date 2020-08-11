@@ -83,17 +83,11 @@ class Load_Dataset_Thread(QtCore.QRunnable):
             self.populate_tablewidget_with_dataframe(ui, ui.dataset_tableWidget, ml_model.dataset)
             self.populate_tablewidget_with_dataframe(ui, ui.pre_process_dataset_tableWidget, ml_model.dataset)
 
-            pre_process_checkboxes = [ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox,
-                                      ui.remove_outliers_checkBox,
-                                      ui.replace_values_checkBox, ui.filter_values_checkBox]
-
-            [item.setChecked(False) for item in pre_process_checkboxes]
-
             widgets_to_enable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-                                 ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                                 ui.replace_values_checkBox, ui.filter_values_checkBox,
-                                 ui.addrule_replace_value_pushButton,
-                                 ui.addrule_filter_value_pushButton]
+                                 ui.remove_duplicates_pushButton, ui.remove_constant_variables_pushButton,
+                                 ui.numeric_scaling_pushButton, ui.remove_outliers_pushButton,
+                                 ui.addrule_filter_value_pushButton, ui.addrule_replace_value_pushButton,
+                                 ui.add_input_columns_pushButton, ui.add_output_columns_pushButton]
 
             [item.setEnabled(True) for item in widgets_to_enable]
 
@@ -123,8 +117,7 @@ class Load_Dataset_Thread(QtCore.QRunnable):
             if ui.output_columns_listWidget.count() != 0:
                 ui.output_columns_listWidget.clear()
 
-            ui.preprocess_replace_listWidget.clear()
-            ui.preprocess_filter_listWidget.clear()
+            ui.preprocess_sequence_listWidget.clear()
             ui.clas_output_colum_comboBox.clear()
             ui.train_model_pushButton.setDisabled(True)
 

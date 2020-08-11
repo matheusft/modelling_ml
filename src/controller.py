@@ -54,17 +54,15 @@ def configure_gui(ui, ml_model):
     ui.nn_regression_radioButton.click()
 
     ui.tabs_widget.setCurrentIndex(0)
+    ui.pre_process_tabWidget.setCurrentIndex(0)
     ui.output_selection_stackedWidget.setCurrentIndex(0)
 
-    # widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-    #                       ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-    #                       ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
-    #                       ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton]
-
     widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-                          # ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                          # ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
-                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton]
+                          ui.remove_duplicates_pushButton, ui.remove_constant_variables_pushButton,
+                          ui.numeric_scaling_pushButton, ui.remove_outliers_pushButton,
+                          ui.addrule_filter_value_pushButton, ui.addrule_replace_value_pushButton,
+                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton,
+                          ui.add_input_columns_pushButton, ui.add_output_columns_pushButton, ui.train_model_pushButton]
 
     for widget in widgets_to_disable:
         widget.setEnabled(False)
@@ -106,7 +104,6 @@ def connect_signals(ui, ml_model):
     ui.outliers_treshold_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.outliers_treshold_horizontalSlider.value(),
                                                 ui.outliers_treshold_label, ml_model))
-    ui.outliers_treshold_horizontalSlider.sliderReleased.connect(lambda: update_pre_process_rm_outlier(ui, ml_model))
 
     ui.replace_columnSelection_comboBox.currentIndexChanged.connect(lambda: update_preprocess_replace(ui,
                                                                                                       ml_model))  # Update the pre_process_replacing_stackedWidget according to the replace_columnSelection_comboBox
@@ -236,8 +233,9 @@ def update_table_widget(ui, table_widget, function, data):
             ui.load_file_pushButton.setDisabled(False)
             ui.example_dataset_comboBox.setDisabled(False)
         elif table_widget.objectName() == 'pre_process_dataset_tableWidget':
-            print('Update Pre-Process Table!!!')
-            update_train_test_shape_label
+            ui.wait_spinner_prepdataset_tableWidget.stop()
+            print('Call update_train_test_shape_label')
+            #Todo : call update_train_test_shape_label
 
 
 def update_visualisation_widgets(ui, ml_model):
@@ -416,11 +414,6 @@ def update_preprocess_filtering(ui, ml_model):
             ui.filtering_dataset_value_comboBox.addItem(each_value)  # Fill comboBox
 
 
-def update_pre_process_rm_outlier(ui, ml_model):
-    if ui.remove_outliers_checkBox.isChecked():
-        update_pre_process(ui, ml_model)
-
-
 def update_visualisation_options(ui, ml_model):
     """Update the available visualisation options for each column in the radio buttons.
 
@@ -454,6 +447,9 @@ def update_visualisation_options(ui, ml_model):
 
 
 def plot_matplotlib_to_qt_widget(ui, target_widget, content):
+
+    #Todo - Put this function in a thread!!
+    print('Plotting something - DO THIS IN A THREAD!!!')
 
     target_widget.canvas.axes.clear()
     # If the figure has multiple axes - This happens when the Confusion Matrix is plotted
@@ -528,11 +524,13 @@ def update_label_from_slider_change(ui, slider_value, label_object, ml_model):
     elif label_object.objectName() == 'train_percentage_label':
         label_object.setText('{}%'.format(slider_value))
         ui.test_percentage_horizontalSlider.setValue(100 - slider_value)
-        update_train_test_shape_label(ui, ml_model)
+        if ml_model.is_data_loaded:
+            update_train_test_shape_label(ui, ml_model)
     elif label_object.objectName() == 'test_percentage_label':
         label_object.setText('{}%'.format(slider_value))
         ui.train_percentage_horizontalSlider.setValue(100 - slider_value)
-        update_train_test_shape_label(ui, ml_model)
+        if ml_model.is_data_loaded:
+            update_train_test_shape_label(ui, ml_model)
 
 
 def update_nn_layers_table(table, value):
@@ -627,8 +625,6 @@ def display_message(icon, main_message, informative_message, window_title):
 
 def update_pre_process(ui, ml_model):
 
-    scaling = ui.numeric_scaling_checkBox.isChecked()
-    rm_duplicate = ui.remove_duplicates_checkBox.isChecked()
     rm_outliers = [ui.remove_outliers_checkBox.isChecked(), ui.outliers_treshold_horizontalSlider.value() / 10]
 
     if ui.replace_values_checkBox.isChecked() and ui.preprocess_replace_listWidget.count() > 0:  # Just read the replacing Values if the box is checked

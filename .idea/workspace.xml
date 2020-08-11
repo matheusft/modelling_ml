@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="49b43dc1-dadc-4c38-94e3-a91e8b1a2dcd" name="Default Changelist" comment="Building the Input/Output Tab">
-      <change afterPath="$PROJECT_DIR$/src/threads.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/resources/ui/ml_gui.ui" beforeDir="false" afterPath="$PROJECT_DIR$/resources/ui/ml_gui.ui" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/controller.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/controller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/model.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/model.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threads.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/view.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/view.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -15,7 +15,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="DarkyenusTimeTracker">
-    <option name="totalTimeSeconds" value="245691" />
+    <option name="totalTimeSeconds" value="249498" />
     <option name="gitIntegration" value="true" />
     <option name="naggedAbout" value="1" />
   </component>
@@ -66,6 +66,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$USER_HOME$/Desktop/Untitled.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="controller" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="generic_ml" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/controller.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -141,6 +162,7 @@
       <list>
         <item itemvalue="Python.main" />
         <item itemvalue="Python.convert_ui_to_py" />
+        <item itemvalue="Python.controller" />
         <item itemvalue="Python.Untitled" />
         <item itemvalue="Python.test" />
       </list>
@@ -320,7 +342,7 @@
     </state>
     <state width="683" height="466" key="DebuggerActiveHint/0.0.1440.900@0.0.1440.900" timestamp="1596186636490" />
     <state width="1268" height="428" key="DebuggerActiveHint/0.23.1440.826@0.23.1440.826" timestamp="1596473581422" />
-    <state width="1405" height="173" key="GridCell.Tab.0.bottom" timestamp="1597138592713">
+    <state width="1405" height="330" key="GridCell.Tab.0.bottom" timestamp="1597186668247">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="178" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1596186161339" />
@@ -328,11 +350,12 @@
     <state width="1259" height="180" key="GridCell.Tab.0.bottom/0.23.1440.826/-1280.-48.1280.777@-1280.-48.1280.777" timestamp="1593198282265" />
     <state width="1419" height="82" key="GridCell.Tab.0.bottom/0.23.1440.826/-800.-357.800.1257@0.23.1440.826" timestamp="1593945066401" />
     <state width="779" height="325" key="GridCell.Tab.0.bottom/0.23.1440.826/-800.-38.800.1257@-800.-38.800.1257" timestamp="1593275117779" />
+    <state width="1405" height="330" key="GridCell.Tab.0.bottom/0.23.1440.826/1440.-323.800.1257@0.23.1440.826" timestamp="1597186668247" />
     <state width="1419" height="280" key="GridCell.Tab.0.bottom/0.23.1440.826/1440.-357.800.1257@0.23.1440.826" timestamp="1596123389823" />
     <state width="779" height="469" key="GridCell.Tab.0.bottom/0.23.1440.826/1440.-357.800.1257@1440.-357.800.1257" timestamp="1596122037704" />
     <state width="1405" height="173" key="GridCell.Tab.0.bottom/0.23.1440.826@0.23.1440.826" timestamp="1597138592713" />
     <state width="1419" height="82" key="GridCell.Tab.0.bottom/0.23.1440.877/-800.-357.800.1206@0.23.1440.877" timestamp="1593794456593" />
-    <state width="1405" height="173" key="GridCell.Tab.0.center" timestamp="1597138592712">
+    <state width="1405" height="330" key="GridCell.Tab.0.center" timestamp="1597186668247">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="178" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1596186161332" />
@@ -340,11 +363,12 @@
     <state width="1259" height="180" key="GridCell.Tab.0.center/0.23.1440.826/-1280.-48.1280.777@-1280.-48.1280.777" timestamp="1593198282264" />
     <state width="1419" height="82" key="GridCell.Tab.0.center/0.23.1440.826/-800.-357.800.1257@0.23.1440.826" timestamp="1593945066390" />
     <state width="779" height="325" key="GridCell.Tab.0.center/0.23.1440.826/-800.-38.800.1257@-800.-38.800.1257" timestamp="1593275117776" />
+    <state width="1405" height="330" key="GridCell.Tab.0.center/0.23.1440.826/1440.-323.800.1257@0.23.1440.826" timestamp="1597186668247" />
     <state width="1419" height="280" key="GridCell.Tab.0.center/0.23.1440.826/1440.-357.800.1257@0.23.1440.826" timestamp="1596123389821" />
     <state width="779" height="469" key="GridCell.Tab.0.center/0.23.1440.826/1440.-357.800.1257@1440.-357.800.1257" timestamp="1596122037703" />
     <state width="1405" height="173" key="GridCell.Tab.0.center/0.23.1440.826@0.23.1440.826" timestamp="1597138592712" />
     <state width="1419" height="82" key="GridCell.Tab.0.center/0.23.1440.877/-800.-357.800.1206@0.23.1440.877" timestamp="1593794456591" />
-    <state width="1405" height="173" key="GridCell.Tab.0.left" timestamp="1597138592712">
+    <state width="1405" height="330" key="GridCell.Tab.0.left" timestamp="1597186668246">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="178" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1596186161331" />
@@ -352,11 +376,12 @@
     <state width="1259" height="180" key="GridCell.Tab.0.left/0.23.1440.826/-1280.-48.1280.777@-1280.-48.1280.777" timestamp="1593198282263" />
     <state width="1419" height="82" key="GridCell.Tab.0.left/0.23.1440.826/-800.-357.800.1257@0.23.1440.826" timestamp="1593945066389" />
     <state width="779" height="325" key="GridCell.Tab.0.left/0.23.1440.826/-800.-38.800.1257@-800.-38.800.1257" timestamp="1593275117774" />
+    <state width="1405" height="330" key="GridCell.Tab.0.left/0.23.1440.826/1440.-323.800.1257@0.23.1440.826" timestamp="1597186668246" />
     <state width="1419" height="280" key="GridCell.Tab.0.left/0.23.1440.826/1440.-357.800.1257@0.23.1440.826" timestamp="1596123389821" />
     <state width="779" height="469" key="GridCell.Tab.0.left/0.23.1440.826/1440.-357.800.1257@1440.-357.800.1257" timestamp="1596122037702" />
     <state width="1405" height="173" key="GridCell.Tab.0.left/0.23.1440.826@0.23.1440.826" timestamp="1597138592712" />
     <state width="1419" height="82" key="GridCell.Tab.0.left/0.23.1440.877/-800.-357.800.1206@0.23.1440.877" timestamp="1593794456591" />
-    <state width="1405" height="173" key="GridCell.Tab.0.right" timestamp="1597138592713">
+    <state width="1405" height="330" key="GridCell.Tab.0.right" timestamp="1597186668247">
       <screen x="0" y="23" width="1440" height="826" />
     </state>
     <state width="1419" height="178" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1596186161333" />
@@ -364,6 +389,7 @@
     <state width="1259" height="180" key="GridCell.Tab.0.right/0.23.1440.826/-1280.-48.1280.777@-1280.-48.1280.777" timestamp="1593198282264" />
     <state width="1419" height="82" key="GridCell.Tab.0.right/0.23.1440.826/-800.-357.800.1257@0.23.1440.826" timestamp="1593945066398" />
     <state width="779" height="325" key="GridCell.Tab.0.right/0.23.1440.826/-800.-38.800.1257@-800.-38.800.1257" timestamp="1593275117777" />
+    <state width="1405" height="330" key="GridCell.Tab.0.right/0.23.1440.826/1440.-323.800.1257@0.23.1440.826" timestamp="1597186668247" />
     <state width="1419" height="280" key="GridCell.Tab.0.right/0.23.1440.826/1440.-357.800.1257@0.23.1440.826" timestamp="1596123389822" />
     <state width="779" height="469" key="GridCell.Tab.0.right/0.23.1440.826/1440.-357.800.1257@1440.-357.800.1257" timestamp="1596122037703" />
     <state width="1405" height="173" key="GridCell.Tab.0.right/0.23.1440.826@0.23.1440.826" timestamp="1597138592713" />
@@ -441,18 +467,18 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>470</line>
+          <line>466</line>
           <option name="timeStamp" value="173" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/model.py</url>
-          <line>44</line>
-          <option name="timeStamp" value="174" />
+          <url>file://$PROJECT_DIR$/src/controller.py</url>
+          <line>670</line>
+          <option name="timeStamp" value="175" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/controller.py</url>
-          <line>674</line>
-          <option name="timeStamp" value="175" />
+          <line>453</line>
+          <option name="timeStamp" value="177" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

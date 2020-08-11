@@ -14,9 +14,7 @@ class MlModel:
 
     def __init__(self):
         self.dataset = pd.DataFrame()
-        self.is_rm_duplicate = False
-        self.is_rm_outliers = False
-        self.is_numeric_scaled = False
+        self.is_data_loaded = False
         self.categorical_variables = []
 
 
@@ -40,6 +38,7 @@ class MlModel:
                 self.dataset = pd.read_excel(address)
             else:
                 return 'invalid_file_extension'  # Invalid file extension
+            self.is_data_loaded = True
             self.dataset.dropna(inplace = True)
             self.dataset.reset_index(inplace=True, drop=True)
             self.pre_processed_dataset = self.dataset.copy()
@@ -55,16 +54,10 @@ class MlModel:
 
     def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter_out):
 
-        self.is_rm_duplicate = 0
-        self.is_rm_outliers = 0
-        self.is_numeric_scaled = 0
-
         if rm_duplicate:
-            self.is_rm_duplicate = 1
             self.pre_processed_dataset.drop_duplicates(inplace=True)
 
         if rm_outliers[0]:
-            self.is_rm_outliers = 1
             # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
             # Remove Outliers by removing rows that are not within 'standard_deviation_threshold' standard deviations from mean
             # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
@@ -119,7 +112,6 @@ class MlModel:
 
         # Scaling the numeric values in the pre_processed_dataset
         if scaling:
-            self.is_numeric_scaled = 1
             numeric_columns_to_not_scale = []
             numeric_input_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.drop(
                 labels=numeric_columns_to_not_scale).to_list()
@@ -179,8 +171,8 @@ class MlModel:
             y_test = y_test.ravel()
 
         # if the target class is an integer which was scaled between 0 and 1
-        if not model_parameters['is_regression'] and self.is_numeric_scaled and self.column_types_pd_series[
-            model_parameters['output_variables'][0]].kind == 'i':
+        if not model_parameters['is_regression'] and self.column_types_pd_series[
+            model_parameters['output_variables'][0]].kind == 'i': #Todo add condition to check if it was scaled as well
             original_target_categories = self.dataset[model_parameters['output_variables']].values
             y_train = original_target_categories[train_indexes]
             y_test = original_target_categories[test_indexes]
