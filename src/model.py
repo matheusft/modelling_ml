@@ -40,6 +40,8 @@ class MlModel:
                 self.dataset = pd.read_excel(address)
             else:
                 return 'invalid_file_extension'  # Invalid file extension
+            self.dataset.dropna(inplace = True)
+            self.dataset.reset_index(inplace=True, drop=True)
             self.pre_processed_dataset = self.dataset.copy()
             #This contains the type of all columns
             self.column_types_pd_series = self.dataset.dtypes

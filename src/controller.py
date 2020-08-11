@@ -1,51 +1,16 @@
 import os
 import random
 import sys
+import threads
 import seaborn as sns
 from os.path import join, abspath
 import pandas as pd
+from docutils.nodes import address
 from view import QtCore, QtWidgets
 from personalised_widgets import MplWidget, QtWaitingSpinner
 
 #Set seaborn aesthetic parameters
 sns.set()
-
-class Train_Model_WorkerSignals(QtCore.QObject):
-    finished = QtCore.pyqtSignal(object, object, object)
-
-
-class Train_Model_Worker(QtCore.QRunnable):
-    """
-    Worker thread
-
-    Inherits from QRunnable to handler worker thread setup, signals and wrap-up.
-
-    :param callback: The function callback to run on this worker thread. Supplied args and
-                     kwargs will be passed through to the runner.
-    :type callback: function
-    :param args: Arguments to pass to the callback function
-    :param kwargs: Keywords to pass to the callback function
-
-    """
-
-    def __init__(self, *args, **kwargs):
-        super(Train_Model_Worker, self).__init__()
-
-        self.ml_model = args[0]
-        self.model_parameters = args[1]
-        self.algorithm_parameters = args[2]
-        self.ui = args[3]
-
-        self.args = args
-        self.kwargs = kwargs
-        self.signals = Train_Model_WorkerSignals()
-
-    @QtCore.pyqtSlot()
-    def run(self):
-        # training the model
-        result = self.ml_model.train(self.model_parameters, self.algorithm_parameters)
-        # sending the output of the thread to the assigned function
-        self.signals.finished.emit(self.ui, result, self.model_parameters)
 
 
 def transform_to_resource_path(relative_path):
@@ -81,9 +46,48 @@ def configure_gui(ui, ml_model):
             # Each Item receives the dataset name as text and the dataset path as data
             ui.example_dataset_comboBox.addItem(dataset.split('.')[0], datasets_path + dataset)
 
+    connect_signals(ui, ml_model)
+
+    ui.nn_classification_radioButton.click()
+    ui.nn_regression_radioButton.click()
+    # ui.regression_selection_radioButton.setChecked(True)
+    ui.nn_regression_radioButton.click()
+
+    ui.tabs_widget.setCurrentIndex(0)
+    ui.output_selection_stackedWidget.setCurrentIndex(0)
+
+    # widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
+    #                       ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+    #                       ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
+    #                       ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton]
+
+    widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
+                          # ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+                          # ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
+                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton]
+
+    for widget in widgets_to_disable:
+        widget.setEnabled(False)
+
+    #Crating QtWaitingSpinners dinamically and positioning it over the tableWidgets
+    ui.wait_spinner_dataset_tableWidget = QtWaitingSpinner(ui.dataset_tableWidget)
+    ui.wait_spinner_prepdataset_tableWidget = QtWaitingSpinner(ui.pre_process_dataset_tableWidget)
+    ui.wait_spinner_dataset_tableWidget.setSizePolicy(ui.dataset_tableWidget.sizePolicy())
+    ui.wait_spinner_prepdataset_tableWidget.setSizePolicy(ui.pre_process_dataset_tableWidget.sizePolicy())
+
+    # Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
+
+    # TODO : Disable all button and functions while Dataset is not chosen -
+    # Todo : Check things that break when the dataset is not loaded yet
+
+
+def connect_signals(ui, ml_model):
+
     # Connecting load_file_pushButton - Dataset Load Tab
-    ui.load_file_pushButton.clicked.connect(lambda: load_dataset(ui, ml_model))
-    ui.example_dataset_comboBox.currentIndexChanged.connect(lambda: load_dataset(ui, ml_model))
+    ui.load_file_pushButton.clicked.connect(
+        lambda: trigger_loading_dataset_thread(ui, ml_model, ui.load_file_pushButton))
+    ui.example_dataset_comboBox.currentIndexChanged.connect(
+        lambda: trigger_loading_dataset_thread(ui, ml_model, ui.example_dataset_comboBox))
 
     # Connecting columnSelection_comboBox - Visualise Tab
     ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
@@ -93,11 +97,11 @@ def configure_gui(ui, ml_model):
     ui.plot_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
     ui.histogram_radioButton.clicked.connect(lambda: update_visualisation_widgets(ui, ml_model))
 
-    pre_process_checkboxes = [ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                              ui.replace_values_checkBox, ui.filter_values_checkBox]
-
-    for pre_process_option in pre_process_checkboxes:
-        pre_process_option.clicked.connect(lambda: update_pre_process(ui, ml_model))
+    # pre_process_checkboxes = [ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
+    #                           ui.replace_values_checkBox, ui.filter_values_checkBox]
+    #
+    # for pre_process_option in pre_process_checkboxes:
+    #     pre_process_option.clicked.connect(lambda: update_pre_process(ui, ml_model))
 
     ui.outliers_treshold_horizontalSlider.valueChanged.connect(
         lambda: update_label_from_slider_change(ui, ui.outliers_treshold_horizontalSlider.value(),
@@ -112,10 +116,10 @@ def configure_gui(ui, ml_model):
     ui.addrule_replace_value_pushButton.clicked.connect(lambda: add_replacing_rule(ui, ml_model))
     ui.addrule_filter_value_pushButton.clicked.connect(lambda: add_filtering_rule(ui, ml_model))
 
-    ui.remove_replace_value_pushButton.clicked.connect(
-        lambda: remove_item_from_listwidget(ui, ui.preprocess_replace_listWidget, ml_model))
-    ui.remove_filter_rule_pushButton.clicked.connect(
-        lambda: remove_item_from_listwidget(ui, ui.preprocess_filter_listWidget, ml_model))
+    # ui.remove_replace_value_pushButton.clicked.connect(
+    #     lambda: remove_item_from_listwidget(ui, ui.preprocess_replace_listWidget, ml_model))
+    # ui.remove_filter_rule_pushButton.clicked.connect(
+    #     lambda: remove_item_from_listwidget(ui, ui.preprocess_filter_listWidget, ml_model))
 
     ui.add_input_columns_pushButton.clicked.connect(
         lambda: update_input_output_columns(ui, ui.input_columns_listWidget, ml_model))
@@ -127,10 +131,10 @@ def configure_gui(ui, ml_model):
     ui.remove_output_columns_pushButton.clicked.connect(
         lambda: remove_item_from_listwidget(ui, ui.output_columns_listWidget, ml_model))
 
-    ui.clear_replace_value_pushButton.clicked.connect(
-        lambda: clear_listwidget(ui, ui.preprocess_replace_listWidget, ml_model))
-    ui.clear_filter_rule_pushButton.clicked.connect(
-        lambda: clear_listwidget(ui, ui.preprocess_filter_listWidget, ml_model))
+    # ui.clear_replace_value_pushButton.clicked.connect(
+    #     lambda: clear_listwidget(ui, ui.preprocess_replace_listWidget, ml_model))
+    # ui.clear_filter_rule_pushButton.clicked.connect(
+    #     lambda: clear_listwidget(ui, ui.preprocess_filter_listWidget, ml_model))
     ui.clear_input_columns_pushButton.clicked.connect(
         lambda: clear_listwidget(ui, ui.input_columns_listWidget, ml_model))
     ui.clear_output_columns_pushButton.clicked.connect(
@@ -179,30 +183,8 @@ def configure_gui(ui, ml_model):
 
     ui.train_model_pushButton.clicked.connect(lambda: train_model(ui, ml_model))
 
-    ui.nn_classification_radioButton.click()
-    ui.nn_regression_radioButton.click()
-    # ui.regression_selection_radioButton.setChecked(True)
-    ui.nn_regression_radioButton.click()
 
-    ui.tabs_widget.setCurrentIndex(0)
-    ui.output_selection_stackedWidget.setCurrentIndex(0)
-
-    widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-                          ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                          ui.replace_values_checkBox, ui.filter_values_checkBox, ui.addrule_replace_value_pushButton,
-                          ui.addrule_filter_value_pushButton, ui.export_model_pushButton, ui.train_model_pushButton,
-                          ui.load_file_pushButton]
-
-    for widget in widgets_to_disable:
-        widget.setEnabled(False)
-
-    # Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
-
-    # TODO : Disable all button and functions while Dataset is not chosen -
-    # Todo : Check things that break when the dataset is not loaded yet
-
-
-def load_dataset(ui, ml_model):
+def trigger_loading_dataset_thread(ui, ml_model, data_source):
     """Prompts the user to select an input file and call ml_model.read_dataset.
 
     Args:
@@ -210,124 +192,52 @@ def load_dataset(ui, ml_model):
         :param ui:  The ui to be updated
 
     """
-    # TODO: uncomment this when finish doing tests
-    # fileDlg = QtWidgets.QFileDialog()
-    # file_address = fileDlg.getOpenFileName()[0]
 
-    # # TODO : Check whether the file_address is valid or empty (Is empty if the user cancel)
-    # file_address = ''
-    # while file_address == '' or file_address[0] == '.':
-    #     file_address = random.choice(os.listdir('/Users/matheustorquato/Documents/GitHub/generic_ml/data'))
-    # file_address = '/Users/matheustorquato/Documents/GitHub/generic_ml/data/' + file_address
-    selected_index = ui.example_dataset_comboBox.currentIndex()
-    file_address = ui.example_dataset_comboBox.itemData(selected_index)
-    # Todo: Display loading icom here!!!
-    return_code = ml_model.read_dataset(file_address)
+    if data_source.objectName() == 'load_file_pushButton':
+        fileDlg = QtWidgets.QFileDialog()
+        file_address = fileDlg.getOpenFileName()[0]
+        if file_address == '' or file_address == None:
+            return
+    elif data_source.objectName() == 'example_dataset_comboBox':
+        selected_index = ui.example_dataset_comboBox.currentIndex()
+        file_address = ui.example_dataset_comboBox.itemData(selected_index)
+
+    # This spinner is started here, but finished by the thread
+    ui.wait_spinner_dataset_tableWidget.start() # Todo: Stop this when the thread is done
+    ui.load_file_pushButton.setDisabled(True)
+    ui.example_dataset_comboBox.setDisabled(True)
+
+    # Creating an object worker
+    worker = threads.Load_Dataset_Thread(ui, ml_model, file_address)
+    # Connecting the signals from the created worker to its functions
+    worker.signals.update_train_test_shape_label.connect(update_train_test_shape_label)
+    worker.signals.display_message.connect(display_message)
+    worker.signals.update_table_widget.connect(update_table_widget)
+    #Starts the thread
+    ui.threadpool.start(worker) # Todo: Uncomment this when finished debugging
+    # result = ml_model.read_dataset(file_address)
 
     # TODO: add checkbox Dataset with Column name or not
     # Todo: Check what needs to be reset/cleared when a new dataset is loaded
 
-    # Sucess
-    if return_code == 'sucess':
 
-        populate_tablewidget_with_dataframe(ui.dataset_tableWidget, ml_model.dataset)
-        populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, ml_model.dataset)
-
-        pre_process_checkboxes = [ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox,
-                                  ui.remove_outliers_checkBox,
-                                  ui.replace_values_checkBox, ui.filter_values_checkBox]
-
-        [item.setChecked(False) for item in pre_process_checkboxes]
-
-        widgets_to_enable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
-                             ui.numeric_scaling_checkBox, ui.remove_duplicates_checkBox, ui.remove_outliers_checkBox,
-                             ui.replace_values_checkBox, ui.filter_values_checkBox,
-                             ui.addrule_replace_value_pushButton,
-                             ui.addrule_filter_value_pushButton]
-
-        [item.setEnabled(True) for item in widgets_to_enable]
-
-        # Here we update the columnSelection_comboBox
-        if ui.columnSelection_comboBox.count() > 0:  # If the comboBox is not empty
-            # Disconnecting
-            ui.columnSelection_comboBox.currentIndexChanged.disconnect()  # Disconnect the signal first, then clear
-            ui.replace_columnSelection_comboBox.currentIndexChanged.disconnect()  # Disconnect the signal first, then clear
-            ui.filter_columnSelection_comboBox.currentIndexChanged.disconnect()  # Disconnect the signal first, then clear
-            # Clearing
-            ui.columnSelection_comboBox.clear()  # Delete all values from comboBox, then re-connect the signal
-            ui.replace_columnSelection_comboBox.clear()  # Delete all values from comboBox, then re-connect the signal
-            ui.filter_columnSelection_comboBox.clear()  # Delete all values from comboBox, then re-connect the signal
-            # Re-connecting
-            ui.columnSelection_comboBox.currentIndexChanged.connect(lambda: update_visualisation_options(ui, ml_model))
-            ui.replace_columnSelection_comboBox.currentIndexChanged.connect(
-                lambda: update_preprocess_replace(ui, ml_model))
-            ui.filter_columnSelection_comboBox.currentIndexChanged.connect(
-                lambda: update_preprocess_filtering(ui, ml_model))
-
-        update_train_test_shape_label(ui, ml_model)
-
-        if ui.available_columns_listWidget.count() != 0:
-            ui.available_columns_listWidget.clear()
-
-        if ui.input_columns_listWidget.count() != 0:
-            ui.input_columns_listWidget.clear()
-
-        if ui.output_columns_listWidget.count() != 0:
-            ui.output_columns_listWidget.clear()
-
-        ui.preprocess_replace_listWidget.clear()
-        ui.preprocess_filter_listWidget.clear()
-        ui.clas_output_colum_comboBox.clear()
-        ui.train_model_pushButton.setDisabled(True)
-
-        # Filling the comboBoxes
-        for each_column in ml_model.dataset.columns:
-            ui.columnSelection_comboBox.addItem(each_column)  # Fill columnSelection_comboBox from the Visualise Tab
-            ui.replace_columnSelection_comboBox.addItem(each_column)  # from the Pre-process Tab
-            ui.filter_columnSelection_comboBox.addItem(each_column)  # from the Pre-process Tab
-            ui.available_columns_listWidget.addItem(each_column)
-
-            if ml_model.column_types_pd_series[each_column].kind in 'iO':  # i = Integer , O = Object
-                ui.clas_output_colum_comboBox.addItem(each_column)
-
-    elif return_code == 'invalid_file_extension':
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Warning)
-        msg.setText("Error")
-        msg.setInformativeText('Invalid Input format. \nTry Excel or .csv formats')
-        msg.setWindowTitle("Error")
-        msg.exec()
-
-    elif return_code == 'exception_in_the_file':
-        msg = QtWidgets.QMessageBox()
-        msg.setIcon(QtWidgets.QMessageBox.Critical)
-        msg.setText("Error")
-        msg.setInformativeText('Invalid Input File')
-        msg.setWindowTitle("Error")
-        msg.exec()
-
-
-def populate_tablewidget_with_dataframe(table_widget, filling_dataframe):
-    # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
-    number_of_rows_to_display = 20
-    table_widget.setRowCount(len(filling_dataframe.head(number_of_rows_to_display)))
-    table_widget.setColumnCount(len(filling_dataframe.columns))
-
-    #Todo: Check if the columns width are ok
-    ## header = table_widget.horizontalHeader()  # uses this header in order to adjust the column width
-    ## header.setSectionResizeMode(i, QtWidgets.QHeaderView.ResizeToContents)  # Column width fits the content
-
-    # Adding the labels at the top of the Table
-    table_widget.setHorizontalHeaderLabels(filling_dataframe.columns)
-
-    # Filling the Table with the dataset
-    for i in range(table_widget.rowCount()):
-        for j in range(table_widget.columnCount()):
-            dataset_value = filling_dataframe.iloc[i, j]  # Get the value from the dataset
-            dataset_value_converted = dataset_value if (type(dataset_value) is str) else '{:}'.format(dataset_value)
-            qt_item = QtWidgets.QTableWidgetItem(dataset_value_converted)  # Creates an qt item
-            qt_item.setTextAlignment(QtCore.Qt.AlignHCenter)  # Aligns the item in the horizontal center
-            table_widget.setItem(i, j, qt_item)
+def update_table_widget(ui, table_widget, function, data):
+    if function == 'update_header':
+        table_widget.setHorizontalHeaderLabels(data['header_labels'])
+    elif function == 'fill_table':
+        i = data['i']
+        j = data['j']
+        qt_item = data['qt_item']
+        table_widget.setItem(i, j, qt_item)
+    elif function == 'stop_spinner':
+        if table_widget.objectName() == 'dataset_tableWidget':
+            ui.wait_spinner_dataset_tableWidget.stop()
+            # Enabling back the widgets after finishing the data loading
+            ui.load_file_pushButton.setDisabled(False)
+            ui.example_dataset_comboBox.setDisabled(False)
+        elif table_widget.objectName() == 'pre_process_dataset_tableWidget':
+            print('Update Pre-Process Table!!!')
+            update_train_test_shape_label
 
 
 def update_visualisation_widgets(ui, ml_model):
@@ -344,6 +254,121 @@ def update_visualisation_widgets(ui, ml_model):
     plot_matplotlib_to_qt_widget(ui=ui, target_widget=ui.dataVisualisePlot_widget,
                                  content={'data': ml_model.dataset[selected_column],
                                           'is_categorical': is_categorical})
+
+
+def add_replacing_rule(ui, ml_model):
+    if ui.pre_process_replacing_stackedWidget.currentIndex() == 0:  # If numeric
+        if ui.replaced_value_lineEdit.text() != '' and ui.replacing_value_lineEdit.text() != '':  # If inputs are not empty
+            try:
+                float(ui.replacing_value_lineEdit.text()), float(
+                    ui.replaced_value_lineEdit.text())  # Check whether it is a valid input
+            except:
+                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',  # Display error message and return
+                                'Type a valid numeric input for column {}'.format(
+                                    ui.replace_columnSelection_comboBox.currentText()), 'Error')
+                return
+            # Make String to be displayed in the rule
+            string_to_add = '- Replace {} in {} with {}'.format(ui.replaced_value_lineEdit.text(),
+                                                                ui.replace_columnSelection_comboBox.currentText(),
+                                                                ui.replacing_value_lineEdit.text())
+            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+            # Add the data embedded in each QListWidgetItem element from the listWidget
+            item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.replaced_value_lineEdit.text(),
+                                                     ui.replace_columnSelection_comboBox.currentText(),
+                                                     ui.replacing_value_lineEdit.text()])
+            # Todo: Make this loop a function. It happens 4x in the code
+            for i in range(ui.preprocess_replace_listWidget.count()):
+                if ui.preprocess_replace_listWidget.item(i).text() == item_to_add.text():
+                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                    'Type a valid rule', 'Error')
+                    return
+            ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
+
+        else:  # Display a message if the inputs are empty and a rule is added
+            display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
+                            'Type a valid rule', 'Error')
+
+    else:  # If not numeric
+        if ui.replacing_value_lineEdit.text() != '':  # If input is not empty
+            string_to_add = '- Replace {} in {} with {}'.format(ui.replaced_value_comboBox.currentText(),
+                                                                ui.replace_columnSelection_comboBox.currentText(),
+                                                                ui.replacing_value_lineEdit.text())
+            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+            # Add the data embedded in each QListWidgetItem element from the listWidget
+            item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.replaced_value_comboBox.currentText(),
+                                                     ui.replace_columnSelection_comboBox.currentText(),
+                                                     ui.replacing_value_lineEdit.text()])
+            for i in range(ui.preprocess_replace_listWidget.count()):
+                if ui.preprocess_replace_listWidget.item(i).text() == item_to_add.text():
+                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                    'Type a valid rule', 'Error')
+                    return
+            ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
+        else:  # Display a message if the inputs are empty and a rule is added
+            display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
+                            'Type a valid rule', 'Error')
+            return
+
+    if ui.replace_values_checkBox.isChecked():
+        update_pre_process(ui, ml_model)
+
+
+def add_filtering_rule(ui, ml_model):
+    is_numeric_column = ml_model.column_types_pd_series[
+                            ui.filter_columnSelection_comboBox.currentText()].kind in 'iuf'  # iuf = i int (signed), u unsigned int, f float
+
+    if is_numeric_column:  # If numeric
+        if ui.filtering_dataset_value_lineEdit.text() != '':  # If input is not empty
+            try:
+                float(ui.filtering_dataset_value_lineEdit.text())  # Check whether it is a valid input
+            except:
+                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',
+                                'Type a valid numeric input for column {}'.format(
+                                    ui.filter_columnSelection_comboBox.currentText()), 'Error')
+                return
+            string_to_add = '- Exclude {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
+                                                               ui.filter_operator_comboBox.currentText(),
+                                                               ui.filtering_dataset_value_lineEdit.text())
+            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+            # Add the data
+            item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.filter_columnSelection_comboBox.currentText(),
+                                                     ui.filter_operator_comboBox.currentText(),
+                                                     ui.filtering_dataset_value_lineEdit.text()])
+            # Todo Make This Loop a function
+            for i in range(ui.preprocess_filter_listWidget.count()):
+                if ui.preprocess_filter_listWidget.item(i).text() == item_to_add.text():
+                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                    'Type a valid rule', 'Error')
+                    return
+            ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
+
+
+        else:  # Display a message if the inputs are empty and a rule is added
+            display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
+                            'Type a valid rule', 'Error')
+
+    else:  # If not numeric
+        string_to_add = '- Exclude {} values {} to {}'.format(ui.filter_columnSelection_comboBox.currentText(),
+                                                              ui.filter_operator_comboBox.currentText(),
+                                                              ui.filtering_dataset_value_comboBox.currentText())
+        item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+        item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
+        # Add the data
+        item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.filter_columnSelection_comboBox.currentText(),
+                                                 ui.filter_operator_comboBox.currentText(),
+                                                 ui.filtering_dataset_value_comboBox.currentText()])
+        for i in range(ui.preprocess_filter_listWidget.count()):
+            if ui.preprocess_filter_listWidget.item(i).text() == item_to_add.text():
+                display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
+                                'Type a valid rule', 'Error')
+                return
+        ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
+
+    if ui.filter_values_checkBox.isChecked():
+        update_pre_process(ui, ml_model)
 
 
 def update_preprocess_replace(ui, ml_model):
@@ -389,6 +414,11 @@ def update_preprocess_filtering(ui, ml_model):
         # Filling the comboBoxes
         for each_value in unique_values:
             ui.filtering_dataset_value_comboBox.addItem(each_value)  # Fill comboBox
+
+
+def update_pre_process_rm_outlier(ui, ml_model):
+    if ui.remove_outliers_checkBox.isChecked():
+        update_pre_process(ui, ml_model)
 
 
 def update_visualisation_options(ui, ml_model):
@@ -519,126 +549,6 @@ def update_nn_layers_table(table, value):
             table.removeRow(table.rowCount() - 1)
 
 
-def update_pre_process_rm_outlier(ui, ml_model):
-    if ui.remove_outliers_checkBox.isChecked():
-        update_pre_process(ui, ml_model)
-
-
-def add_replacing_rule(ui, ml_model):
-    if ui.pre_process_replacing_stackedWidget.currentIndex() == 0:  # If numeric
-        if ui.replaced_value_lineEdit.text() != '' and ui.replacing_value_lineEdit.text() != '':  # If inputs are not empty
-            try:
-                float(ui.replacing_value_lineEdit.text()), float(
-                    ui.replaced_value_lineEdit.text())  # Check whether it is a valid input
-            except:
-                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',  # Display error message and return
-                                'Type a valid numeric input for column {}'.format(
-                                    ui.replace_columnSelection_comboBox.currentText()), 'Error')
-                return
-            # Make String to be displayed in the rule
-            string_to_add = '- Replace {} in {} with {}'.format(ui.replaced_value_lineEdit.text(),
-                                                                ui.replace_columnSelection_comboBox.currentText(),
-                                                                ui.replacing_value_lineEdit.text())
-            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
-            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
-            # Add the data embedded in each QListWidgetItem element from the listWidget
-            item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.replaced_value_lineEdit.text(),
-                                                     ui.replace_columnSelection_comboBox.currentText(),
-                                                     ui.replacing_value_lineEdit.text()])
-            # Todo: Make this loop a function. It happens 4x in the code
-            for i in range(ui.preprocess_replace_listWidget.count()):
-                if ui.preprocess_replace_listWidget.item(i).text() == item_to_add.text():
-                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
-                                    'Type a valid rule', 'Error')
-                    return
-            ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
-
-        else:  # Display a message if the inputs are empty and a rule is added
-            display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
-                            'Type a valid rule', 'Error')
-
-    else:  # If not numeric
-        if ui.replacing_value_lineEdit.text() != '':  # If input is not empty
-            string_to_add = '- Replace {} in {} with {}'.format(ui.replaced_value_comboBox.currentText(),
-                                                                ui.replace_columnSelection_comboBox.currentText(),
-                                                                ui.replacing_value_lineEdit.text())
-            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
-            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
-            # Add the data embedded in each QListWidgetItem element from the listWidget
-            item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.replaced_value_comboBox.currentText(),
-                                                     ui.replace_columnSelection_comboBox.currentText(),
-                                                     ui.replacing_value_lineEdit.text()])
-            for i in range(ui.preprocess_replace_listWidget.count()):
-                if ui.preprocess_replace_listWidget.item(i).text() == item_to_add.text():
-                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
-                                    'Type a valid rule', 'Error')
-                    return
-            ui.preprocess_replace_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
-        else:  # Display a message if the inputs are empty and a rule is added
-            display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
-                            'Type a valid rule', 'Error')
-            return
-
-    if ui.replace_values_checkBox.isChecked():
-        update_pre_process(ui, ml_model)
-
-
-def add_filtering_rule(ui, ml_model):
-    is_numeric_column = ml_model.column_types_pd_series[
-                            ui.filter_columnSelection_comboBox.currentText()].kind in 'iuf'  # iuf = i int (signed), u unsigned int, f float
-
-    if is_numeric_column:  # If numeric
-        if ui.filtering_dataset_value_lineEdit.text() != '':  # If input is not empty
-            try:
-                float(ui.filtering_dataset_value_lineEdit.text())  # Check whether it is a valid input
-            except:
-                display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',
-                                'Type a valid numeric input for column {}'.format(
-                                    ui.filter_columnSelection_comboBox.currentText()), 'Error')
-                return
-            string_to_add = '- Exclude {} values {} {}'.format(ui.filter_columnSelection_comboBox.currentText(),
-                                                               ui.filter_operator_comboBox.currentText(),
-                                                               ui.filtering_dataset_value_lineEdit.text())
-            item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
-            item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
-            # Add the data
-            item_to_add.setData(QtCore.Qt.UserRole, ['Numeric', ui.filter_columnSelection_comboBox.currentText(),
-                                                     ui.filter_operator_comboBox.currentText(),
-                                                     ui.filtering_dataset_value_lineEdit.text()])
-            # Todo Make This Loop a function
-            for i in range(ui.preprocess_filter_listWidget.count()):
-                if ui.preprocess_filter_listWidget.item(i).text() == item_to_add.text():
-                    display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
-                                    'Type a valid rule', 'Error')
-                    return
-            ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
-
-
-        else:  # Display a message if the inputs are empty and a rule is added
-            display_message(QtWidgets.QMessageBox.Information, 'Empty Input',
-                            'Type a valid rule', 'Error')
-
-    else:  # If not numeric
-        string_to_add = '- Exclude {} values {} to {}'.format(ui.filter_columnSelection_comboBox.currentText(),
-                                                              ui.filter_operator_comboBox.currentText(),
-                                                              ui.filtering_dataset_value_comboBox.currentText())
-        item_to_add = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
-        item_to_add.setText(string_to_add)  # Add the text to be displayed in the listWidget
-        # Add the data
-        item_to_add.setData(QtCore.Qt.UserRole, ['Categorical', ui.filter_columnSelection_comboBox.currentText(),
-                                                 ui.filter_operator_comboBox.currentText(),
-                                                 ui.filtering_dataset_value_comboBox.currentText()])
-        for i in range(ui.preprocess_filter_listWidget.count()):
-            if ui.preprocess_filter_listWidget.item(i).text() == item_to_add.text():
-                display_message(QtWidgets.QMessageBox.Information, 'Duplicate Rule',
-                                'Type a valid rule', 'Error')
-                return
-        ui.preprocess_filter_listWidget.addItem(item_to_add)  # Add the new rule to the list widget
-
-    if ui.filter_values_checkBox.isChecked():
-        update_pre_process(ui, ml_model)
-
-
 def remove_item_from_listwidget(ui, target_listwidget, ml_model):
     if target_listwidget == ui.preprocess_filter_listWidget:
         for item in ui.preprocess_filter_listWidget.selectedItems():
@@ -716,6 +626,7 @@ def display_message(icon, main_message, informative_message, window_title):
 
 
 def update_pre_process(ui, ml_model):
+
     scaling = ui.numeric_scaling_checkBox.isChecked()
     rm_duplicate = ui.remove_duplicates_checkBox.isChecked()
     rm_outliers = [ui.remove_outliers_checkBox.isChecked(), ui.outliers_treshold_horizontalSlider.value() / 10]
@@ -755,7 +666,14 @@ def update_pre_process(ui, ml_model):
         display_message(QtWidgets.QMessageBox.Critical, 'Invalid Pre-processing',
                         'These pre-processing rules are too restrictive and would return an empty dataset', 'Error')
     else:
-        populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, pre_processed_dataset)
+        worker = threads.Load_Dataset_Thread(ui, ml_model, 'populate_tablewidget_only')
+        worker.signals.update_train_test_shape_label.connect(update_train_test_shape_label)
+        worker.signals.display_message.connect(display_message)
+        worker.signals.update_table_widget.connect(update_table_widget)
+        # Starts the thread
+        ui.threadpool.start(worker)  # Todo: Uncomment this when finished debugging
+        # populate_tablewidget_with_dataframe(ui.pre_process_dataset_tableWidget, pre_processed_dataset,
+        #                                     ui.wait_spinner_prepdataset_tableWidget)
         update_train_test_shape_label(ui, ml_model)
 
     # Todo Update the values from the comboboxes after filtering/replacing according to the pro-process dataset
@@ -947,13 +865,13 @@ def train_model(ui, ml_model):
                              'output_variables': output_variables})
 
     # Creating an object worker
-    worker = Train_Model_Worker(ml_model, model_parameters, algorithm_parameters, ui)
+    worker = threads.Train_Model_Thread(ml_model, model_parameters, algorithm_parameters, ui)
 
     # Connecting the signals from the created worker to its functions
     worker.signals.finished.connect(display_training_results)
 
     ui.train_model_pushButton.setDisabled(True)
-    ui.loading_widget.start()
+    ui.train_results_loading_widget.start()
 
     # Todo: Clean the plot before running the thread
     # Running the traning in a separate thread from the GUI
@@ -964,7 +882,7 @@ def train_model(ui, ml_model):
 
 
 def display_training_results(ui, result, model_parameters):
-    ui.loading_widget.stop()
+    ui.train_results_loading_widget.stop()
     ui.train_model_pushButton.setDisabled(False)
     ui.export_model_pushButton.setDisabled(False)
 
