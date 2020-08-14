@@ -17,7 +17,6 @@ class MlModel:
         self.is_data_loaded = False
         self.categorical_variables = []
 
-
     def read_dataset(self, address):
         """Read a dataset into a pandas dataframe from a file address.
 
@@ -47,83 +46,65 @@ class MlModel:
             # Selecting all non-numeric columns
             self.categorical_variables = self.dataset.select_dtypes(include=['object']).columns.to_list()
             self.integer_variables = self.dataset.select_dtypes(include=['int64']).columns.to_list()
+            self.numeric_variables = self.dataset.select_dtypes(include=['int64', 'float64']).columns.to_list()
             return 'sucess'
         except:
             return 'exception_in_the_file'  # Exception
 
 
-    def pre_process_data(self, scaling, rm_duplicate, rm_outliers, replace, filter_out):
+    def remove_outliers(self, cut_off):
+        # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
+        # Remove Outliers by removing rows that are not within 'standard_deviation_threshold' standard deviations from mean
+        # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
+        numeric_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.to_list()
+        z_score = stats.zscore(self.pre_processed_dataset[numeric_columns])
+        self.pre_processed_dataset = self.pre_processed_dataset[(np.abs(z_score) < cut_off).all(axis=1)]
+        self.pre_processed_dataset.reset_index(inplace=True, drop=True)
 
-        if rm_duplicate:
-            self.pre_processed_dataset.drop_duplicates(inplace=True)
+    def scale_numeric_values(self):
 
-        if rm_outliers[0]:
-            # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
-            # Remove Outliers by removing rows that are not within 'standard_deviation_threshold' standard deviations from mean
-            # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
-            standard_deviation_threshold = rm_outliers[1]
-            numeric_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.to_list()
-            self.pre_processed_dataset = self.pre_processed_dataset[
-                (np.abs(stats.zscore(self.pre_processed_dataset[numeric_columns])) < standard_deviation_threshold).all(
-                    axis=1)]
-            self.pre_processed_dataset.reset_index()
+        self.input_scaler = MinMaxScaler(feature_range=(-1, 1))
+        standardised_numeric_input = self.input_scaler.fit_transform(self.pre_processed_dataset[self.numeric_variables])
+        # Updating the scaled values in the pre_processed_dataset
+        self.pre_processed_dataset[self.numeric_variables] = standardised_numeric_input
 
-        if filter_out[0]:
-            for rule in filter_out[1]:
-                target_column = rule[0]
-                comparing_value = rule[2]
+    def remove_duplicate_rows(self):
+        self.pre_processed_dataset.drop_duplicates(inplace=True)
+        self.pre_processed_dataset.reset_index(inplace=True, drop=True)
 
-                if rule[1] == 'Equal':
-                    self.pre_processed_dataset = self.pre_processed_dataset[~
-                    operator.eq(self.pre_processed_dataset[target_column], comparing_value)]
-                elif rule[1] == 'Not equal':
-                    self.pre_processed_dataset = self.pre_processed_dataset[~
-                    operator.ne(self.pre_processed_dataset[target_column], comparing_value)]
-                elif rule[1] == 'Less than':
-                    self.pre_processed_dataset = self.pre_processed_dataset[~
-                    operator.lt(self.pre_processed_dataset[target_column], comparing_value)]
-                elif rule[1] == 'Less than or equal to':
-                    self.pre_processed_dataset = self.pre_processed_dataset[~
-                    operator.le(self.pre_processed_dataset[target_column], comparing_value)]
-                elif rule[1] == 'Greater than':
-                    self.pre_processed_dataset = self.pre_processed_dataset[~
-                    operator.gt(self.pre_processed_dataset[target_column], comparing_value)]
-                elif rule[1] == 'Greater than or equal to':
-                    self.pre_processed_dataset = self.pre_processed_dataset[~
-                    operator.ge(self.pre_processed_dataset[target_column], comparing_value)]
-            self.pre_processed_dataset.reset_index()
+    def remove_constant_variables(self):
+        dataset = self.pre_processed_dataset
+        self.pre_processed_dataset = dataset.loc[:, (dataset != dataset.iloc[0]).any()]
 
-        if replace[0]:
-            for rule in replace[1]:
-                target_column = rule[1]
-                column_data_type = self.column_types_pd_series[target_column]
-                new_value = rule[2]
-                if column_data_type.kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
-                    value_to_replace = float(rule[0])
-                    new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(new_value)
-                else:
-                    value_to_replace = rule[0]
-                # Making sure the value to be replaced mataches with the dtype of the dataset
-                value_to_replace = pd.Series(value_to_replace).astype(column_data_type).values[0]
-                # Converting to either float or int, depending if . or e is in the string
+    def replace_values(self, target_variable, is_numeric_variable, new_value, old_values):
+            variable_data_type = self.column_types_pd_series[target_variable]
+            if is_numeric_variable:
+                value_to_replace = float(old_values)
+                new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(new_value)
+            else:
+                value_to_replace = old_values
+            # Making sure the value to be replaced mataches with the dtype of the dataset
+            value_to_replace = pd.Series(value_to_replace).astype(variable_data_type).values[0]
+            # Converting to either float or int, depending if . or e is in the string
+            self.pre_processed_dataset[target_variable].replace(to_replace=value_to_replace, value=new_value,inplace=True)
 
-                self.pre_processed_dataset[target_column].replace(to_replace=value_to_replace, value=new_value,
-                                                                  inplace=True)
+    def filter_out_values(self, filtering_variable, filtering_value, filtering_operator):
+        column_of_filtering_variable = self.pre_processed_dataset[filtering_variable]
+        dataset = self.pre_processed_dataset
+        if filtering_operator == 'Equal to':
+            self.pre_processed_dataset = dataset[~operator.eq(column_of_filtering_variable, filtering_value)]
+        elif filtering_operator == 'Not equal to':
+            self.pre_processed_dataset = dataset[~operator.ne(column_of_filtering_variable, filtering_value)]
+        elif filtering_operator == 'Less than':
+            self.pre_processed_dataset = dataset[~operator.lt(column_of_filtering_variable, filtering_value)]
+        elif filtering_operator == 'Less than or equal to':
+            self.pre_processed_dataset =dataset[~operator.le(column_of_filtering_variable, filtering_value)]
+        elif filtering_operator == 'Greater than':
+            self.pre_processed_dataset = dataset[~operator.gt(column_of_filtering_variable, filtering_value)]
+        elif filtering_operator == 'Greater than or equal to':
+            self.pre_processed_dataset =dataset[~operator.ge(column_of_filtering_variable, filtering_value)]
 
-        # Scaling the numeric values in the pre_processed_dataset
-        if scaling:
-            numeric_columns_to_not_scale = []
-            numeric_input_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.drop(
-                labels=numeric_columns_to_not_scale).to_list()
-            self.input_scaler = MinMaxScaler(feature_range=(-1, 1))
-            standardised_numeric_input = self.input_scaler.fit_transform(
-                self.pre_processed_dataset[numeric_input_columns])
-
-            # Updating the scaled values in the pre_processed_dataset
-            self.pre_processed_dataset[numeric_input_columns] = standardised_numeric_input
-
-        return self.pre_processed_dataset
-
+        self.pre_processed_dataset.reset_index(inplace=True, drop=True)
 
     def split_data_train_test(self, model_parameters):
 

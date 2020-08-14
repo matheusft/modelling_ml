@@ -203,3 +203,14 @@ class QtWaitingSpinner(QtWidgets.QWidget):
             resultAlpha = min(1.0, max(0.0, resultAlpha))
             color.setAlphaF(resultAlpha)
         return color
+
+
+class QTableWidget_with_spinner(QtWidgets.QTableWidget):
+
+    def __init__(self, parent=None):
+        QtWidgets.QTableWidget.__init__(self, parent)
+
+        self.spinner = QtWaitingSpinner(self)
+        self.spinner.setSizePolicy(self.sizePolicy())
+
+
