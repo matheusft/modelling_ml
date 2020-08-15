@@ -14,8 +14,19 @@ class MlModel:
 
     def __init__(self):
         self.dataset = pd.DataFrame()
-        self.is_data_loaded = False
+        self.column_types_pd_series = []
         self.categorical_variables = []
+        self.integer_variables = []
+        self.numeric_variables = []
+
+        self.pre_processed_dataset = pd.DataFrame()
+        self.pre_processed_column_types_pd_series = []
+        self.pre_processed_categorical_variables = []
+        self.pre_processed_integer_variables = []
+        self.pre_processed_numeric_variables = []
+
+        self.is_data_loaded = False
+        self.input_scaler = []
 
     def read_dataset(self, address):
         """Read a dataset into a pandas dataframe from a file address.
@@ -29,6 +40,7 @@ class MlModel:
                                    exception_in_the_file
         """
         filename, file_extension = os.path.splitext(address)
+
         try:
             #Todo: Check also for .data files, etc
             if file_extension == '.csv':
@@ -39,56 +51,71 @@ class MlModel:
                 return 'invalid_file_extension'  # Invalid file extension
             self.is_data_loaded = True
             self.dataset.dropna(inplace = True)
-            self.dataset.reset_index(inplace=True, drop=True)
             self.pre_processed_dataset = self.dataset.copy()
             #This contains the type of all columns
-            self.column_types_pd_series = self.dataset.dtypes
-            # Selecting all non-numeric columns
-            self.categorical_variables = self.dataset.select_dtypes(include=['object']).columns.to_list()
-            self.integer_variables = self.dataset.select_dtypes(include=['int64']).columns.to_list()
-            self.numeric_variables = self.dataset.select_dtypes(include=['int64', 'float64']).columns.to_list()
+            self.update_datasets_info()
             return 'sucess'
         except:
             return 'exception_in_the_file'  # Exception
 
+    def update_datasets_info(self):
+
+        dataset = self.dataset
+        dataset.reset_index(inplace=True, drop=True)
+        self.column_types_pd_series = dataset.dtypes
+        self.categorical_variables = dataset.select_dtypes(include=['object']).columns.to_list()
+        self.integer_variables = dataset.select_dtypes(include=['int64']).columns.to_list()
+        self.numeric_variables = dataset.select_dtypes(include=['int64', 'float64']).columns.to_list()
+
+        dataset = self.pre_processed_dataset
+        dataset.reset_index(inplace=True, drop=True)
+        self.pre_processed_column_types_pd_series = dataset.dtypes
+        self.pre_processed_categorical_variables = dataset.select_dtypes(include=['object']).columns.to_list()
+        self.pre_processed_integer_variables = dataset.select_dtypes(include=['int64']).columns.to_list()
+        self.pre_processed_numeric_variables = dataset.select_dtypes(include=['int64', 'float64']).columns.to_list()
 
     def remove_outliers(self, cut_off):
-        # Computes the Z-score of each value in the column, relative to the column mean and standard deviation
-        # Remove Outliers by removing rows that are not within 'standard_deviation_threshold' standard deviations from mean
-        # 1std comprises 68% of the data, 2std comprises 95% and 3std comprises 99.7%
+        # Remove Outliers by removing rows that are not within cut_off standard deviations from mean
         numeric_columns = self.pre_processed_dataset.select_dtypes(include=['float64', 'int']).columns.to_list()
         z_score = stats.zscore(self.pre_processed_dataset[numeric_columns])
         self.pre_processed_dataset = self.pre_processed_dataset[(np.abs(z_score) < cut_off).all(axis=1)]
-        self.pre_processed_dataset.reset_index(inplace=True, drop=True)
+        self.update_datasets_info()
 
     def scale_numeric_values(self):
 
+        dataset = self.pre_processed_dataset
         self.input_scaler = MinMaxScaler(feature_range=(-1, 1))
-        standardised_numeric_input = self.input_scaler.fit_transform(self.pre_processed_dataset[self.numeric_variables])
+        standardised_numeric_input = self.input_scaler.fit_transform(dataset[self.pre_processed_numeric_variables])
         # Updating the scaled values in the pre_processed_dataset
-        self.pre_processed_dataset[self.numeric_variables] = standardised_numeric_input
+        dataset[self.pre_processed_numeric_variables] = standardised_numeric_input
+        self.update_datasets_info()
 
     def remove_duplicate_rows(self):
         self.pre_processed_dataset.drop_duplicates(inplace=True)
-        self.pre_processed_dataset.reset_index(inplace=True, drop=True)
+        self.update_datasets_info()
 
     def remove_constant_variables(self):
         dataset = self.pre_processed_dataset
         self.pre_processed_dataset = dataset.loc[:, (dataset != dataset.iloc[0]).any()]
+        self.update_datasets_info()
 
     def replace_values(self, target_variable, is_numeric_variable, new_value, old_values):
-            variable_data_type = self.column_types_pd_series[target_variable]
-            if is_numeric_variable:
-                value_to_replace = float(old_values)
-                new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(new_value)
-            else:
-                value_to_replace = old_values
-            # Making sure the value to be replaced mataches with the dtype of the dataset
-            value_to_replace = pd.Series(value_to_replace).astype(variable_data_type).values[0]
-            # Converting to either float or int, depending if . or e is in the string
-            self.pre_processed_dataset[target_variable].replace(to_replace=value_to_replace, value=new_value,inplace=True)
+
+        variable_data_type = self.pre_processed_column_types_pd_series[target_variable]
+        if is_numeric_variable:
+            value_to_replace = float(old_values)
+            new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(new_value)
+        else:
+            value_to_replace = old_values
+        # Making sure the value to be replaced mataches with the dtype of the dataset
+        value_to_replace = pd.Series(value_to_replace).astype(variable_data_type).values[0]
+        # Converting to either float or int, depending if . or e is in the string
+        self.pre_processed_dataset[target_variable].replace(to_replace=value_to_replace, value=new_value,inplace=True)
+
+        self.update_datasets_info()
 
     def filter_out_values(self, filtering_variable, filtering_value, filtering_operator):
+
         column_of_filtering_variable = self.pre_processed_dataset[filtering_variable]
         dataset = self.pre_processed_dataset
         if filtering_operator == 'Equal to':
@@ -104,7 +131,7 @@ class MlModel:
         elif filtering_operator == 'Greater than or equal to':
             self.pre_processed_dataset =dataset[~operator.ge(column_of_filtering_variable, filtering_value)]
 
-        self.pre_processed_dataset.reset_index(inplace=True, drop=True)
+        self.update_datasets_info()
 
     def split_data_train_test(self, model_parameters):
 
@@ -113,7 +140,7 @@ class MlModel:
             model_parameters['input_variables'] + model_parameters['output_variables']].copy()
         input_dataset.reset_index(inplace=True)
         # Selecting the categorical variables that are in the training set
-        categorical_variables_in_training = list(set(self.categorical_variables) & set(
+        categorical_variables_in_training = list(set(self.pre_processed_categorical_variables) & set(
             model_parameters['input_variables']))
 
         self.categorical_encoders = {}
@@ -152,14 +179,13 @@ class MlModel:
             y_test = y_test.ravel()
 
         # if the target class is an integer which was scaled between 0 and 1
-        if not model_parameters['is_regression'] and self.column_types_pd_series[
+        if not model_parameters['is_regression'] and self.pre_processed_column_types_pd_series[
             model_parameters['output_variables'][0]].kind == 'i': #Todo add condition to check if it was scaled as well
             original_target_categories = self.dataset[model_parameters['output_variables']].values
             y_train = original_target_categories[train_indexes]
             y_test = original_target_categories[test_indexes]
 
         return {'x_train': x_train, 'x_test': x_test, 'y_train': y_train, 'y_test': y_test}
-
 
     def train(self, model_parameters, algorithm_parameters):
 

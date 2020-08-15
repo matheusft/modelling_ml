@@ -1,5 +1,6 @@
 from view import QtCore, QtWidgets
 import pandas as pd
+import seaborn as sns
 
 class Train_Model_WorkerSignals(QtCore.QObject):
     finished = QtCore.pyqtSignal(object, object)
@@ -41,6 +42,7 @@ class Load_Dataset_WorkerSignals(QtCore.QObject):
     display_message = QtCore.pyqtSignal(object, object, object, object)
     populate_tablewidget_with_dataframe = QtCore.pyqtSignal(object, object)
     update_train_test_shape_label = QtCore.pyqtSignal()
+    stop_spinner = QtCore.pyqtSignal(object, object, object)
 class Load_Dataset_Thread(QtCore.QRunnable):
     """
     Worker thread
@@ -70,6 +72,7 @@ class Load_Dataset_Thread(QtCore.QRunnable):
 
         return_code = self.ml_model.read_dataset(self.file_path)
 
+
         if return_code == 'sucess':
             self.signals.populate_tablewidget_with_dataframe.emit(self.ui.dataset_tableWidget, self.ml_model.dataset)
             self.signals.populate_tablewidget_with_dataframe.emit(self.ui.pre_process_dataset_tableWidget,
@@ -78,7 +81,9 @@ class Load_Dataset_Thread(QtCore.QRunnable):
                                  ui.remove_duplicates_pushButton, ui.remove_constant_variables_pushButton,
                                  ui.numeric_scaling_pushButton, ui.remove_outliers_pushButton,
                                  ui.addrule_filter_value_pushButton, ui.addrule_replace_value_pushButton,
-                                 ui.add_input_columns_pushButton, ui.add_output_columns_pushButton]
+                                 ui.add_input_columns_pushButton, ui.add_output_columns_pushButton,
+                                 ui.remove_preprocessing_rule_pushButton,
+                                 ui.clear_preprocessing_rule_pushButton]
 
             [item.setEnabled(True) for item in widgets_to_enable]
 
@@ -131,6 +136,8 @@ class Load_Dataset_Thread(QtCore.QRunnable):
                 ui.replace_columnSelection_comboBox.setCurrentIndex(0)
                 ui.filter_columnSelection_comboBox.setCurrentIndex(0)
 
+            return
+
         elif return_code == 'invalid_file_extension':
             self.signals.display_message.emit(QtWidgets.QMessageBox.Warning, 'Error',
                                               'Invalid Input format. \nTry Excel or .csv format',
@@ -138,6 +145,10 @@ class Load_Dataset_Thread(QtCore.QRunnable):
 
         elif return_code == 'exception_in_the_file':
             self.signals.display_message.emit(QtWidgets.QMessageBox.Warning, 'Error', 'Invalid Input File', 'Error')
+
+        self.signals.stop_spinner.emit(self.ui.dataset_tableWidget, 'stop_spinner' , [])
+        self.signals.stop_spinner.emit(self.ui.pre_process_dataset_tableWidget, 'stop_spinner' , [])
+
 
 
 class Pre_Process_Dataset_WorkerSignals(QtCore.QObject):

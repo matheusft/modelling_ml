@@ -13,6 +13,8 @@ sns.set()
 
 
 class ViewController:
+
+    # Initialising ############################################################################################
     def __init__(self, ui, ml_model):
         self.ui = ui
         self.ml_model = ml_model
@@ -52,10 +54,14 @@ class ViewController:
                               ui.addrule_filter_value_pushButton, ui.addrule_replace_value_pushButton,
                               ui.addrule_filter_value_pushButton, ui.export_model_pushButton,
                               ui.add_input_columns_pushButton, ui.add_output_columns_pushButton,
-                              ui.train_model_pushButton]
+                              ui.train_model_pushButton, ui.remove_preprocessing_rule_pushButton,
+                              ui.clear_preprocessing_rule_pushButton]
 
         for widget in widgets_to_disable:
             widget.setEnabled(False)
+
+        ui.spinner_traning_results = personalised_widgets.QtWaitingSpinner(ui.model_train_widget)
+        ui.spinner_traning_results.setSizePolicy(ui.model_train_widget.sizePolicy())
 
         # Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
 
@@ -86,30 +92,34 @@ class ViewController:
         ui.addrule_filter_value_pushButton.clicked.connect(lambda: self.generate_filtering_rule())
         ui.addrule_replace_value_pushButton.clicked.connect(lambda: self.generate_replacing_rule())
 
-        ui.preprocess_sequence_listWidget.model().rowsInserted.connect(lambda: self.update_pre_process())
-        ui.preprocess_sequence_listWidget.model().rowsRemoved.connect(lambda: self.update_pre_process())
+        # ui.preprocess_sequence_listWidget.model().rowsInserted.connect(lambda: self.update_pre_process())
+        # ui.preprocess_sequence_listWidget.model().rowsRemoved.connect(lambda: self.update_pre_process())
+
 
         ui.outliers_treshold_horizontalSlider.valueChanged.connect(
             lambda: self.update_label_from_slider_change(ui.outliers_treshold_horizontalSlider.value(),
                                                          ui.outliers_treshold_label))
 
         ui.replace_columnSelection_comboBox.currentIndexChanged.connect(
-            lambda: self.update_preprocess_replace())  # Update the pre_process_replacing_stackedWidget according to the replace_columnSelection_comboBox
+            lambda: self.update_preprocess_replace_fields())  # Update the pre_process_replacing_stackedWidget according to the replace_columnSelection_comboBox
         ui.filter_columnSelection_comboBox.currentIndexChanged.connect(
-            lambda: self.update_preprocess_filtering())  # Update the pre_process_replacing_stackedWidget according to the replace_columnSelection_comboBox
+            lambda: self.update_preprocess_filtering_fields())  # Update the pre_process_replacing_stackedWidget according to the replace_columnSelection_comboBox
 
         ui.add_input_columns_pushButton.clicked.connect(
             lambda: self.update_input_output_columns(ui.input_columns_listWidget))
         ui.add_output_columns_pushButton.clicked.connect(
-            lambda: slef.update_input_output_columns(ui.output_columns_listWidget))
+            lambda: self.update_input_output_columns(ui.output_columns_listWidget))
 
         ui.remove_input_columns_pushButton.clicked.connect(
             lambda: self.remove_item_from_listwidget(ui.input_columns_listWidget))
         ui.remove_output_columns_pushButton.clicked.connect(
             lambda: self.remove_item_from_listwidget(ui.output_columns_listWidget))
+        ui.remove_preprocessing_rule_pushButton.clicked.connect(
+            lambda: self.remove_item_from_listwidget(ui.preprocess_sequence_listWidget))
 
         ui.clear_input_columns_pushButton.clicked.connect(lambda: self.clear_listwidget(ui.input_columns_listWidget))
         ui.clear_output_columns_pushButton.clicked.connect(lambda: self.clear_listwidget(ui.output_columns_listWidget))
+        ui.clear_preprocessing_rule_pushButton.clicked.connect(lambda: self.clear_listwidget(ui.preprocess_sequence_listWidget))
 
         model_selection_radio_buttons = [ui.regression_selection_radioButton, ui.classification_selection_radioButton,
                                          ui.gradientboosting_classification_radioButton,
@@ -155,6 +165,7 @@ class ViewController:
 
         ui.train_model_pushButton.clicked.connect(lambda: self.trigger_train_model_thread())
 
+    # Reading Dataset #########################################################################################
     def trigger_loading_dataset_thread(self, data_source):
         ui = self.ui
         ml_model = self.ml_model
@@ -180,6 +191,7 @@ class ViewController:
         worker = threads.Load_Dataset_Thread(ui, ml_model, file_address)
 
         # Connecting the signals from the created worker to its functions
+        worker.signals.stop_spinner.connect(self.update_table_widget)
         worker.signals.display_message.connect(display_message)
         worker.signals.update_train_test_shape_label.connect(self.update_train_test_shape_label)
         worker.signals.populate_tablewidget_with_dataframe.connect(
@@ -192,91 +204,16 @@ class ViewController:
         # TODO: add checkbox Dataset with Column name or not
         # Todo: Check what needs to be reset/cleared when a new dataset is loaded
 
-    def update_train_test_shape_label(self):
-        ui = self.ui
-        ml_model = self.ml_model
 
-        dataset_shape = ml_model.pre_processed_dataset.shape
-
-        number_of_rows_train = round(dataset_shape[0] * ui.train_percentage_horizontalSlider.value() / 100)
-        number_of_columns_train = ui.input_columns_listWidget.count()
-
-        number_of_rows_test = round(dataset_shape[0] * ui.test_percentage_horizontalSlider.value() / 100)
-        number_of_columns_test = ui.input_columns_listWidget.count()
-
-        ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train, number_of_columns_train))
-        ui.test_dataset_shape_label.setText('{} x {}'.format(number_of_rows_test, number_of_columns_test))
-
-    def add_pre_process_rule(self):
-        ui = self.ui
-        ml_model = self.ml_model
-
-    def clear_listwidget(self, target_listwidget):
-        ui = self.ui
-        ml_model = self.ml_model
-
-        if target_listwidget == ui.preprocess_sequence_listWidget:
-            ui.preprocess_sequence_listWidget.clear()
-
-        elif target_listwidget == ui.input_columns_listWidget:
-
-            for _ in range(ui.input_columns_listWidget.count()):
-                item = ui.input_columns_listWidget.takeItem(0)
-                ui.available_columns_listWidget.addItem(item)
-
-                # Adding the variables back to the clas_output_colum_comboBox
-                if item.text() in ml_model.categorical_variables:
-                    ui.clas_output_colum_comboBox.addItem(item.text())
-
-            ui.train_model_pushButton.setDisabled(True)
-            update_train_test_shape_label(ui, ml_model)
-
-        elif target_listwidget == ui.output_columns_listWidget:
-
-            ui.train_model_pushButton.setDisabled(True)
-
-            for _ in range(ui.output_columns_listWidget.count()):
-                item = ui.output_columns_listWidget.takeItem(0)
-                ui.available_columns_listWidget.addItem(item)
-
-    def update_train_model_button_status(self, is_regression):
-        ui = self.ui
-        if is_regression:
-            if ui.output_columns_listWidget.count() > 0 and ui.input_columns_listWidget.count() > 0:
-                ui.train_model_pushButton.setDisabled(False)
-            else:
-                ui.train_model_pushButton.setDisabled(True)
-        else:
-            if ui.input_columns_listWidget.count() > 0 and ui.clas_output_colum_comboBox.count() > 0:
-                ui.train_model_pushButton.setDisabled(False)
-            else:
-                ui.train_model_pushButton.setDisabled(True)
-
-    def create_listwidgetitem(self, text, data):
-        string_to_add = text
-        my_qlist_item = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
-        my_qlist_item.setText(string_to_add)  # Add the text to be displayed in the listWidget
-        my_qlist_item.setData(QtCore.Qt.UserRole, data)  # Set data to the item
-        return my_qlist_item
-
-    def add_rm_duplicate_rows_rule(self):
-        ui = self.ui
-
-        rule_text = 'Remove Duplicate Rows'
-        rule_data = {'pre_processing_action': 'rm_duplicate_rows'}
-        item_to_add = self.create_listwidgetitem(rule_text, rule_data)
-        self.add_pre_processing_rule_to_listWidget(item_to_add, ui.preprocess_sequence_listWidget)
-
-    def add_rm_constant_var_rule(self):
-        ui = self.ui
-
-        rule_text = 'Remove Constant Variables (Columns)'
-        rule_data = {'pre_processing_action': 'rm_constant_var'}
-        item_to_add = self.create_listwidgetitem(rule_text, rule_data)
-        self.add_pre_processing_rule_to_listWidget(item_to_add, ui.preprocess_sequence_listWidget)
-
+    # Pre-Processing ##########################################################################################
     def add_num_scaling_rule(self):
         ui = self.ui
+
+        if self.ml_model.pre_processed_numeric_variables == []:
+            display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',  # Display error message and return
+                            'There are no numeric variables available', 'Error')
+            #Todo Maybe disable the button instead of warning that is not possible
+            return
 
         rule_text = 'Apply Numeric Scaling'
         rule_data = {'pre_processing_action': 'apply_num_scaling'}
@@ -387,6 +324,156 @@ class ViewController:
         else:  # If not numeric
             self.add_categorical_replacing_rule()
 
+    def add_rm_duplicate_rows_rule(self):
+        ui = self.ui
+
+        rule_text = 'Remove Duplicate Rows'
+        rule_data = {'pre_processing_action': 'rm_duplicate_rows'}
+        item_to_add = self.create_listwidgetitem(rule_text, rule_data)
+        self.add_pre_processing_rule_to_listWidget(item_to_add, ui.preprocess_sequence_listWidget)
+
+    def add_rm_constant_var_rule(self):
+        ui = self.ui
+
+        rule_text = 'Remove Constant Variables (Columns)'
+        rule_data = {'pre_processing_action': 'rm_constant_var'}
+        item_to_add = self.create_listwidgetitem(rule_text, rule_data)
+        self.add_pre_processing_rule_to_listWidget(item_to_add, ui.preprocess_sequence_listWidget)
+
+    def add_pre_processing_rule_to_listWidget(self, item, listWidget):
+
+        listWidget.addItem(item)
+        self.update_pre_process()
+
+    def update_preprocess_replace_fields(self):
+        ui = self.ui
+        ml_model = self.ml_model
+        selected_value = ui.replace_columnSelection_comboBox.currentText()
+
+        if ml_model.column_types_pd_series[
+            selected_value].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
+            ui.pre_process_replacing_stackedWidget.setCurrentIndex(0)
+        else:
+            ui.pre_process_replacing_stackedWidget.setCurrentIndex(1)
+
+            ui.replaced_value_comboBox.clear()
+            unique_values = ml_model.dataset[selected_value].unique().tolist()
+
+            # Filling the comboBoxes
+            for each_value in unique_values:
+                ui.replaced_value_comboBox.addItem(each_value)  # Fill comboBox
+
+    def update_preprocess_filtering_fields(self):
+        ui = self.ui
+        ml_model = self.ml_model
+
+        selected_value = ui.filter_columnSelection_comboBox.currentText()
+
+        if ml_model.column_types_pd_series[
+            selected_value].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
+            ui.pre_process_filtering_stackedWidget.setCurrentIndex(0)
+
+            if ui.filter_operator_comboBox.count() == 2:  # 2 items mean only == and !=
+                ui.filter_operator_comboBox.insertItem(2, 'Greater than or equal to')  # The index is always 2
+                ui.filter_operator_comboBox.insertItem(2, 'Greater than')  # The list will keep shifting
+                ui.filter_operator_comboBox.insertItem(2, 'Less than or equal to')
+                ui.filter_operator_comboBox.insertItem(2, 'Less than')
+
+        else:
+            ui.pre_process_filtering_stackedWidget.setCurrentIndex(1)
+
+            ui.filtering_dataset_value_comboBox.clear()
+            unique_values = ml_model.dataset[selected_value].unique().tolist()
+
+            if ui.filter_operator_comboBox.count() == 6:
+                ui.filter_operator_comboBox.removeItem(2)  # Removing Less than
+                ui.filter_operator_comboBox.removeItem(2)  # Removing Less than or equal to
+                ui.filter_operator_comboBox.removeItem(2)  # Removing Greater than
+                ui.filter_operator_comboBox.removeItem(2)  # Removing Greater than or equal to
+
+            # Filling the comboBoxes
+            for each_value in unique_values:
+                ui.filtering_dataset_value_comboBox.addItem(each_value)  # Fill comboBox
+
+    def update_pre_process(self):
+
+        ui = self.ui
+        ml_model = self.ml_model
+
+        ui.pre_process_dataset_tableWidget.spinner.start()
+
+        worker = threads.Pre_Process_Dataset_Thread(ui, ml_model)
+
+        worker.signals.update_pre_process_tableWidget.connect(self.generate_qt_items_to_fill_tablewidget)
+        worker.signals.display_message.connect(display_message)
+
+        ui.threadpool.start(worker)
+    # Pre-Processing ##########################################################################################
+
+    def update_train_test_shape_label(self):
+        ui = self.ui
+        ml_model = self.ml_model
+
+        dataset_shape = ml_model.pre_processed_dataset.shape
+
+        number_of_rows_train = round(dataset_shape[0] * ui.train_percentage_horizontalSlider.value() / 100)
+        number_of_columns_train = ui.input_columns_listWidget.count()
+
+        number_of_rows_test = round(dataset_shape[0] * ui.test_percentage_horizontalSlider.value() / 100)
+        number_of_columns_test = ui.input_columns_listWidget.count()
+
+        ui.train_dataset_shape_label.setText('{} x {}'.format(number_of_rows_train, number_of_columns_train))
+        ui.test_dataset_shape_label.setText('{} x {}'.format(number_of_rows_test, number_of_columns_test))
+
+    def clear_listwidget(self, target_listwidget):
+        ui = self.ui
+        ml_model = self.ml_model
+
+        if target_listwidget == ui.preprocess_sequence_listWidget:
+            target_listwidget.clear()
+            self.update_pre_process()
+
+        elif target_listwidget == ui.input_columns_listWidget:
+
+            for _ in range(target_listwidget.count()):
+                item = target_listwidget.takeItem(0)
+                ui.available_columns_listWidget.addItem(item)
+
+                # Adding the variables back to the clas_output_colum_comboBox
+                if item.text() in ml_model.categorical_variables:
+                    ui.clas_output_colum_comboBox.addItem(item.text())
+
+            ui.train_model_pushButton.setDisabled(True)
+            self.update_train_test_shape_label()
+
+        elif target_listwidget == ui.output_columns_listWidget:
+
+            ui.train_model_pushButton.setDisabled(True)
+
+            for _ in range(target_listwidget.count()):
+                item = target_listwidget.takeItem(0)
+                ui.available_columns_listWidget.addItem(item)
+
+    def update_train_model_button_status(self, is_regression):
+        ui = self.ui
+        if is_regression:
+            if ui.output_columns_listWidget.count() > 0 and ui.input_columns_listWidget.count() > 0:
+                ui.train_model_pushButton.setDisabled(False)
+            else:
+                ui.train_model_pushButton.setDisabled(True)
+        else:
+            if ui.input_columns_listWidget.count() > 0 and ui.clas_output_colum_comboBox.count() > 0:
+                ui.train_model_pushButton.setDisabled(False)
+            else:
+                ui.train_model_pushButton.setDisabled(True)
+
+    def create_listwidgetitem(self, text, data):
+        string_to_add = text
+        my_qlist_item = QtWidgets.QListWidgetItem()  # Create a QListWidgetItem
+        my_qlist_item.setText(string_to_add)  # Add the text to be displayed in the listWidget
+        my_qlist_item.setData(QtCore.Qt.UserRole, data)  # Set data to the item
+        return my_qlist_item
+
     def model_selection_tab_events(self):
         ui = self.ui
 
@@ -431,20 +518,12 @@ class ViewController:
             elif ui.knn_classification_radioButton.isChecked():
                 ui.classification_parameters_stackedWidget.setCurrentIndex(4)
 
-    def add_pre_processing_rule_to_listWidget(self, item, listWidget):
-
-        number_of_rules = listWidget.count()
-        item.setText('{} - '.format(number_of_rules + 1) + item.text())
-        listWidget.addItem(item)
-
-        # Todo: call update pre-process
-
     def generate_qt_items_to_fill_tablewidget(self, table_widget, filling_dataframe):
 
         table_widget.clear()
 
         # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
-        number_of_rows_to_display = 20
+        number_of_rows_to_display = 50
         table_widget.setRowCount(len(filling_dataframe.head(number_of_rows_to_display)))
         table_widget.setColumnCount(len(filling_dataframe.columns))
 
@@ -465,21 +544,6 @@ class ViewController:
                 self.update_table_widget(table_widget, 'fill_table', data)
         # Stopping the loading spinner
         self.update_table_widget(table_widget, 'stop_spinner', data)
-
-    def update_pre_process(self):
-
-        ui = self.ui
-        ml_model = self.ml_model
-
-        ui.pre_process_dataset_tableWidget.spinner.start()
-
-        worker = threads.Pre_Process_Dataset_Thread(ui, ml_model)
-
-        worker.signals.update_pre_process_tableWidget.connect(self.generate_qt_items_to_fill_tablewidget)
-        worker.signals.display_message.connect(display_message)
-
-        ui.threadpool.start(worker)
-
 
     def update_visualisation_widgets(self):
         ui = self.ui
@@ -564,56 +628,6 @@ class ViewController:
             elif table_widget.objectName() == 'pre_process_dataset_tableWidget':
                 self.update_train_test_shape_label()
 
-    def update_preprocess_replace(self):
-        ui = self.ui
-        ml_model = self.ml_model
-        selected_value = ui.replace_columnSelection_comboBox.currentText()
-
-        if ml_model.column_types_pd_series[
-            selected_value].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
-            ui.pre_process_replacing_stackedWidget.setCurrentIndex(0)
-        else:
-            ui.pre_process_replacing_stackedWidget.setCurrentIndex(1)
-
-            ui.replaced_value_comboBox.clear()
-            unique_values = ml_model.dataset[selected_value].unique().tolist()
-
-            # Filling the comboBoxes
-            for each_value in unique_values:
-                ui.replaced_value_comboBox.addItem(each_value)  # Fill comboBox
-
-    def update_preprocess_filtering(self):
-        ui = self.ui
-        ml_model = self.ml_model
-
-        selected_value = ui.filter_columnSelection_comboBox.currentText()
-
-        if ml_model.column_types_pd_series[
-            selected_value].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
-            ui.pre_process_filtering_stackedWidget.setCurrentIndex(0)
-
-            if ui.filter_operator_comboBox.count() == 2:  # 2 items mean only == and !=
-                ui.filter_operator_comboBox.insertItem(2, 'Greater than or equal to')  # The index is always 2
-                ui.filter_operator_comboBox.insertItem(2, 'Greater than')  # The list will keep shifting
-                ui.filter_operator_comboBox.insertItem(2, 'Less than or equal to')
-                ui.filter_operator_comboBox.insertItem(2, 'Less than')
-
-        else:
-            ui.pre_process_filtering_stackedWidget.setCurrentIndex(1)
-
-            ui.filtering_dataset_value_comboBox.clear()
-            unique_values = ml_model.dataset[selected_value].unique().tolist()
-
-            if ui.filter_operator_comboBox.count() == 6:
-                ui.filter_operator_comboBox.removeItem(2)  # Removing Less than
-                ui.filter_operator_comboBox.removeItem(2)  # Removing Less than or equal to
-                ui.filter_operator_comboBox.removeItem(2)  # Removing Greater than
-                ui.filter_operator_comboBox.removeItem(2)  # Removing Greater than or equal to
-
-            # Filling the comboBoxes
-            for each_value in unique_values:
-                ui.filtering_dataset_value_comboBox.addItem(each_value)  # Fill comboBox
-
     def update_nn_layers_table(self, table, value):
         if value > table.rowCount():
             while value > table.rowCount():
@@ -629,7 +643,7 @@ class ViewController:
 
     def display_training_results(self, result, model_parameters):
         ui = self.ui
-        ui.train_results_loading_widget.stop()
+        ui.spinner_traning_results.stop()
         ui.train_model_pushButton.setDisabled(False)
         ui.export_model_pushButton.setDisabled(False)
 
@@ -824,10 +838,10 @@ class ViewController:
         worker = threads.Train_Model_Thread(ml_model, model_parameters, algorithm_parameters, ui)
 
         # Connecting the signals from the created worker to its functions
-        worker.signals.finished.connect(display_training_results)
+        worker.signals.finished.connect(self.display_training_results)
 
         ui.train_model_pushButton.setDisabled(True)
-        ui.train_results_loading_widget.start()
+        ui.spinner_traning_results.start()
 
         # Todo: Clean the plot before running the thread
         # Running the traning in a separate thread from the GUI
@@ -839,32 +853,22 @@ class ViewController:
     def remove_item_from_listwidget(self, target_listwidget):
         ui = self.ui
         ml_model = self.ml_model
-        if target_listwidget == ui.preprocess_filter_listWidget:
-            for item in ui.preprocess_filter_listWidget.selectedItems():
-                ui.preprocess_filter_listWidget.takeItem(ui.preprocess_filter_listWidget.row(item))
 
-        elif target_listwidget == ui.preprocess_replace_listWidget:
-            for item in ui.preprocess_replace_listWidget.selectedItems():
-                ui.preprocess_replace_listWidget.takeItem(ui.preprocess_replace_listWidget.row(item))
+        for item in target_listwidget.selectedItems():
+            taken_item = target_listwidget.takeItem(target_listwidget.row(item))
 
-        elif target_listwidget == ui.input_columns_listWidget:
-            for selected_item in target_listwidget.selectedItems():
-                item = target_listwidget.takeItem(target_listwidget.row(selected_item))
-                ui.available_columns_listWidget.addItem(item)
+            if target_listwidget == ui.input_columns_listWidget or target_listwidget == ui.output_columns_listWidget:
+                    ui.available_columns_listWidget.addItem(taken_item)
 
-                # Adding the variables back to the clas_output_colum_comboBox
-                if selected_item.text() in ml_model.categorical_variables:
-                    ui.clas_output_colum_comboBox.addItem(selected_item.text())
+                    # Adding the variables back to the clas_output_colum_comboBox
+                    if item.text() in ml_model.categorical_variables and target_listwidget == ui.input_columns_listWidget:
+                        target_listwidget.addItem(taken_item.text())
 
+        if target_listwidget == ui.input_columns_listWidget or target_listwidget == ui.output_columns_listWidget:
             self.update_train_model_button_status(ui.regression_selection_radioButton.isChecked())
 
-        elif target_listwidget == ui.output_columns_listWidget:
-            for selected_item in target_listwidget.selectedItems():
-                item = target_listwidget.takeItem(target_listwidget.row(selected_item))
-                ui.available_columns_listWidget.addItem(item)
-
-            self.update_train_model_button_status(ui.regression_selection_radioButton.isChecked())
-
+        if target_listwidget == ui.preprocess_sequence_listWidget:
+            self.update_pre_process()
 
 def transform_to_resource_path(relative_path):
     """Get absolute path to resource, works for dev and for PyInstaller.
@@ -882,7 +886,6 @@ def transform_to_resource_path(relative_path):
         base_path = abspath(".")
 
     return join(base_path, relative_path)
-
 
 def display_message(icon, main_message, informative_message, window_title):
     msg = QtWidgets.QMessageBox()
