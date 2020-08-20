@@ -9,7 +9,6 @@ import numpy as np
 import operator
 import os
 
-
 class MlModel:
 
     def __init__(self):
@@ -248,7 +247,6 @@ class MlModel:
 
         else:
 
-            # Todo : classification y values can be either objects or ints - check this when updating the input/output tab
             self.output_class_label_encoder = LabelEncoder()
             self.output_class_label_encoder.fit(np.concatenate((y_train, y_test)).ravel())
             encoded_y_train = self.output_class_label_encoder.transform(y_train.ravel())

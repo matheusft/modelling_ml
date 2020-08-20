@@ -916,9 +916,3 @@ def get_project_root_directory():
     path, filename = os.path.split(full_path)
     root_directory = path + '/../'
     return root_directory
-
-# try:
-#     sys._MEIPASS
-#     files_folder = transform_to_resource_path('resources/')
-# except:
-#     files_folder = transform_to_resource_path('../resources/')
