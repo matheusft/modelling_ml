@@ -4,7 +4,6 @@ import sys
 import threads
 import seaborn as sns
 from os.path import join, abspath
-from docutils.nodes import address
 from view import QtCore, QtWidgets
 import personalised_widgets
 
@@ -19,6 +18,10 @@ class ViewController:
         self.ui = ui
         self.ml_model = ml_model
 
+        self.root_directory = get_project_root_directory()
+        self.src_directory = get_project_root_directory()+'src/'
+        self.data_directory = self.root_directory+'data/'
+
         self.configure_gui()
 
     def configure_gui(self):
@@ -30,13 +33,12 @@ class ViewController:
         ui.threadpool = QtCore.QThreadPool()
 
         # Populating the example_dataset_comboBox
-        current_working_directory = os.getcwd()
-        datasets_path = current_working_directory + '/../data/'
-        list_of_datasets = os.listdir(datasets_path)
+        list_of_datasets = os.listdir(self.data_directory)
+        ui.example_dataset_comboBox.addItem('', '')
         for dataset in list_of_datasets:
             if not dataset.startswith('.'):
                 # Each Item receives the dataset name as text and the dataset path as data
-                ui.example_dataset_comboBox.addItem(dataset.split('.')[0], datasets_path + dataset)
+                ui.example_dataset_comboBox.addItem(dataset.split('.')[0], self.data_directory + dataset)
 
         self.connect_signals()
 
@@ -48,11 +50,12 @@ class ViewController:
         ui.pre_process_tabWidget.setCurrentIndex(0)
         ui.output_selection_stackedWidget.setCurrentIndex(0)
 
+        # Disable these widgets while no dataset is loaded
         widgets_to_disable = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton,
                               ui.remove_duplicates_pushButton, ui.remove_constant_variables_pushButton,
                               ui.numeric_scaling_pushButton, ui.remove_outliers_pushButton,
                               ui.addrule_filter_value_pushButton, ui.addrule_replace_value_pushButton,
-                              ui.addrule_filter_value_pushButton, ui.export_model_pushButton,
+                              ui.addrule_filter_value_pushButton,
                               ui.add_input_columns_pushButton, ui.add_output_columns_pushButton,
                               ui.train_model_pushButton, ui.remove_preprocessing_rule_pushButton,
                               ui.clear_preprocessing_rule_pushButton]
@@ -62,11 +65,6 @@ class ViewController:
 
         ui.spinner_traning_results = personalised_widgets.QtWaitingSpinner(ui.model_train_widget)
         ui.spinner_traning_results.setSizePolicy(ui.model_train_widget.sizePolicy())
-
-        # Todo : Check whether all number_of_neuros of reg_nn_layers_tableWidget are int greater than 0
-
-        # TODO : Disable all button and functions while Dataset is not chosen -
-        # Todo : Check things that break when the dataset is not loaded yet
 
     def connect_signals(self):
         ui = self.ui
@@ -92,9 +90,11 @@ class ViewController:
         ui.addrule_filter_value_pushButton.clicked.connect(lambda: self.generate_filtering_rule())
         ui.addrule_replace_value_pushButton.clicked.connect(lambda: self.generate_replacing_rule())
 
-        # ui.preprocess_sequence_listWidget.model().rowsInserted.connect(lambda: self.update_pre_process())
-        # ui.preprocess_sequence_listWidget.model().rowsRemoved.connect(lambda: self.update_pre_process())
 
+        neuros_table_regression = ui.reg_nn_layers_tableWidget
+        neuros_table_regression.cellChanged.connect(lambda: self.check_neurons_number(neuros_table_regression))
+        neuros_table_classification = ui.clas_nn_layers_tableWidget
+        neuros_table_classification.cellChanged.connect(lambda: self.check_neurons_number(neuros_table_classification))
 
         ui.outliers_treshold_horizontalSlider.valueChanged.connect(
             lambda: self.update_label_from_slider_change(ui.outliers_treshold_horizontalSlider.value(),
@@ -176,13 +176,19 @@ class ViewController:
         if data_source.objectName() == 'load_file_pushButton':
             fileDlg = QtWidgets.QFileDialog()
             file_address = fileDlg.getOpenFileName()[0]
-            if file_address == '' or file_address == None:
-                ui.dataset_tableWidget.spinner.stop()
-                ui.pre_process_dataset_tableWidget.spinner.stop()
-                return
+
         elif data_source.objectName() == 'example_dataset_comboBox':
             selected_index = ui.example_dataset_comboBox.currentIndex()
             file_address = ui.example_dataset_comboBox.itemData(selected_index)
+
+        if file_address == '' or file_address == None:
+            ui.dataset_tableWidget.spinner.stop()
+            ui.pre_process_dataset_tableWidget.spinner.stop()
+            return
+
+        # Delete empty entry in the comboBox - This just happens once
+        if ui.example_dataset_comboBox.itemText(0) == '':
+            ui.example_dataset_comboBox.removeItem(0)
 
         ui.load_file_pushButton.setDisabled(True)
         ui.example_dataset_comboBox.setDisabled(True)
@@ -198,12 +204,8 @@ class ViewController:
             self.generate_qt_items_to_fill_tablewidget)
 
         # Starts the thread
-        ui.threadpool.start(worker)  # Todo: Uncomment this when finished debugging
+        ui.threadpool.start(worker)
         # result = ml_model.read_dataset(file_address)
-
-        # TODO: add checkbox Dataset with Column name or not
-        # Todo: Check what needs to be reset/cleared when a new dataset is loaded
-
 
     # Pre-Processing ##########################################################################################
     def add_num_scaling_rule(self):
@@ -518,6 +520,28 @@ class ViewController:
             elif ui.knn_classification_radioButton.isChecked():
                 ui.classification_parameters_stackedWidget.setCurrentIndex(4)
 
+    def check_neurons_number(self,widget):
+        row = widget.currentRow()
+        column = widget.currentColumn()
+
+        widget.blockSignals(True)
+        item = QtWidgets.QTableWidgetItem()
+        item.setTextAlignment(QtCore.Qt.AlignCenter)
+        try:
+            integer_value = int(widget.item(row,column).text())
+            if integer_value <= 0:
+                display_message(QtWidgets.QMessageBox.Information, 'Invalid Input',
+                                'The number of neurons must be an integer greater than 0', 'Error')
+                item.setText('1')
+                widget.setItem(row, column,item)
+        except:
+            display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',
+                            'The number of neurons must be an integer greater than 0', 'Error')
+            item.setText('1')
+            widget.setItem(row, column, item)
+        widget.blockSignals(False)
+
+
     def generate_qt_items_to_fill_tablewidget(self, table_widget, filling_dataframe):
 
         table_widget.clear()
@@ -596,15 +620,13 @@ class ViewController:
 
         self.update_visualisation_widgets()
 
-        # TODO: Clear plot area
-
     def trigger_plot_matplotlib_to_qt_widget_thread(self, target_widget, content):
 
         # Creating an object worker
         worker = threads.Plotting_in_MplWidget_Thread(self.ui, target_widget, content)
 
         # Starts the thread
-        self.ui.threadpool.start(worker)  # Todo: Uncomment this when finished debugging
+        self.ui.threadpool.start(worker)
 
     def update_table_widget(self, table_widget, function, data):
         ui = self.ui
@@ -629,6 +651,7 @@ class ViewController:
                 self.update_train_test_shape_label()
 
     def update_nn_layers_table(self, table, value):
+        table.blockSignals(True)
         if value > table.rowCount():
             while value > table.rowCount():
                 table.insertRow(table.rowCount())
@@ -640,12 +663,12 @@ class ViewController:
         else:
             while value < table.rowCount():
                 table.removeRow(table.rowCount() - 1)
+        table.blockSignals(False)
 
     def display_training_results(self, result, model_parameters):
         ui = self.ui
         ui.spinner_traning_results.stop()
         ui.train_model_pushButton.setDisabled(False)
-        ui.export_model_pushButton.setDisabled(False)
 
         if model_parameters['is_regression']:
 
@@ -703,7 +726,6 @@ class ViewController:
     def update_label_from_slider_change(self, slider_value, label_object):
         ui = self.ui
         ml_model = self.ml_model
-        # Todo - Too repetitive, make this a function
 
         if label_object.objectName() == 'reg_nn_layers_label':
             label_object.setText('{}'.format(slider_value))
@@ -713,9 +735,6 @@ class ViewController:
             self.update_nn_layers_table(ui.clas_nn_layers_tableWidget, slider_value)
         elif label_object.objectName() == 'outliers_treshold_label':
             label_object.setText('{:.1f}'.format(slider_value / 10))
-            # https://moonbooks.org/Articles/How-to-fill-an-area-in-matplotlib-/
-            # https://i.pinimg.com/originals/e1/d6/30/e1d630a1719b4444bbd08b7df92b7bf1.gif
-            # Todo: Plot a normal distribution with the included and excluded area (plt.fill_between)
         elif label_object.objectName() == 'reg_nn_val_percent_label':
             label_object.setText('{}%'.format(slider_value))
         elif label_object.objectName() == 'reg_nn_max_iter_label':
@@ -742,7 +761,6 @@ class ViewController:
     def trigger_train_model_thread(self):
         ui = self.ui
         ml_model = self.ml_model
-        # Todo : check for condition before continuing: 1) Output columns is not empty
 
         train_percentage = (ui.train_percentage_horizontalSlider.value() / 100)
         test_percentage = (ui.test_percentage_horizontalSlider.value() / 100)
@@ -843,12 +861,10 @@ class ViewController:
         ui.train_model_pushButton.setDisabled(True)
         ui.spinner_traning_results.start()
 
-        # Todo: Clean the plot before running the thread
         # Running the traning in a separate thread from the GUI
-        # ui.threadpool.start(worker) #Todo uncomment when this when finished testing!!
-        # Todo : Delete this when finished testing
-        result = ml_model.train(model_parameters, algorithm_parameters)
-        self.display_training_results(result, model_parameters)
+        ui.threadpool.start(worker) #Todo uncomment when this when finished testing!!
+        # result = ml_model.train(model_parameters, algorithm_parameters)
+        # self.display_training_results(result, model_parameters)
 
     def remove_item_from_listwidget(self, target_listwidget):
         ui = self.ui
@@ -894,6 +910,12 @@ def display_message(icon, main_message, informative_message, window_title):
     msg.setInformativeText(informative_message)
     msg.setWindowTitle(window_title)
     msg.exec()
+
+def get_project_root_directory():
+    full_path = os.path.realpath(__file__)
+    path, filename = os.path.split(full_path)
+    root_directory = path + '/../'
+    return root_directory
 
 # try:
 #     sys._MEIPASS

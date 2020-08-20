@@ -1,5 +1,5 @@
 <RCC>
   <qresource prefix="newPrefix">
-    <file>../images/ML.ico</file>
+    <file>../images/brain.ico</file>
   </qresource>
 </RCC>

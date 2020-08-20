@@ -37,7 +37,6 @@ class Train_Model_Thread(QtCore.QRunnable):
         # sending the output of the thread to the assigned function
         self.signals.finished.emit(result, self.model_parameters)
 
-
 class Load_Dataset_WorkerSignals(QtCore.QObject):
     display_message = QtCore.pyqtSignal(object, object, object, object)
     populate_tablewidget_with_dataframe = QtCore.pyqtSignal(object, object)
@@ -149,8 +148,6 @@ class Load_Dataset_Thread(QtCore.QRunnable):
         self.signals.stop_spinner.emit(self.ui.dataset_tableWidget, 'stop_spinner' , [])
         self.signals.stop_spinner.emit(self.ui.pre_process_dataset_tableWidget, 'stop_spinner' , [])
 
-
-
 class Pre_Process_Dataset_WorkerSignals(QtCore.QObject):
     update_pre_process_tableWidget = QtCore.pyqtSignal(object, object)
     display_message = QtCore.pyqtSignal(object, object, object, object)
@@ -202,10 +199,9 @@ class Pre_Process_Dataset_Thread(QtCore.QRunnable):
                 ml_model.remove_outliers(item_data['cut_off'])
             elif item_data['pre_processing_action'] == 'replace_values':
                 target_variable = item_data['variable']
-                is_numeric_variable = item_data['is_numeric']
                 new_value = item_data['new_values']
                 old_values = item_data['old_values']
-                ml_model.replace_values(target_variable,is_numeric_variable,new_value,old_values)
+                ml_model.replace_values(target_variable,new_value,old_values)
             elif item_data['pre_processing_action'] == 'apply_filtering':
                 filtering_variable = item_data['variable']
                 filtering_value = item_data['filtering_value']
@@ -218,9 +214,12 @@ class Pre_Process_Dataset_Thread(QtCore.QRunnable):
         if filling_dataframe.empty:
             self.signals.display_message.emit(QtWidgets.QMessageBox.Critical, 'Invalid Pre-processing',
                             'This pre-processing rule is too restrictive and would return an empty dataset', 'Error')
+            # Undo the processing
+            self.ml_model.pre_processed_dataset = old_pre_processed_dataset
             filling_dataframe = old_pre_processed_dataset
-            #Drop the inavlid rule
+            # Drop the inavlid rule
             listwidget.takeItem(listwidget.count() - 1)
+
 
         self.signals.update_pre_process_tableWidget.emit(table_widget,filling_dataframe)
 
@@ -284,10 +283,13 @@ class Plotting_in_MplWidget_Thread(QtCore.QRunnable):
                 if len(content['output_variables']) == 1:
                     pd.DataFrame(content['data']).hist(ax=target_widget.canvas.axes, grid=False)
                     target_widget.canvas.axes.axes.set_title('Histogram of Percentage Errors')
+                    target_widget.canvas.axes.axes.set_ylabel('Number of Occurrences')
+                    target_widget.canvas.axes.axes.set_xlabel('Percentage Error (%)')
                 else:
                     target_widget.canvas.axes.bar(content['data']['labels'], content['data']['values'])
                     target_widget.canvas.axes.set_xticklabels(content['data']['labels'], rotation='vertical')
-                    target_widget.canvas.axes.axes.set_title('Percentage Error')
+                    target_widget.canvas.axes.axes.set_ylabel('Mean Percentage Error (%)')
+                    target_widget.canvas.axes.axes.set_title('Individual Mean Percentage Error (%)')
             else:
                 # Print the number labels in the cells if n_of_classes < 10, otherwise just colours
                 is_annot = False if len(content['data']) > 10 else True
@@ -296,5 +298,6 @@ class Plotting_in_MplWidget_Thread(QtCore.QRunnable):
                 target_widget.canvas.axes.tick_params(axis='x', labelrotation=60)
                 target_widget.canvas.axes.set_xlabel('Actual')
                 target_widget.canvas.axes.set_ylabel('Predicted')
+                target_widget.canvas.axes.axes.set_title('Confusion Matrix')
 
         target_widget.canvas.draw()

@@ -44,3 +44,5 @@ Thumbs.db
 dist/
 build/
 src/__pycache__/
+resources/.DS_Store
+src/=

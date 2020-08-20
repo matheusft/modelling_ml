@@ -28,6 +28,13 @@ class MlModel:
         self.is_data_loaded = False
         self.input_scaler = []
 
+    def mean_absolute_percentage_error(self,y_true, y_pred):
+        y_true, y_pred = np.array(y_true), np.array(y_pred)
+        subtraction = (y_true - y_pred)
+        # Abs division between subtraction and y_true where y_true != 0, Otherwise, 0
+        abs_pct_error = np.abs(np.divide(subtraction, y_true, out=np.zeros_like(subtraction), where=y_true != 0))
+        return (abs_pct_error * 100)
+
     def read_dataset(self, address):
         """Read a dataset into a pandas dataframe from a file address.
 
@@ -99,12 +106,16 @@ class MlModel:
         self.pre_processed_dataset = dataset.loc[:, (dataset != dataset.iloc[0]).any()]
         self.update_datasets_info()
 
-    def replace_values(self, target_variable, is_numeric_variable, new_value, old_values):
+    def replace_values(self, target_variable, new_value, old_values):
 
         variable_data_type = self.pre_processed_column_types_pd_series[target_variable]
-        if is_numeric_variable:
+
+        if self.pre_processed_column_types_pd_series[target_variable].kind == 'f':
             value_to_replace = float(old_values)
-            new_value = float(new_value) if '.' in new_value or 'e' in new_value.lower() else int(new_value)
+            new_value = float(new_value)# if '.' in new_value or 'e' in new_value.lower() else int(new_value)
+        elif self.pre_processed_column_types_pd_series[target_variable].kind == 'i':
+            value_to_replace = int(old_values)
+            new_value = int(new_value)
         else:
             value_to_replace = old_values
         # Making sure the value to be replaced mataches with the dtype of the dataset
@@ -118,6 +129,10 @@ class MlModel:
 
         column_of_filtering_variable = self.pre_processed_dataset[filtering_variable]
         dataset = self.pre_processed_dataset
+        if self.pre_processed_column_types_pd_series[filtering_variable].kind == 'f':
+            filtering_value = float(filtering_value)
+        if self.pre_processed_column_types_pd_series[filtering_variable].kind == 'i':
+            filtering_value = int(filtering_value)
         if filtering_operator == 'Equal to':
             self.pre_processed_dataset = dataset[~operator.eq(column_of_filtering_variable, filtering_value)]
         elif filtering_operator == 'Not equal to':
@@ -220,27 +235,11 @@ class MlModel:
             mae = mean_absolute_error(y_test, y_pred)
             rmse = mean_squared_error(y_test, y_pred, squared=False)
 
+            percentage_errors = self.mean_absolute_percentage_error(y_test, y_pred)
             if len(model_parameters['output_variables']) == 1:
-                np_y_test = np.array(y_test).flatten()
-                valid_indexes = [i for i, x in enumerate(np_y_test) if x != 0]
-                np_y_pred = np.array(y_pred).flatten()
-                percentage_errors = abs(np_y_test[valid_indexes] - np_y_pred[valid_indexes] / np_y_test[valid_indexes])
-                array_zero_errors = np.zeros(abs(len(np_y_test) - len(valid_indexes)))
-                percentage_errors_with_zeros = np.concatenate((percentage_errors, array_zero_errors))
-                data_to_plot = percentage_errors_with_zeros
+                data_to_plot = percentage_errors
             else:
-                data_to_plot = {'values': [], 'labels': model_parameters['output_variables']}
-                for i in range(len(model_parameters['output_variables'])):
-                    # Todo: organizar isso melhor, renomear np_y_test
-                    y_test_column_i = np.array(y_test[:, i])
-                    valid_indexes = [j for j, x in enumerate(y_test_column_i) if x != 0]
-                    y_pred_column_i = y_pred[:, i]
-                    percentage_errors = abs(
-                        (y_test_column_i[valid_indexes] - y_pred_column_i[valid_indexes]) / y_test_column_i[
-                            valid_indexes])
-                    array_zero_errors = np.zeros(abs(len(y_test_column_i) - len(valid_indexes)))
-                    percentage_errors_with_zeros = np.concatenate((percentage_errors, array_zero_errors))
-                    data_to_plot['values'].append(percentage_errors_with_zeros.mean())
+                data_to_plot = {'labels': model_parameters['output_variables'], 'values':percentage_errors.mean(axis=0)}
 
             training_output = {'r2_score': r2_score_result, 'mse': mse, 'mae': mae, 'rmse': rmse,
                                'data_to_plot': data_to_plot}
@@ -277,7 +276,6 @@ class MlModel:
             number_of_classes = len(np.unique(np.concatenate((y_train, y_test))))
             if number_of_classes > 2:
                 average_value = 'macro'
-                # Todo Understand the difference between macro and micro
             else:
                 average_value = 'binary'
 
