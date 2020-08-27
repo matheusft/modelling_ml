@@ -26,7 +26,7 @@ using [Qt Designer](https://build-system.fman.io/qt-designer-download).
 [src/ml_gui_resources_rc.py](https://github.com/matheusft/modelling_ml/tree/master/src/ml_gui_resources_rc.py). Let
 the [pyuic5](https://pypi.org/project/pyqt5ac/) package called in [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py)
  do its jobs.)
-3. Run **src/main.py**
+3. Run [src/main.py](https://github.com/matheusft/modelling_ml/tree/master/src/main.py)
 
 Ideally, this tool should be self-explanatory...
 
