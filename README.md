@@ -16,3 +16,10 @@ Pre-Processing the Dataset:
 Selecting the Machine Learning Algorithm:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Model_Sel.gif?raw=true"/>
 
+Selecting Input and Output Variables:
+<img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Input_Output.gif?raw=true"/>
+
+Training the Model:
+<img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
+
+
