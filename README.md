@@ -13,3 +13,6 @@ Visualising the loaded Dataset:
 Pre-Processing the Dataset:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Pre_processing.gif?raw=true"/>
 
+Selecting the Machine Learning Algorithm:
+<img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Model_Sel.gif?raw=true"/>
+
