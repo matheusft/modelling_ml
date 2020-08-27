@@ -17,7 +17,7 @@ Even tought
 Eventug it was tested is working fine needs more updates.
 in the bottom of this documents you'll find....
 
-#### For updating the anything in the GUI 
+#### For updating anything in the GUI 
 1. Update the files from **resources/ui** using [Qt Designer](https://build-system.fman.io/qt-designer-download). 
 (Trust me, you don't want to build a GUI using code)
 2. Run **src/convert_ui_to_py.py** (Do not fiddle yourself with **src/main.py** nor **src/ml_gui_resources_rc.py**. Let
