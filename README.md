@@ -22,7 +22,7 @@ in the bottom of this documents you'll find....
 using [Qt Designer](https://build-system.fman.io/qt-designer-download). 
 (Trust me, you don't want to build a GUI using code).
 2. Run [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py) 
-(Do not fiddle yourself with [src/view.py](https://github.com/matheusft/modelling_ml/tree/master/src/view.py) nor 
+(Do not fiddle with [src/view.py](https://github.com/matheusft/modelling_ml/tree/master/src/view.py) nor 
 [src/ml_gui_resources_rc.py](https://github.com/matheusft/modelling_ml/tree/master/src/ml_gui_resources_rc.py). Let
 the [pyuic5](https://pypi.org/project/pyqt5ac/) package called in [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py)
  do its jobs.)
