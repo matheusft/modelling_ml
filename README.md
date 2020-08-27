@@ -24,6 +24,7 @@
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Input_Output.gif?raw=true"/>
 
 ###Training the Model:
+
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
 
 
