@@ -2,10 +2,10 @@
  
  This is Modelling ML, a code-free Machine Learning (ML) tool presented in a Graphical user interface (GUI) 
  which covers the most important steps in the design of Classification and Regression Machine Learning models.
- 
+ <!--
  The idea behind this tool came initially from a personal need where I needed to quickly perform some pre-processing, 
  visualisation and training ML models from datasets in .csv and Microsoft Excel (.xls and .xlsx) format.
- 
+ -->
  Modelling ML is 100% coded in Python 3 and uses some of the most popular libraries for Data Science and ML such as 
  [Scikit-learn](https://scikit-learn.org/stable/), [Pandas](https://pandas.pydata.org/pandas-docs/stable/index.html#),
  [Matplotlib](https://matplotlib.org/), [Numpy](https://numpy.org/), etc. The GUI was built on top of 
@@ -14,11 +14,16 @@
 Eventug it was tested is working fine needs more updates.
 in the bottom of this documents you'll find....
 
+1. Update the files from **resources/ui** using [Qt Designer](https://build-system.fman.io/qt-designer-download) (Trust me, You don't want to build an GUI using code)
+2. Run **src/convert_ui_to_py.py** 
+3. Run **src/main.py**
+
 Ideally, this tool should be self-explanatory...
 
 > A user interface (UI) is like a joke. If you have to explain it, it’s not that good
 
-In case this UI fails to achieve the same level as a nice joke and you need some further explanation,  
+In case this UI fails to achieve the same level as a nice joke and you need some further explanation, please, check 
+below for some extra info regarding each separate tab from Modelling ML.
 
 
 ___
