@@ -21,7 +21,8 @@ in the bottom of this documents you'll find....
 1. Update the files from [resources/ui](https://github.com/matheusft/modelling_ml/tree/master/resources/ui) using 
 [Qt Designer](https://build-system.fman.io/qt-designer-download). 
 (Trust me, you don't want to build a GUI using code)
-2. Run **src/convert_ui_to_py.py** (Do not fiddle yourself with **src/main.py** nor **src/ml_gui_resources_rc.py**. Let
+2. Run [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py) 
+(Do not fiddle yourself with **src/main.py** nor **src/ml_gui_resources_rc.py**. Let
 [pyuic5](https://pypi.org/project/pyqt5ac/) do its jobs.)
 3. Run **src/main.py**
 
