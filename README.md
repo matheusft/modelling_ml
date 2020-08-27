@@ -10,13 +10,18 @@
  [Scikit-learn](https://scikit-learn.org/stable/), [Pandas](https://pandas.pydata.org/pandas-docs/stable/index.html#),
  [Matplotlib](https://matplotlib.org/), [Numpy](https://numpy.org/), etc. The GUI was built on top of 
  [Qt](https://www.qt.io/download) using PyQt5. 
+ 
+
+Even tought 
 
 Eventug it was tested is working fine needs more updates.
 in the bottom of this documents you'll find....
 
-1. Update the files from **resources/ui** using [Qt Designer](https://build-system.fman.io/qt-designer-download) 
-(Trust me, You don't want to build a GUI using code)
-2. Run **src/convert_ui_to_py.py** 
+#### For updating the anything in the GUI 
+1. Update the files from **resources/ui** using [Qt Designer](https://build-system.fman.io/qt-designer-download). 
+(Trust me, you don't want to build a GUI using code)
+2. Run **src/convert_ui_to_py.py** (Do not fiddle yourself with **src/main.py** nor **src/ml_gui_resources_rc.py**. Let
+[pyuic5](https://pypi.org/project/pyqt5ac/) do its jobs.)
 3. Run **src/main.py**
 
 Ideally, this tool should be self-explanatory...
@@ -25,7 +30,6 @@ Ideally, this tool should be self-explanatory...
 
 In case this UI fails to achieve the same level as a nice joke, please, check below for some extra info regarding each 
 separate tab from Modelling ML.
-
 
 ___
 
