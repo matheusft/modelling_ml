@@ -14,7 +14,8 @@
 Eventug it was tested is working fine needs more updates.
 in the bottom of this documents you'll find....
 
-1. Update the files from **resources/ui** using [Qt Designer](https://build-system.fman.io/qt-designer-download) (Trust me, You don't want to build an GUI using code)
+1. Update the files from **resources/ui** using [Qt Designer](https://build-system.fman.io/qt-designer-download) 
+(Trust me, You don't want to build a GUI using code)
 2. Run **src/convert_ui_to_py.py** 
 3. Run **src/main.py**
 
@@ -22,8 +23,8 @@ Ideally, this tool should be self-explanatory...
 
 > A user interface (UI) is like a joke. If you have to explain it, it’s not that good
 
-In case this UI fails to achieve the same level as a nice joke and you need some further explanation, please, check 
-below for some extra info regarding each separate tab from Modelling ML.
+In case this UI fails to achieve the same level as a nice joke, please, check below for some extra info regarding each 
+separate tab from Modelling ML.
 
 
 ___
