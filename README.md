@@ -3,7 +3,10 @@
  This is Modelling ML, a code-free Machine Learning (ML) tool presented in a friendly Graphical user interface (GUI) 
  which covers the most important steps in the design of Classification and Regression Machine Learning models.
  
- The idea behind this tool came initially from a personal need where I needed to quickly perform some 
+ The idea behind this tool came initially from a personal need where I needed to quickly perform some pre-processing, 
+ visualisation and training ML models from datasets in .csv and Microsoft Excel (.xls and .xlsx) format.
+
+___
 
 ###Loading a Dataset:
 <!--
@@ -11,20 +14,33 @@
 -->
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Loading.gif?raw=true"/>
 
+___
+
 ###Visualising the loaded Dataset:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Visualising.gif?raw=true"/>
+
+___
 
 ###Pre-Processing the Dataset:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Pre_processing.gif?raw=true"/>
 
+___
+
 ###Selecting the Machine Learning Algorithm:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Model_Sel.gif?raw=true"/>
+
+___
 
 ###Selecting Input and Output Variables:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Input_Output.gif?raw=true"/>
 
-###Training the Model:
+___
 
+###Training the Model:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
 
+##To do List:
+* Unordered list can use asterisks
+* Unordered list can use asterisks
+* Unordered list can use asterisks
 
