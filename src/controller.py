@@ -31,15 +31,13 @@ class ViewController:
 
         # Seting up the thread pool for multi-threading
         ui.threadpool = QtCore.QThreadPool()
-
         # Populating the example_dataset_comboBox
-        list_of_datasets = os.listdir(self.data_directory)
+        list_of_datasets = os.listdir(transform_to_resource_path(self.data_directory))
         ui.example_dataset_comboBox.addItem('', '')
         for dataset in list_of_datasets:
             if not dataset.startswith('.'):
                 # Each Item receives the dataset name as text and the dataset path as data
                 ui.example_dataset_comboBox.addItem(dataset.split('.')[0], self.data_directory + dataset)
-
         self.connect_signals()
 
         ui.nn_classification_radioButton.click()
@@ -188,7 +186,9 @@ class ViewController:
 
         # Delete empty entry in the comboBox - This just happens once
         if ui.example_dataset_comboBox.itemText(0) == '':
+            ui.example_dataset_comboBox.blockSignals(True)
             ui.example_dataset_comboBox.removeItem(0)
+            ui.example_dataset_comboBox.blockSignals(False)
 
         ui.load_file_pushButton.setDisabled(True)
         ui.example_dataset_comboBox.setDisabled(True)
@@ -540,7 +540,6 @@ class ViewController:
             item.setText('1')
             widget.setItem(row, column, item)
         widget.blockSignals(False)
-
 
     def generate_qt_items_to_fill_tablewidget(self, table_widget, filling_dataframe):
 
