@@ -83,8 +83,8 @@ ___
 
 The Input/Output tap is where you select the input and output variables for you ML model.
 
-* When Regression Model is selected in the previous tab, one or more numerical variables should be used as output. 
-* When Classification Model is selected in the previous tab, a single categorical variable should be used as output. 
+* When **Regression** is selected in the previous tab, one or more numerical variables should be used as output. 
+* When **Classification** Model is selected in the previous tab, a single categorical variable should be used as output. 
 
 ___
 
