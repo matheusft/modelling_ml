@@ -13,7 +13,6 @@ sns.set()
 
 class ViewController:
 
-    # Initialising ############################################################################################
     def __init__(self, ui, ml_model):
         self.ui = ui
         self.ml_model = ml_model
@@ -32,12 +31,13 @@ class ViewController:
         # Seting up the thread pool for multi-threading
         ui.threadpool = QtCore.QThreadPool()
         # Populating the example_dataset_comboBox
-        list_of_datasets = os.listdir(transform_to_resource_path(self.data_directory))
         ui.example_dataset_comboBox.addItem('', '')
+        list_of_datasets = os.listdir(transform_to_resource_path(self.data_directory))
         for dataset in list_of_datasets:
             if not dataset.startswith('.'):
                 # Each Item receives the dataset name as text and the dataset path as data
                 ui.example_dataset_comboBox.addItem(dataset.split('.')[0], self.data_directory + dataset)
+
         self.connect_signals()
 
         ui.nn_classification_radioButton.click()
@@ -61,12 +61,12 @@ class ViewController:
         for widget in widgets_to_disable:
             widget.setEnabled(False)
 
+        #Creates the spinner for the model_train_widget in run-time
         ui.spinner_traning_results = personalised_widgets.QtWaitingSpinner(ui.model_train_widget)
         ui.spinner_traning_results.setSizePolicy(ui.model_train_widget.sizePolicy())
 
     def connect_signals(self):
         ui = self.ui
-        ml_model = self.ml_model
 
         # Connecting load_file_pushButton - Dataset Load Tab
         ui.load_file_pushButton.clicked.connect(lambda: self.trigger_loading_dataset_thread(ui.load_file_pushButton))
@@ -87,7 +87,6 @@ class ViewController:
         ui.remove_outliers_pushButton.clicked.connect(lambda: self.add_rm_outliers_rule())
         ui.addrule_filter_value_pushButton.clicked.connect(lambda: self.generate_filtering_rule())
         ui.addrule_replace_value_pushButton.clicked.connect(lambda: self.generate_replacing_rule())
-
 
         neuros_table_regression = ui.reg_nn_layers_tableWidget
         neuros_table_regression.cellChanged.connect(lambda: self.check_neurons_number(neuros_table_regression))
@@ -163,7 +162,6 @@ class ViewController:
 
         ui.train_model_pushButton.clicked.connect(lambda: self.trigger_train_model_thread())
 
-    # Reading Dataset #########################################################################################
     def trigger_loading_dataset_thread(self, data_source):
         ui = self.ui
         ml_model = self.ml_model
@@ -179,16 +177,16 @@ class ViewController:
             selected_index = ui.example_dataset_comboBox.currentIndex()
             file_address = ui.example_dataset_comboBox.itemData(selected_index)
 
+            # Delete empty entry in the comboBox - This just happens once
+            if ui.example_dataset_comboBox.itemText(0) == '':
+                ui.example_dataset_comboBox.blockSignals(True)
+                ui.example_dataset_comboBox.removeItem(0)
+                ui.example_dataset_comboBox.blockSignals(False)
+
         if file_address == '' or file_address == None:
             ui.dataset_tableWidget.spinner.stop()
             ui.pre_process_dataset_tableWidget.spinner.stop()
             return
-
-        # Delete empty entry in the comboBox - This just happens once
-        if ui.example_dataset_comboBox.itemText(0) == '':
-            ui.example_dataset_comboBox.blockSignals(True)
-            ui.example_dataset_comboBox.removeItem(0)
-            ui.example_dataset_comboBox.blockSignals(False)
 
         ui.load_file_pushButton.setDisabled(True)
         ui.example_dataset_comboBox.setDisabled(True)
@@ -205,9 +203,7 @@ class ViewController:
 
         # Starts the thread
         ui.threadpool.start(worker)
-        # result = ml_model.read_dataset(file_address)
 
-    # Pre-Processing ##########################################################################################
     def add_num_scaling_rule(self):
         ui = self.ui
 
@@ -238,7 +234,7 @@ class ViewController:
         filtering_operator = ui.filter_operator_comboBox.currentText()
         if filtering_value != '':  # If input is not empty
             try:
-                float(filtering_value)  # Check whether it is a valid input
+                float(filtering_value)  # Check whether it is a valid numeric input
             except:
                 display_message(QtWidgets.QMessageBox.Critical, 'Invalid Input',
                                 'Type a valid numeric input for column {}'.format(filtering_operator), 'Error')
@@ -345,15 +341,17 @@ class ViewController:
     def add_pre_processing_rule_to_listWidget(self, item, listWidget):
 
         listWidget.addItem(item)
-        self.update_pre_process()
+        self.trigger_update_pre_process_thread()
 
     def update_preprocess_replace_fields(self):
         ui = self.ui
         ml_model = self.ml_model
         selected_value = ui.replace_columnSelection_comboBox.currentText()
 
-        if ml_model.column_types_pd_series[
-            selected_value].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
+        is_numeric_variable = ml_model.column_types_pd_series[
+                         selected_value].kind in 'iuf'  # iuf = i int (signed), u unsigned int, f float
+
+        if is_numeric_variable:
             ui.pre_process_replacing_stackedWidget.setCurrentIndex(0)
         else:
             ui.pre_process_replacing_stackedWidget.setCurrentIndex(1)
@@ -370,34 +368,29 @@ class ViewController:
         ml_model = self.ml_model
 
         selected_value = ui.filter_columnSelection_comboBox.currentText()
-
-        if ml_model.column_types_pd_series[
-            selected_value].kind in 'iuf':  # iuf = i int (signed), u unsigned int, f float
+        is_numeric_variable = ml_model.column_types_pd_series[
+                                  selected_value].kind in 'iuf'  # iuf = i int (signed), u unsigned int, f float
+        if is_numeric_variable:
             ui.pre_process_filtering_stackedWidget.setCurrentIndex(0)
-
             if ui.filter_operator_comboBox.count() == 2:  # 2 items mean only == and !=
                 ui.filter_operator_comboBox.insertItem(2, 'Greater than or equal to')  # The index is always 2
                 ui.filter_operator_comboBox.insertItem(2, 'Greater than')  # The list will keep shifting
                 ui.filter_operator_comboBox.insertItem(2, 'Less than or equal to')
                 ui.filter_operator_comboBox.insertItem(2, 'Less than')
-
         else:
             ui.pre_process_filtering_stackedWidget.setCurrentIndex(1)
-
             ui.filtering_dataset_value_comboBox.clear()
             unique_values = ml_model.dataset[selected_value].unique().tolist()
-
             if ui.filter_operator_comboBox.count() == 6:
                 ui.filter_operator_comboBox.removeItem(2)  # Removing Less than
                 ui.filter_operator_comboBox.removeItem(2)  # Removing Less than or equal to
                 ui.filter_operator_comboBox.removeItem(2)  # Removing Greater than
                 ui.filter_operator_comboBox.removeItem(2)  # Removing Greater than or equal to
-
             # Filling the comboBoxes
             for each_value in unique_values:
                 ui.filtering_dataset_value_comboBox.addItem(each_value)  # Fill comboBox
 
-    def update_pre_process(self):
+    def trigger_update_pre_process_thread(self):
 
         ui = self.ui
         ml_model = self.ml_model
@@ -410,7 +403,6 @@ class ViewController:
         worker.signals.display_message.connect(display_message)
 
         ui.threadpool.start(worker)
-    # Pre-Processing ##########################################################################################
 
     def update_train_test_shape_label(self):
         ui = self.ui
@@ -433,7 +425,7 @@ class ViewController:
 
         if target_listwidget == ui.preprocess_sequence_listWidget:
             target_listwidget.clear()
-            self.update_pre_process()
+            self.trigger_update_pre_process_thread()
 
         elif target_listwidget == ui.input_columns_listWidget:
 
@@ -478,7 +470,6 @@ class ViewController:
 
     def model_selection_tab_events(self):
         ui = self.ui
-
         is_regression = ui.regression_selection_radioButton.isChecked()
 
         if is_regression:
@@ -546,7 +537,7 @@ class ViewController:
         table_widget.clear()
 
         # Fill dataset_tableWidget from the Dataset Load Tab with the head of the dataset
-        number_of_rows_to_display = 50
+        number_of_rows_to_display = 50 #Todo: Give the user the option to choose this number
         table_widget.setRowCount(len(filling_dataframe.head(number_of_rows_to_display)))
         table_widget.setColumnCount(len(filling_dataframe.columns))
 
@@ -590,13 +581,6 @@ class ViewController:
         ui = self.ui
         ml_model = self.ml_model
 
-        """Update the available visualisation options for each column in the radio buttons.
-    
-        Args:
-            :param ml_model: The Machine Learning Model.
-            :param ui:  The ui to be updated
-    
-        """
         selected_column = ui.variable_to_plot_comboBox.currentText()  # Get the selected value in the comboBox
         # Create a list of all radioButton objects
         radio_buttons_list = [ui.plot_radioButton, ui.boxplot_radioButton, ui.histogram_radioButton]
@@ -650,6 +634,7 @@ class ViewController:
                 self.update_train_test_shape_label()
 
     def update_nn_layers_table(self, table, value):
+        # This blockSignals(True) prevents check_neurons_number from running here
         table.blockSignals(True)
         if value > table.rowCount():
             while value > table.rowCount():
@@ -670,12 +655,10 @@ class ViewController:
         ui.train_model_pushButton.setDisabled(False)
 
         if model_parameters['is_regression']:
-
             ui.reg_mse_label.setText('{:.4f}'.format(result['mse']))
             ui.reg_rmse_label.setText('{:.4f}'.format(result['rmse']))
             ui.reg_r2_label.setText('{:.4f}'.format(result['r2_score']))
             ui.reg_mea_label.setText('{:.4f}'.format(result['mae']))
-
             self.trigger_plot_matplotlib_to_qt_widget_thread(target_widget=ui.model_train_widget,
                                                              content={'data': result['data_to_plot'],
                                                                       'output_variables': model_parameters[
@@ -688,7 +671,6 @@ class ViewController:
             ui.clas_recall_label.setText('{:.4f}'.format(result['recall_score']))
             ui.clas_precision_label.setText('{:.4f}'.format(result['precision_score']))
             ui.clas_f1_score_label.setText('{:.4f}'.format(result['f1_score']))
-
             self.trigger_plot_matplotlib_to_qt_widget_thread(target_widget=ui.model_train_widget,
                                                              content={'data': result['data_to_plot'],
                                                                       'output_variables': model_parameters[
@@ -764,10 +746,8 @@ class ViewController:
         train_percentage = (ui.train_percentage_horizontalSlider.value() / 100)
         test_percentage = (ui.test_percentage_horizontalSlider.value() / 100)
         shuffle_samples = ui.shuffle_samples_checkBox.isChecked()
-
         model_parameters = {'train_percentage': train_percentage, 'test_percentage': test_percentage,
                             'shuffle_samples': shuffle_samples}
-
         is_regression = ui.regression_selection_radioButton.isChecked()
 
         input_variables = []
@@ -806,12 +786,11 @@ class ViewController:
                                         'max_iter': max_iter, 'alpha': alpha,
                                         'validation_percentage': validation_percentage}
             elif algorithm == 'svm':
-                algorithm_parameters = []
+                algorithm_parameters = {}
             elif algorithm == 'random_forest':
-                algorithm_parameters = []
+                algorithm_parameters = {}
             elif algorithm == 'grad_boosting':
-                algorithm_parameters = []
-
+                algorithm_parameters = {}
         else:
             algorithm_index = [ui.nn_classification_radioButton.isChecked(),
                                ui.svm_classification_radioButton.isChecked(),
@@ -839,13 +818,13 @@ class ViewController:
                                         'max_iter': max_iter, 'alpha': alpha,
                                         'validation_percentage': validation_percentage}
             elif algorithm == 'svm':
-                algorithm_parameters = []
+                algorithm_parameters = {}
             elif algorithm == 'random_forest':
-                algorithm_parameters = []
+                algorithm_parameters = {}
             elif algorithm == 'grad_boosting':
-                algorithm_parameters = []
+                algorithm_parameters = {}
             elif algorithm == 'knn':
-                algorithm_parameters = []
+                algorithm_parameters = {}
 
         model_parameters.update(
             {'is_regression': is_regression, 'algorithm': algorithm, 'input_variables': input_variables,
@@ -861,9 +840,7 @@ class ViewController:
         ui.spinner_traning_results.start()
 
         # Running the traning in a separate thread from the GUI
-        ui.threadpool.start(worker) #Todo uncomment when this when finished testing!!
-        # result = ml_model.train(model_parameters, algorithm_parameters)
-        # self.display_training_results(result, model_parameters)
+        ui.threadpool.start(worker)
 
     def remove_item_from_listwidget(self, target_listwidget):
         ui = self.ui
@@ -883,7 +860,7 @@ class ViewController:
             self.update_train_model_button_status(ui.regression_selection_radioButton.isChecked())
 
         if target_listwidget == ui.preprocess_sequence_listWidget:
-            self.update_pre_process()
+            self.trigger_update_pre_process_thread()
 
 def transform_to_resource_path(relative_path):
     """Get absolute path to resource, works for dev and for PyInstaller.
