@@ -78,17 +78,21 @@ ___
 ___
 
 ### Selecting Input and Output Variables:
+
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Input_Output.gif?raw=true"/>
 
 The Input/Output tap is where you select the input and output variables for you ML model.
 
-* For Regression models, one or more numerical variables should be used as output.
-* For Classification models, a single categorical variable should be used as output.
+* When Regression Model is selected in the previous tab, one or more numerical variables should be used as output. 
+* When Classification Model is selected in the previous tab, a single categorical variable should be used as output. 
 
 ___
 
 ### Training the Model:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
+
+___
+
 
 #### To-do List:
 * Add a Testing Tab
