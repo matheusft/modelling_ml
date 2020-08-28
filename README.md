@@ -76,9 +76,9 @@ ___
 
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Model_Sel.gif?raw=true"/>
 
-The Model Selection Tab is where you choose whether you want to train a **Regression** or **Classification** model.
+The Model Selection Tab is where you choose between a **Regression** or **Classification** model. Choose Wisely!
 
-According to your choice, different ML algorithms are available and you can adjust its respective parameters &#127899;.
+According to your choice, different ML algorithms will be presented and you can adjust some of its main parameters &#127899;.
 
 ___
 
