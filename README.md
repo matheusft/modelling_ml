@@ -68,7 +68,13 @@ The visualisation tab displays some basic plots and a summary of the variable ch
 ___
 
 ### Pre-Processing the Dataset:
+
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Pre_processing.gif?raw=true"/>
+
+The Pre-Processing tab is where you can apply some modifications to your Dataset while it is live updated and displayed to you.
+
+The pre-processing elements you select will be applied sequentially according to what is displayed in **Pre-Processing Sequence** 
+section. Any update in the pre-processing sequence will trigger Modelling ML to run all the pre-processing steps from beginning.
 
 ___
 
@@ -98,7 +104,7 @@ ___
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
 
 Once a Dataset has been loaded, the ML model has been selected as well as the input and output variables, you are ready 
-to hit the **Train Model** button. If you skip any of the required steps, you will not be allowed to train your model &#xe403;.
+to hit the **Train Model** button. If you skip any of the required steps, you will not be allowed to train your model &#9785;&#65039;.
 
 Whether you are training a Regression or Classification model, the correspondent metrics will be shown as well as a plot
 illustrating the result of your trained model.
