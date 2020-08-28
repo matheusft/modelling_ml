@@ -95,6 +95,8 @@ ___
 Once a Dataset has been loaded, the ML model has been selected as well as the input and output variables, you are ready 
 to hit the **Train Model** button. If you skip any of the required steps, you will not be allowed to train your model &#57432;.
 
+&#xe403;
+
 Whether you are training a Regression or Classification model, the correspondent metrics will be shown as well as a plot
 illustrating the result of your trained model.
 
