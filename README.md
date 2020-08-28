@@ -48,7 +48,8 @@ ___
 
 
 In the first tab of Modelling ML you can either select an example dataset from the dropdown box or load a dataset
-from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx.
+from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx. Once the Dataset is selected, the first
+50 rows are shown.
 
 In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
 per column. Funny datasets with multiple data types in each column may cause Modelling ML to get very angry and explode 
@@ -62,7 +63,7 @@ ___
 
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Visualising.gif?raw=true"/>
 
-The visualisation tab displays some basic plots and a summary of the variable chosen in dropdown box.
+The visualisation tab displays some basic plots and a summary of the variable chosen in the dropdown box.
 
 ___
 
@@ -78,6 +79,11 @@ ___
 
 ### Selecting Input and Output Variables:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Input_Output.gif?raw=true"/>
+
+The Input/Output tap is where you select the input and output variables for you ML model.
+
+* For Regression models, one or more numerical variables should be used as output.
+* For Classification models, a single categorical variable should be used as output.
 
 ___
 
