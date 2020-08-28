@@ -13,13 +13,13 @@
  
  
 This project is in constant development. Hence, make sure you use the latest version and feel free to report any bugs. 
-There is a **To do List** in the bottom of this page and suggestions are welcomed.
+There is a **To-do List** in the bottom of this page and suggestions are welcomed.
 
-If you want to get involve in this project, please, feel free to contribute by submitting your pull request.
+If you want to get involved in this project, please, feel free to contribute by submitting your pull request.
  
 
 #### Versions
-* 1.0 (Current)
+* 1.0 - Better done than Perfect (Current)
 
 #### For running Modelling ML
 1. Run [src/main.py](https://github.com/matheusft/modelling_ml/tree/master/src/main.py)
@@ -73,7 +73,7 @@ ___
 ### Training the Model:
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
 
-#### To do List:
+#### To-do List:
 * Add a Testing Tab
 * Accept file extensions other than (.csv, .xls and .xlsx)
 * Add other Pre-Processing options
