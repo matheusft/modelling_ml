@@ -53,7 +53,7 @@ from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx. O
 
 In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
 per column. Funny datasets with multiple data types in each column may cause Modelling ML to get very angry and explode 
-&#58371;. 
+&#128165;. 
 
 This should be improved in the future.
 
@@ -93,9 +93,7 @@ ___
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
 
 Once a Dataset has been loaded, the ML model has been selected as well as the input and output variables, you are ready 
-to hit the **Train Model** button. If you skip any of the required steps, you will not be allowed to train your model &#57432;.
-
-&#xe403;
+to hit the **Train Model** button. If you skip any of the required steps, you will not be allowed to train your model &#xe403;.
 
 Whether you are training a Regression or Classification model, the correspondent metrics will be shown as well as a plot
 illustrating the result of your trained model.
