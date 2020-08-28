@@ -48,7 +48,10 @@ In the first tab of Modelling ML you can either select an example dataset from t
 from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx.
 
 In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
-per column. Funny datasets with XXX may cause Modelling ML to explode &#128165;. 
+per column. Funny datasets with multiple data types in each column may cause Modelling ML to get very angry and explode 
+&#128165;. 
+
+This should be improved in the future.
 
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Loading.gif?raw=true"/>
 
@@ -81,8 +84,9 @@ ___
 * Add a Testing Tab
 * Add more example Datasets
 * Accept file extensions other than (.csv, .xls and .xlsx)
+* Handle Unusual Datasets files
 * Add other Pre-Processing options
 * Display Pre-Processed and Original Dataset in the Visualisation Tab (Combobox)
-* Generate Executable files for Windows ans macOS.
+* Generate Executable files for Windows and macOS.
 
 
