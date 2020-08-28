@@ -52,8 +52,8 @@ from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx. O
 50 rows are shown.
 
 In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
-per column. Funny datasets with multiple data types in each column may cause Modelling ML to get very angry and explode 
-&#128165;. 
+per column (just like the ones from [data](https://github.com/matheusft/modelling_ml/tree/master/data). 
+Funny datasets with multiple data types in the same column may cause Modelling ML to get very angry and explode &#128165;. 
 
 This should be improved in the future.
 
@@ -74,7 +74,7 @@ ___
 The Pre-Processing tab is where you can apply some modifications to your Dataset while it is live updated and displayed to you.
 
 The pre-processing elements you select will be applied sequentially according to what is displayed in **Pre-Processing Sequence** 
-section. Any update in the pre-processing sequence will trigger Modelling ML to run all the pre-processing steps from beginning.
+section. Any update in the pre-processing sequence will trigger Modelling ML to run all the pre-processing steps from beginning &#128259;.
 
 ___
 
@@ -113,12 +113,14 @@ ___
 
 
 ### To-do List:
+* Finish Implementing the other ML Algorithms from **Model Selection** Tab
 * Add a Testing Tab
 * Add more example Datasets
 * Accept file extensions other than (.csv, .xls and .xlsx)
-* Handle Unusual Datasets files
+* Handle Unusual Datasets files (heterogeneous columns)
 * Add other Pre-Processing options
-* Display Pre-Processed and Original Dataset in the Visualisation Tab (Combobox)
+* Give the user the option to choose which variables are categorical
+* Display Pre-Processed and Original Datasets in the Visualisation Tab (Combobox)
 * Generate Executable files for Windows and macOS.
 
 
