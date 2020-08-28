@@ -11,11 +11,18 @@
  [Matplotlib](https://matplotlib.org/), [Numpy](https://numpy.org/), etc. The GUI was built on top of 
  [Qt](https://www.qt.io/download) using PyQt5. 
  
+ 
+This project is in constant development. Hence, make sure you use the latest version and feel free to report any bugs. 
+There is a **To do List** in the bottom of this page and suggestions are welcomed.
 
-Even tought 
+If you want to get involve in this project, please, feel free to contribute by submitting your pull request.
+ 
 
-Eventug it was tested is working fine needs more updates.
-in the bottom of this documents you'll find....
+#### Versions
+* 1.0 (Current)
+
+#### For running Modelling ML
+1. Run [src/main.py](https://github.com/matheusft/modelling_ml/tree/master/src/main.py)
 
 #### For updating anything in the GUI 
 1. Use [Qt Designer](https://doc.qt.io/qt-5/qtdesigner-manual.html) to update the files from [resources/ui](https://github.com/matheusft/modelling_ml/tree/master/resources/ui). 
@@ -68,8 +75,9 @@ ___
 
 #### To do List:
 * Add a Testing Tab
-* Accept extensions other than (.csv, .xls and .xlsx)
-* Add new filtering options
-* Display filtered and Original dataset in the Visualisation Tab
+* Accept file extensions other than (.csv, .xls and .xlsx)
+* Add other Pre-Processing options
+* Display Pre-Processed and Original Dataset in the Visualisation Tab (Combobox)
+* Generate Executable files for Windows ans macOS.
 
 
