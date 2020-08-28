@@ -44,6 +44,9 @@ ___
 
 ### Loading a Dataset:
 
+<img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Loading.gif?raw=true"/>
+
+
 In the first tab of Modelling ML you can either select an example dataset from the dropdown box or load a dataset
 from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx.
 
@@ -52,8 +55,6 @@ per column. Funny datasets with multiple data types in each column may cause Mod
 &#128165;. 
 
 This should be improved in the future.
-
-<img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Loading.gif?raw=true"/>
 
 ___
 
