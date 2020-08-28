@@ -73,7 +73,12 @@ ___
 ___
 
 ### Selecting the Machine Learning Algorithm:
+
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Model_Sel.gif?raw=true"/>
+
+The Model Selection Tab is where you choose whether you want to train a **Regression** or **Classification** model.
+
+According to your choice, different ML algorithms are available and you can adjust its respective parameters &#127899;.
 
 ___
 
