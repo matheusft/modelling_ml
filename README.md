@@ -53,7 +53,7 @@ from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx. O
 
 In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
 per column. Funny datasets with multiple data types in each column may cause Modelling ML to get very angry and explode 
-&#128165;. 
+&#58371;. 
 
 This should be improved in the future.
 
