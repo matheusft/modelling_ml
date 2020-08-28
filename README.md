@@ -18,15 +18,13 @@ Eventug it was tested is working fine needs more updates.
 in the bottom of this documents you'll find....
 
 #### For updating anything in the GUI 
-1. Update the files from [resources/ui](https://github.com/matheusft/modelling_ml/tree/master/resources/ui) exclusively 
-using [Qt Designer](https://build-system.fman.io/qt-designer-download). 
+1. Use [Qt Designer](https://build-system.fman.io/qt-designer-download) to update the files from [resources/ui](https://github.com/matheusft/modelling_ml/tree/master/resources/ui). 
 (Trust me, you don't want to build a GUI using code).
 2. Run [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py) 
 (Do not fiddle with [src/view.py](https://github.com/matheusft/modelling_ml/tree/master/src/view.py) nor 
 [src/ml_gui_resources_rc.py](https://github.com/matheusft/modelling_ml/tree/master/src/ml_gui_resources_rc.py). Let
 the [pyuic5](https://pypi.org/project/pyqt5ac/) package called in [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py)
  do its jobs.)
-3. Run [src/main.py](https://github.com/matheusft/modelling_ml/tree/master/src/main.py)
 
 Ideally, this tool should be self-explanatory...
 
@@ -69,7 +67,7 @@ ___
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Training.gif?raw=true"/>
 
 #### To do List:
-* Unordered list can use asterisks
-* Unordered list can use asterisks
+* Add a Testing Tab
+* Accept extensions other than (.csv, .xls and .xlsx)
 * Unordered list can use asterisks
 
