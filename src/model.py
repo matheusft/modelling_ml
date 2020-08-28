@@ -35,16 +35,7 @@ class MlModel:
         return (abs_pct_error * 100)
 
     def read_dataset(self, address):
-        """Read a dataset into a pandas dataframe from a file address.
 
-        Args:
-            address (str): file address.
-
-        Returns:
-            str: The return value. sucess
-                                   invalid_file_extension
-                                   exception_in_the_file
-        """
         filename, file_extension = os.path.splitext(address)
 
         try:
@@ -54,15 +45,14 @@ class MlModel:
             elif file_extension == '.xls' or file_extension == '.xlsx':
                 self.dataset = pd.read_excel(address)
             else:
-                return 'invalid_file_extension'  # Invalid file extension
+                return 'invalid_file_extension'
             self.is_data_loaded = True
             self.dataset.dropna(inplace = True)
             self.pre_processed_dataset = self.dataset.copy()
-            #This contains the type of all columns
             self.update_datasets_info()
             return 'sucess'
         except:
-            return 'exception_in_the_file'  # Exception
+            return 'exception_in_the_file'
 
     def update_datasets_info(self):
 
@@ -242,11 +232,9 @@ class MlModel:
 
             training_output = {'r2_score': r2_score_result, 'mse': mse, 'mae': mae, 'rmse': rmse,
                                'data_to_plot': data_to_plot}
-
             return training_output
 
         else:
-
             self.output_class_label_encoder = LabelEncoder()
             self.output_class_label_encoder.fit(np.concatenate((y_train, y_test)).ravel())
             encoded_y_train = self.output_class_label_encoder.transform(y_train.ravel())
@@ -289,5 +277,4 @@ class MlModel:
             training_output = {'recall_score': recall, 'f1_score': f1, 'precision_score': precision,
                                'accuracy': accuracy,
                                'data_to_plot': df_conf}
-
             return training_output

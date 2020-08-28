@@ -22,5 +22,3 @@ os.system(cmd2)
 
 
 
-
-
