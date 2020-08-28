@@ -43,9 +43,13 @@ separate tab from Modelling ML.
 ___
 
 ### Loading a Dataset:
-<!--
-<img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Loading.gif?raw=true" alt="Kitten" title="A cute kitten" width="150" height="100" />
--->
+
+In the first tab of Modelling ML you can either select an example dataset from the dropdown box or load a dataset
+from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx.
+
+In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
+per column. Funny datasets with XXX may cause Modelling ML to explode &#128165;. 
+
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Loading.gif?raw=true"/>
 
 ___
@@ -75,6 +79,7 @@ ___
 
 #### To-do List:
 * Add a Testing Tab
+* Add more example Datasets
 * Accept file extensions other than (.csv, .xls and .xlsx)
 * Add other Pre-Processing options
 * Display Pre-Processed and Original Dataset in the Visualisation Tab (Combobox)
