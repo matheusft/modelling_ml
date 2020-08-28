@@ -18,7 +18,7 @@ Eventug it was tested is working fine needs more updates.
 in the bottom of this documents you'll find....
 
 #### For updating anything in the GUI 
-1. Use [Qt Designer](https://build-system.fman.io/qt-designer-download) to update the files from [resources/ui](https://github.com/matheusft/modelling_ml/tree/master/resources/ui). 
+1. Use [Qt Designer](https://doc.qt.io/qt-5/qtdesigner-manual.html) to update the files from [resources/ui](https://github.com/matheusft/modelling_ml/tree/master/resources/ui). 
 (Trust me, you don't want to build a GUI using code).
 2. Run [src/convert_ui_to_py.py](https://github.com/matheusft/modelling_ml/tree/master/src/convert_ui_to_py.py) 
 (Do not fiddle with [src/view.py](https://github.com/matheusft/modelling_ml/tree/master/src/view.py) nor 
@@ -69,5 +69,7 @@ ___
 #### To do List:
 * Add a Testing Tab
 * Accept extensions other than (.csv, .xls and .xlsx)
-* Unordered list can use asterisks
+* Add new filtering options
+* Display filtered and Original dataset in the Visualisation Tab
+
 
