@@ -59,7 +59,10 @@ This should be improved in the future.
 ___
 
 ### Visualising the loaded Dataset:
+
 <img src="https://github.com/matheusft/modelling_ml/blob/master/readme_page/Visualising.gif?raw=true"/>
+
+The visualisation tab displays some basic plots and a summary of the variable chosen in dropdown box.
 
 ___
 
