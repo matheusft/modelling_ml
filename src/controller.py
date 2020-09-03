@@ -160,6 +160,27 @@ class ViewController:
             lambda: self.update_label_from_slider_change(ui.test_percentage_horizontalSlider.value(),
                                                          ui.test_percentage_label))
 
+        ui.clas_svm_kernel_comboBox.currentIndexChanged.connect(
+            lambda: self.update_svm_model_parameters('kernel_change', False))
+        ui.clas_svm_C_horizontalSlider.valueChanged.connect(
+            lambda: self.update_svm_model_parameters('regularisation_change', False))
+        ui.clas_svm_episilon_horizontalSlider.valueChanged.connect(
+            lambda: self.update_svm_model_parameters('epsilon_change', False))
+        ui.clas_svm_maxiter_nolimit_checkBox.clicked.connect(
+            lambda: self.update_svm_model_parameters('no_limit_click', False))
+        ui.clas_svm_maxiter_horizontalSlider.valueChanged.connect(
+            lambda: self.update_svm_model_parameters('max_iter_change', False))
+        ui.reg_svm_kernel_comboBox.currentIndexChanged.connect(
+            lambda: self.update_svm_model_parameters('kernel_change', True))
+        ui.reg_svm_C_horizontalSlider.valueChanged.connect(
+            lambda: self.update_svm_model_parameters('regularisation_change', True))
+        ui.reg_svm_episilon_horizontalSlider.valueChanged.connect(
+            lambda: self.update_svm_model_parameters('epsilon_change', True))
+        ui.reg_svm_maxiter_nolimit_checkBox.clicked.connect(
+            lambda: self.update_svm_model_parameters('no_limit_click', True))
+        ui.reg_svm_maxiter_horizontalSlider.valueChanged.connect(
+            lambda: self.update_svm_model_parameters('max_iter_change', True))
+
         ui.train_model_pushButton.clicked.connect(lambda: self.trigger_train_model_thread())
 
     def trigger_loading_dataset_thread(self, data_source):
@@ -649,6 +670,48 @@ class ViewController:
                 table.removeRow(table.rowCount() - 1)
         table.blockSignals(False)
 
+    def update_svm_model_parameters(self, action, is_regression):
+
+        ui = self.ui
+
+        if is_regression:
+            combobox = ui.reg_svm_kernel_comboBox
+            spin_box = ui.reg_svm_kernel_degree_spinBox
+            c_slider = ui.reg_svm_C_horizontalSlider
+            c_label = ui.reg_svm_C_label
+            epsilon_slider = ui.reg_svm_episilon_horizontalSlider
+            epsilon_label = ui.reg_svm_episilon_label
+            max_iter_slider = ui.reg_svm_maxiter_horizontalSlider
+            max_iter_label = ui.reg_svm_maxiter_label
+            check_box = ui.reg_svm_maxiter_nolimit_checkBox
+        else:
+            combobox = ui.clas_svm_kernel_comboBox
+            spin_box = ui.clas_svm_kernel_degree_spinBox
+            c_slider = ui.clas_svm_C_horizontalSlider
+            c_label = ui.clas_svm_C_label
+            epsilon_slider = ui.clas_svm_episilon_horizontalSlider
+            epsilon_label = ui.clas_svm_episilon_label
+            max_iter_slider = ui.clas_svm_maxiter_horizontalSlider
+            max_iter_label = ui.clas_svm_maxiter_label
+            check_box = ui.clas_svm_maxiter_nolimit_checkBox
+
+        if action == 'kernel_change':
+            if combobox.currentText() == 'poly':
+                spin_box.setEnabled(True)
+            else:
+                spin_box.setEnabled(False)
+        elif action == 'regularisation_change':
+            self.update_label_from_slider_change(c_slider.value(),c_label)
+        elif action == 'epsilon_change':
+            self.update_label_from_slider_change(epsilon_slider.value(),epsilon_label)
+        elif action == 'max_iter_change':
+            self.update_label_from_slider_change(max_iter_slider.value(),max_iter_label)
+        elif action == 'no_limit_click':
+            if check_box.isChecked():
+                max_iter_slider.setEnabled(False)
+            else:
+                max_iter_slider.setEnabled(True)
+
     def display_training_results(self, result, model_parameters):
         ui = self.ui
         ui.spinner_traning_results.stop()
@@ -708,24 +771,20 @@ class ViewController:
         ui = self.ui
         ml_model = self.ml_model
 
+        label_object.setText('{}'.format(slider_value))
+
         if label_object.objectName() == 'reg_nn_layers_label':
-            label_object.setText('{}'.format(slider_value))
             self.update_nn_layers_table(ui.reg_nn_layers_tableWidget, slider_value)
         elif label_object.objectName() == 'clas_nn_layers_label':
-            label_object.setText('{}'.format(slider_value))
             self.update_nn_layers_table(ui.clas_nn_layers_tableWidget, slider_value)
         elif label_object.objectName() == 'outliers_treshold_label':
             label_object.setText('{:.1f}'.format(slider_value / 10))
         elif label_object.objectName() == 'reg_nn_val_percent_label':
             label_object.setText('{}%'.format(slider_value))
-        elif label_object.objectName() == 'reg_nn_max_iter_label':
-            label_object.setText('{}'.format(slider_value))
         elif label_object.objectName() == 'reg_nn_alpha_label':
             label_object.setText('{}'.format(slider_value / 10000))
         elif label_object.objectName() == 'clas_nn_val_percent_label':
             label_object.setText('{}%'.format(slider_value))
-        elif label_object.objectName() == 'clas_nn_max_iter_label':
-            label_object.setText('{}'.format(slider_value))
         elif label_object.objectName() == 'clas_nn_alpha_label':
             label_object.setText('{}'.format(slider_value / 10000))
         elif label_object.objectName() == 'train_percentage_label':
@@ -738,6 +797,10 @@ class ViewController:
             ui.train_percentage_horizontalSlider.setValue(100 - slider_value)
             if ml_model.is_data_loaded:
                 self.update_train_test_shape_label()
+        elif label_object.objectName() == 'clas_svm_C_label':
+            label_object.setText('{:.1f}'.format(slider_value / 10))
+        elif label_object.objectName() == 'clas_svm_episilon_label':
+            label_object.setText('{:.1f}'.format(slider_value / 10))
 
     def trigger_train_model_thread(self):
         ui = self.ui
@@ -786,6 +849,7 @@ class ViewController:
                                         'max_iter': max_iter, 'alpha': alpha,
                                         'validation_percentage': validation_percentage}
             elif algorithm == 'svm':
+                # Todo Compplete SVM here!!!
                 algorithm_parameters = {}
             elif algorithm == 'random_forest':
                 algorithm_parameters = {}

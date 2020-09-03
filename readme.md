@@ -1,5 +1,7 @@
 # Modelling ML
- 
+ <!--
+ <img src="/Users/matheustorquato/Desktop/720.mov"/>
+ -->
  This is Modelling ML, a code-free Machine Learning (ML) tool presented in a Graphical user interface (GUI) 
  which covers the most important steps in the design of Classification and Regression Machine Learning models.
  <!--
@@ -52,7 +54,7 @@ from a file. Currently, the file extensions accepted are .csv, .xls and .xlsx. O
 50 rows are shown.
 
 In V1.0, Modelling ML works better with datasets that contain the variable labels in the top row and a single data type 
-per column (just like the ones from [data](https://github.com/matheusft/modelling_ml/tree/master/data). 
+per column (just like the ones from [data](https://github.com/matheusft/modelling_ml/tree/master/data)). 
 Funny datasets with multiple data types in the same column may cause Modelling ML to get very angry and explode &#128165;. 
 
 This should be improved in the future.
@@ -118,6 +120,7 @@ ___
 * Add more example Datasets
 * Accept file extensions other than (.csv, .xls and .xlsx)
 * Handle Unusual Datasets files (heterogeneous columns)
+* Handle Keyboard Events
 * Add other Pre-Processing options
 * Give the user the option to choose which variables are categorical
 * Display Pre-Processed and Original Datasets in the Visualisation Tab (Combobox)
