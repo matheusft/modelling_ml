@@ -1,3 +1,6 @@
+from sklearn import svm
+from sklearn.svm import SVR
+from sklearn.multioutput import MultiOutputRegressor
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error, recall_score, f1_score, precision_score, \
@@ -209,11 +212,24 @@ class MlModel:
                                         alpha=algorithm_parameters['alpha'],
                                         learning_rate=algorithm_parameters['learning_rate'],
                                         validation_fraction=algorithm_parameters['validation_percentage'])
-
                 ml_model.fit(x_train, y_train)
                 y_pred = ml_model.predict(x_test)
             elif model_parameters['algorithm'] == 'svm':
-                algorithm_parameters = []
+                max_iter_no_limit_checked = algorithm_parameters['max_iter_no_limit_checked']
+                if max_iter_no_limit_checked:
+                    svm_max_iter = -1
+                else:
+                    svm_max_iter = algorithm_parameters['max_iter']
+                ml_model = SVR(kernel=algorithm_parameters['kernel'],
+                                 degree=algorithm_parameters['kernel_degree'],
+                                 C=algorithm_parameters['regularisation_parameter'],
+                                 shrinking=algorithm_parameters['is_shrinking_enables'],
+                                 epsilon=algorithm_parameters['epsilon'],
+                                 max_iter=svm_max_iter)
+                if len(y_train.shape)>1:
+                    ml_model = MultiOutputRegressor(ml_model)
+                ml_model.fit(x_train, y_train)
+                y_pred = ml_model.predict(x_test)
             elif model_parameters['algorithm'] == 'random_forest':
                 algorithm_parameters = []
             elif model_parameters['algorithm'] == 'grad_boosting':
@@ -251,7 +267,18 @@ class MlModel:
                 ml_model.fit(x_train, encoded_y_train)
                 encoded_y_pred = ml_model.predict(x_test)
             elif model_parameters['algorithm'] == 'svm':
-                algorithm_parameters = []
+                max_iter_no_limit_checked = algorithm_parameters['max_iter_no_limit_checked']
+                if max_iter_no_limit_checked:
+                    svm_max_iter = -1
+                else:
+                    svm_max_iter = algorithm_parameters['max_iter']
+                ml_model = svm.SVC(kernel=algorithm_parameters['kernel'],
+                                 degree=algorithm_parameters['kernel_degree'],
+                                 C=algorithm_parameters['regularisation_parameter'],
+                                 shrinking=algorithm_parameters['is_shrinking_enables'],
+                                 max_iter=svm_max_iter)
+                ml_model.fit(x_train, encoded_y_train)
+                encoded_y_pred = ml_model.predict(x_test)
             elif model_parameters['algorithm'] == 'random_forest':
                 algorithm_parameters = []
             elif model_parameters['algorithm'] == 'grad_boosting':

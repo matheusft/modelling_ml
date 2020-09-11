@@ -164,8 +164,6 @@ class ViewController:
             lambda: self.update_svm_model_parameters('kernel_change', False))
         ui.clas_svm_C_horizontalSlider.valueChanged.connect(
             lambda: self.update_svm_model_parameters('regularisation_change', False))
-        ui.clas_svm_episilon_horizontalSlider.valueChanged.connect(
-            lambda: self.update_svm_model_parameters('epsilon_change', False))
         ui.clas_svm_maxiter_nolimit_checkBox.clicked.connect(
             lambda: self.update_svm_model_parameters('no_limit_click', False))
         ui.clas_svm_maxiter_horizontalSlider.valueChanged.connect(
@@ -180,6 +178,8 @@ class ViewController:
             lambda: self.update_svm_model_parameters('no_limit_click', True))
         ui.reg_svm_maxiter_horizontalSlider.valueChanged.connect(
             lambda: self.update_svm_model_parameters('max_iter_change', True))
+
+        ui.tabs_widget.currentChanged.connect(lambda: self.update_input_output_columns('clear_output_variables'))
 
         ui.train_model_pushButton.clicked.connect(lambda: self.trigger_train_model_thread())
 
@@ -689,8 +689,6 @@ class ViewController:
             spin_box = ui.clas_svm_kernel_degree_spinBox
             c_slider = ui.clas_svm_C_horizontalSlider
             c_label = ui.clas_svm_C_label
-            epsilon_slider = ui.clas_svm_episilon_horizontalSlider
-            epsilon_label = ui.clas_svm_episilon_label
             max_iter_slider = ui.clas_svm_maxiter_horizontalSlider
             max_iter_label = ui.clas_svm_maxiter_label
             check_box = ui.clas_svm_maxiter_nolimit_checkBox
@@ -746,6 +744,11 @@ class ViewController:
         ml_model = self.ml_model
         is_regression = ui.regression_selection_radioButton.isChecked()
 
+        if target_object == 'clear_output_variables':
+            if ui.tabs_widget.currentIndex() == 4 and not is_regression:
+                ui.clear_output_columns_pushButton.click()
+            return
+
         for selected_item in ui.available_columns_listWidget.selectedItems():
             item = ui.available_columns_listWidget.takeItem(ui.available_columns_listWidget.row(selected_item))
             is_variable_categorical = selected_item.text() in ml_model.categorical_variables
@@ -799,8 +802,6 @@ class ViewController:
                 self.update_train_test_shape_label()
         elif label_object.objectName() == 'clas_svm_C_label':
             label_object.setText('{:.1f}'.format(slider_value / 10))
-        elif label_object.objectName() == 'clas_svm_episilon_label':
-            label_object.setText('{:.1f}'.format(slider_value / 10))
 
     def trigger_train_model_thread(self):
         ui = self.ui
@@ -849,8 +850,20 @@ class ViewController:
                                         'max_iter': max_iter, 'alpha': alpha,
                                         'validation_percentage': validation_percentage}
             elif algorithm == 'svm':
-                # Todo Compplete SVM here!!!
-                algorithm_parameters = {}
+                kernel = ui.reg_svm_kernel_comboBox.currentText()
+                kernel_degree = ui.reg_svm_kernel_degree_spinBox.value()
+                regularisation_parameter = float(ui.reg_svm_C_label.text())
+                is_shrinking_enables =  ui.reg_svm_shirinking_checkBox.isChecked()
+                epsilon = float(ui.reg_svm_episilon_label.text())
+                max_iter_no_limit_checked = ui.reg_svm_maxiter_nolimit_checkBox.isChecked()
+                max_iter = int(ui.reg_svm_maxiter_label.text())
+                algorithm_parameters = {'kernel': kernel,
+                                        'kernel_degree': kernel_degree,
+                                        'regularisation_parameter': regularisation_parameter,
+                                        'is_shrinking_enables': is_shrinking_enables,
+                                        'epsilon': epsilon,
+                                        'max_iter_no_limit_checked': max_iter_no_limit_checked,
+                                        'max_iter': max_iter}
             elif algorithm == 'random_forest':
                 algorithm_parameters = {}
             elif algorithm == 'grad_boosting':
@@ -882,7 +895,18 @@ class ViewController:
                                         'max_iter': max_iter, 'alpha': alpha,
                                         'validation_percentage': validation_percentage}
             elif algorithm == 'svm':
-                algorithm_parameters = {}
+                kernel = ui.clas_svm_kernel_comboBox.currentText()
+                kernel_degree = ui.clas_svm_kernel_degree_spinBox.value()
+                regularisation_parameter = float(ui.clas_svm_C_label.text())
+                is_shrinking_enables =  ui.clas_svm_shirinking_checkBox.isChecked()
+                max_iter_no_limit_checked = ui.clas_svm_maxiter_nolimit_checkBox.isChecked()
+                max_iter = int(ui.clas_svm_maxiter_label.text())
+                algorithm_parameters = {'kernel': kernel,
+                                        'kernel_degree': kernel_degree,
+                                        'regularisation_parameter': regularisation_parameter,
+                                        'is_shrinking_enables': is_shrinking_enables,
+                                        'max_iter_no_limit_checked': max_iter_no_limit_checked,
+                                        'max_iter': max_iter}
             elif algorithm == 'random_forest':
                 algorithm_parameters = {}
             elif algorithm == 'grad_boosting':
