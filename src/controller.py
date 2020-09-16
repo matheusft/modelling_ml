@@ -443,6 +443,7 @@ class ViewController:
     def clear_listwidget(self, target_listwidget):
         ui = self.ui
         ml_model = self.ml_model
+        is_regression = ui.regression_selection_radioButton.isChecked()
 
         if target_listwidget == ui.preprocess_sequence_listWidget:
             target_listwidget.clear()
@@ -463,7 +464,8 @@ class ViewController:
 
         elif target_listwidget == ui.output_columns_listWidget:
 
-            ui.train_model_pushButton.setDisabled(True)
+            if is_regression:
+                ui.train_model_pushButton.setDisabled(True)
 
             for _ in range(target_listwidget.count()):
                 item = target_listwidget.takeItem(0)
